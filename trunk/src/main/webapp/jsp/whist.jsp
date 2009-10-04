@@ -33,7 +33,7 @@
                     }
                     var imgHTML = "";
                     for (card in hand) {
-                        imgHTML = imgHTML + "<img src = \"images/" + card + ".png\"/>"
+                        imgHTML = imgHTML + "<img src = \"images/" + hand[card] + ".png\"/>"
                     }
                     alert("imgHTML is " + imgHTML);
                     document.getElementById("handDiv").innerHTML = imgHTML;

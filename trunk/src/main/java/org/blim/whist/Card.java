@@ -1,10 +1,10 @@
 package org.blim.whist;
 
 import java.util.List;
-
 import com.google.common.collect.Lists;
+import org.json.simple.JSONAware;
 
-public class Card {
+public class Card implements JSONAware {
 	
     public enum Value { TWO, THREE, FOUR, FIVE, SIX, SEVEN, EIGHT, NINE, TEN, JACK, QUEEN, KING, ACE }
     public enum Suit { CLUBS, DIAMONDS, HEARTS, SPADES }
@@ -35,5 +35,9 @@ public class Card {
     public static List<Card> createDeck() {
         return Lists.newArrayList(cards);
     }
+
+	public String toJSONString() {
+		return "\"" + toString() + "\"";
+	}
 
 }
