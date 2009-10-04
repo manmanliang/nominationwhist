@@ -17,7 +17,7 @@ public class Hand extends HttpServlet {
 	    	gameService.dealRound(gameData.getDeck(), 13, gameData.playerOne(), gameData.playerTwo(), gameData.playerThree(), gameData.playerFour());
 	    	String jsonHand = JSONValue.toJSONString(gameData.playerOne().getCards());
 	    	
-	        request.setAttribute ("data", gameData.playerOne().getCards());
+	        request.setAttribute ("data", jsonHand);
 	        getServletConfig().getServletContext().getRequestDispatcher("/jsp/hand.jsp").forward(request, response);
 	    } catch (Exception ex) {
 	        ex.printStackTrace ();
