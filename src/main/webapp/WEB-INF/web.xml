@@ -13,10 +13,18 @@
         <servlet-name>GameServlet</servlet-name>
         <servlet-class>org.blim.whist.Game</servlet-class>
     </servlet>
-
     <servlet-mapping>
         <servlet-name>GameServlet</servlet-name>
         <url-pattern>/whist</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>HandServlet</servlet-name>
+        <servlet-class>org.blim.whist.Hand</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>HandServlet</servlet-name>
+        <url-pattern>/hand</url-pattern>
     </servlet-mapping>
 
 </web-app>

@@ -17,7 +17,7 @@ public class GameServiceTest extends TestCase {
 
 	private GameService svcGame = new GameService();
 
-	public void testDealRoundOfThirteenCards() throws Exception {
+	public void testDealHandOfThirteenCards() throws Exception {
 		Player one = new Player();
 		Player two = new Player();
 		Player three = new Player();
