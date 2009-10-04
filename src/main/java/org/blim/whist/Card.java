@@ -22,7 +22,7 @@ public class Card {
     public Value value() { return value; }
     public Suit suit() { return suit; }
     
-    public String toString() { return value.toString() + " " + suit.toString(); }
+    public String toString() { return value.toString() + "-" + suit.toString(); }
 
     static {
     	for (Value value : Value.values()) {

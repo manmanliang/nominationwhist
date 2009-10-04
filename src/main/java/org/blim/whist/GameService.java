@@ -17,4 +17,9 @@ public class GameService {
 		}
 	}
 		
+	public void playCard(List<Card> player, Card cardToPlay, Trick trick) {
+		trick.addCard(cardToPlay);
+		player.remove(cardToPlay);
+	}
+		
 }
