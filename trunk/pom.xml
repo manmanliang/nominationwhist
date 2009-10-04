@@ -21,12 +21,12 @@
 				<version>2.1-alpha-1</version>
 				<configuration>
 					<webResources>
-						<resource>
+						<!--resource>
 							<directory>src/main/resources/config
 							</directory>
 							<targetPath>WEB-INF</targetPath>
 							<filtering>true</filtering>
-						</resource>
+						</resource-->
 						<resource>
 							<directory>src/main/resources</directory>
 							<targetPath>WEB-INF/classes</targetPath>
