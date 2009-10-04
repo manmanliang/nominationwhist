@@ -4,24 +4,27 @@ import com.google.common.collect.Lists;
 import java.util.List;
 
 public class GameData {
-	private List<Card> playerOne = Lists.newArrayList();
-	private List<Card> playerTwo = Lists.newArrayList();
-	private List<Card> playerThree = Lists.newArrayList();
-	private List<Card> playerFour = Lists.newArrayList();
+	List<Card> deck = Card.createDeck();
+
+	private Player playerOne = new Player();
+	private Player playerTwo = new Player();
+	private Player playerThree = new Player();
+	private Player playerFour = new Player();
 	
-	public List<Card> playerOne() { return playerOne; }
-	public List<Card> playerTwo() { return playerTwo; }
-	public List<Card> playerThree() { return playerThree; }
-	public List<Card> playerFour() { return playerFour; }
+	public Player playerOne() { return playerOne; }
+	public Player playerTwo() { return playerTwo; }
+	public Player playerThree() { return playerThree; }
+	public Player playerFour() { return playerFour; }
 	
-	public void addCardToPlayer(List<Card> player, Card card) {
-		player.add(card);
+	public List<Card> getDeck() {
+		return deck;
 	}
-	
+
 	public void resetData() {
-		playerOne.clear();
-		playerTwo.clear();
-		playerThree.clear();
-		playerFour.clear();
+		playerOne.clearCards();
+		playerTwo.clearCards();
+		playerThree.clearCards();
+		playerFour.clearCards();
+		deck = Card.createDeck();
 	}
 }

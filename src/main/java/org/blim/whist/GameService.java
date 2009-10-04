@@ -5,18 +5,17 @@ import java.util.List;
 
 public class GameService {
 
-	public void dealRound(int numOfCards, List<Card> one, List<Card> two, List<Card> three, List<Card> four) {
-		List<Card> deck = Card.createDeck();
+	public void dealRound(List<Card> deck, int numOfCards,Player one, Player two, Player three, Player four) {
 		Collections.shuffle(deck);
 		
 		for (int i = 0; i < numOfCards; i++) {
-			one.add(deck.remove(0));
-			two.add(deck.remove(0));
-			three.add(deck.remove(0));
-			four.add(deck.remove(0));
+			one.addCard(deck.remove(0));
+			two.addCard(deck.remove(0));
+			three.addCard(deck.remove(0));
+			four.addCard(deck.remove(0));
 		}
 	}
-		
+	
 	public void playCard(List<Card> player, Card cardToPlay, Trick trick) {
 		trick.addCard(cardToPlay);
 		player.remove(cardToPlay);
