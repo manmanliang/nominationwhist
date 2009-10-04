@@ -6,8 +6,7 @@ import java.util.List;
 import org.blim.whist.GameService;
 import org.blim.whist.Card;
 import org.blim.whist.Trick;
-
-import com.google.common.collect.Lists;
+import org.blim.whist.Player;
 
 import static org.hamcrest.Matchers.*;
 import static org.hamcrest.MatcherAssert.*;
@@ -19,29 +18,31 @@ public class GameServiceTest extends TestCase {
 	private GameService svcGame = new GameService();
 
 	public void testDealRoundOfThirteenCards() throws Exception {
-		List<Card> one = Lists.newArrayList();
-		List<Card> two = Lists.newArrayList();
-		List<Card> three = Lists.newArrayList();
-		List<Card> four = Lists.newArrayList();
-		
-		svcGame.dealRound(13, one, two, three, four);
+		Player one = new Player();
+		Player two = new Player();
+		Player three = new Player();
+		Player four = new Player();
+		List<Card> deck = Card.createDeck();
 
-		assertTrue("Players do not have 13 cards each [" + one.size() + ", " + two.size() + ", " + three.size() + ", " + four.size() + "].", one.size() == 13 && two.size() == 13 && three.size() == 13 && four.size() == 13);
+		svcGame.dealRound(deck, 13, one, two, three, four);
+
+		assertTrue("Players do not have 13 cards each [" + one.getCards().size() + ", " + two.getCards().size() + ", " + three.getCards().size() + ", " + four.getCards().size() + "].", one.getCards().size() == 13 && two.getCards().size() == 13 && three.getCards().size() == 13 && four.getCards().size() == 13);
 	}
 
 	public void testPlayCard() throws Exception {
 		List<Card> deck = Card.createDeck();
-		Collections.shuffle(deck);
-		List<Card> player = Lists.newArrayList();
+		Player player = new Player();
 		Trick trick = new Trick();
-		
-		player.addAll(deck.subList(3, 11));
-		deck.removeAll(player);
-		Card cardToPlay = player.get(3);
-		
-		svcGame.playCard(player, cardToPlay, trick);
 
-		assertFalse("Card was not removed from players hand", player.contains(cardToPlay));
+		Collections.shuffle(deck);
+
+		player.getCards().addAll(deck.subList(3, 11));
+		deck.removeAll(player.getCards());
+		Card cardToPlay = player.getCards().get(3);
+		
+		svcGame.playCard(player.getCards(), cardToPlay, trick);
+
+		assertFalse("Card was not removed from players hand", player.getCards().contains(cardToPlay));
 		assertTrue("Card was not added to the trick", trick.getCards().contains(cardToPlay));
 	}
 

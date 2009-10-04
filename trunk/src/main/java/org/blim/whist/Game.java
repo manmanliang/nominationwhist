@@ -10,7 +10,11 @@ public class Game extends HttpServlet {
 
 	    try {
 	    	gameData.resetData();
-	    	gameService.dealRound(13, gameData.playerOne(), gameData.playerTwo(), gameData.playerThree(), gameData.playerFour());
+	    	gameData.playerOne().setName("Rob");
+	    	gameData.playerTwo().setName("Lee");
+	    	gameData.playerThree().setName("Mum");
+	    	gameData.playerFour().setName("Dad");
+	    	gameService.dealRound(gameData.getDeck(), 13, gameData.playerOne(), gameData.playerTwo(), gameData.playerThree(), gameData.playerFour());
 	        request.setAttribute ("playerOne", gameData.playerOne());
 	        request.setAttribute ("playerTwo", gameData.playerTwo());
 	        request.setAttribute ("playerThree", gameData.playerThree());
