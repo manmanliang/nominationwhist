@@ -10,13 +10,13 @@ import org.json.simple.JSONValue;
 
 public class HandStateServlet extends HttpServlet {
 	
-	private Round round = new Round();
 	private GameService gameService = new GameService();
 	
 	public void doGet (HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		Round round = new Round();
 
 	    gameService.dealRound(
-	    		round.getDeck(), 
+	    		Card.createDeck(), 
 	    		13, 
 	    		round.getHandOne(),
 				round.getHandTwo(), 
