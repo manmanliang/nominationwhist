@@ -5,7 +5,7 @@ import java.util.List;
 
 public class GameService {
 
-	public void dealRound(List<Card> deck, int numOfCards,Player one, Player two, Player three, Player four) {
+	public void dealRound(List<Card> deck, int numOfCards,Hand one, Hand two, Hand three, Hand four) {
 		Collections.shuffle(deck);
 		
 		for (int i = 0; i < numOfCards; i++) {
