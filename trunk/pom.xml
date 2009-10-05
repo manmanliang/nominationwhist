@@ -74,23 +74,26 @@
 			</plugin>
 		</plugins>
 	</build>
+  
+    <repositories>
+      <repository>
+        <id>spring-mvn</id>
+        <name>SpringSource Enterprise Bundle Repository - Snapshot Bundle Releases</name>
+        <url>http://repository.springsource.com/maven/bundles/milestone</url>
+      </repository>
+      <repository>
+        <id>com.springsource.repository.bundles.external</id>
+        <name>SpringSource Enterprise Bundle Repository - External Bundle Releases</name>
+        <url>http://repository.springsource.com/maven/bundles/external</url>
+      </repository> 
+      <repository>
+        <id>jboss</id>
+        <name>JBoss</name>
+        <url>http://repository.jboss.org/maven2</url>
+      </repository>
+    </repositories>
+	
 	<dependencies>
-	    <dependency>
-            <groupId>com.google.collections</groupId>
-            <artifactId>google-collections</artifactId>
-            <version>0.8</version>
-            <scope>compile</scope>
-        </dependency>	
-		<dependency>
-			<groupId>org.jmock</groupId>
-			<artifactId>jmock-junit3</artifactId>
-			<version>2.5.1</version>
-		</dependency>
-		<dependency>
-			<groupId>org.hamcrest</groupId>
-			<artifactId>hamcrest-all</artifactId>
-			<version>1.1</version>
-		</dependency>
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>servlet-api</artifactId>
@@ -103,6 +106,76 @@
 			<version>2.0</version>
 			<scope>provided</scope>
 		</dependency>
+		<dependency>
+			<groupId>jstl</groupId>
+			<artifactId>jstl</artifactId>
+			<version>1.1.2</version>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>taglibs</groupId>
+			<artifactId>standard</artifactId>
+			<version>1.1.2</version>
+			<scope>runtime</scope>
+		</dependency>
+
+        <dependency>
+          <groupId>asm</groupId>
+          <artifactId>asm</artifactId>
+          <version>2.2.3</version>
+          <scope>compile</scope>
+        </dependency>
+        <dependency>
+          <groupId>asm</groupId>
+          <artifactId>asm-commons</artifactId>
+          <version>2.2.3</version>
+          <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+          <groupId>org.hibernate</groupId>
+          <artifactId>hibernate-annotations</artifactId>
+          <version>3.4.0.GA</version>
+          <scope>compile</scope>
+        </dependency>
+        <dependency>
+          <groupId>org.hibernate</groupId>
+          <artifactId>hibernate-validator</artifactId>
+          <version>3.1.0.GA</version>
+          <scope>compile</scope>
+        </dependency>
+      
+        <dependency>
+          <groupId>org.springframework</groupId>
+          <artifactId>org.springframework.web.servlet</artifactId>
+          <version>3.0.0.RC1</version>
+          <scope>compile</scope>
+        </dependency>
+        <dependency>
+          <groupId>org.springframework</groupId>
+          <artifactId>org.springframework.orm</artifactId>
+          <version>3.0.0.RC1</version>
+          <scope>compile</scope>
+        </dependency>
+        <dependency>
+          <groupId>org.springframework</groupId>
+          <artifactId>org.springframework.jdbc</artifactId>
+          <version>3.0.0.RC1</version>
+          <scope>runtime</scope>
+        </dependency>
+        <dependency>
+          <groupId>org.springframework</groupId>
+          <artifactId>org.springframework.aop</artifactId>
+          <version>3.0.0.RC1</version>
+          <scope>compile</scope>
+        </dependency>
+        <dependency>
+          <groupId>org.springframework</groupId>
+          <artifactId>org.springframework.test</artifactId>
+          <version>3.0.0.RC1</version>
+          <scope>compile</scope>
+        </dependency>  
+
 		<dependency>
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>
@@ -124,22 +197,22 @@
 			</exclusions>
 		</dependency>
 		<dependency>
-			<groupId>hsqldb</groupId>
-			<artifactId>hsqldb</artifactId>
-			<version>1.8.0.7</version>
+			<groupId>org.jmock</groupId>
+			<artifactId>jmock-junit3</artifactId>
+			<version>2.5.1</version>
 		</dependency>
 		<dependency>
-			<groupId>jstl</groupId>
-			<artifactId>jstl</artifactId>
-			<version>1.1.2</version>
-			<scope>runtime</scope>
+			<groupId>org.hamcrest</groupId>
+			<artifactId>hamcrest-all</artifactId>
+			<version>1.1</version>
 		</dependency>
-		<dependency>
-			<groupId>taglibs</groupId>
-			<artifactId>standard</artifactId>
-			<version>1.1.2</version>
-			<scope>runtime</scope>
-		</dependency>
+
+	    <dependency>
+            <groupId>com.google.collections</groupId>
+            <artifactId>google-collections</artifactId>
+            <version>0.8</version>
+            <scope>compile</scope>
+        </dependency>	
 		<dependency>
 			<groupId>commons-collections</groupId>
 			<artifactId>commons-collections</artifactId>
@@ -155,5 +228,11 @@
        	<artifactId>json-simple</artifactId>
        	<version>1.1</version>
        </dependency>
+
+		<dependency>
+			<groupId>hsqldb</groupId>
+			<artifactId>hsqldb</artifactId>
+			<version>1.8.0.7</version>
+		</dependency>
 	</dependencies>
 </project>
