@@ -1,9 +1,6 @@
 package org.blim.whist;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
 
-@Entity
 public class Round {
 
 	private Long id;
@@ -13,7 +10,6 @@ public class Round {
 	private Hand handThree = new Hand();
 	private Hand handFour = new Hand();
 
-	@Id
 	public Long getId() { return this.id; }
     public void setId(Long id) { this.id = id; }
 	
