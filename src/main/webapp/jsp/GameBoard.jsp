@@ -5,10 +5,9 @@
     <script type="text/javascript" src="<c:url value="/js/json.js"/>"></script>
     <script type="text/javascript" src="<c:url value="/js/xmlhttp.js"/>"></script>
     <script type="text/javascript">
-    	var handxmlhttp;
+      	var handxmlhttp;
         function handStateChange()
         {
-        alert("Got here");
             if (handxmlhttp.readyState==4)
             {// 4 = "loaded"
                 if (handxmlhttp.status==200)
@@ -27,17 +26,16 @@
                 }
                 else
                 {
-                    document.getElementById("handDiv").innerHTML = "<p>Data is out of data. Updating, please wait...</p>";
+                    document.getElementById("handDiv").innerHTML = "<p>" + handxmlhttp.status + ": Data is out of data. Updating, please wait...</p>";
                 }
             }
         }
-        LoadXMLDoc(handxmlhttp, handStateChange, "hand");    
     </script>    
     <style>
     	body { background: #008000; }
     </style>
   </head>
-  <body onload="loadXMLDoc('hand')">  
+  <body onload="handxmlhttp = loadXMLDoc(handStateChange, '<c:url value="/hand"/>');">    
     <h1>Lets Play Nommy</h1>
     <hr>
     </br>

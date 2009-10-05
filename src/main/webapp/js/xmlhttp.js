@@ -1,6 +1,6 @@
-function loadXMLDoc(xmlhttp, stateChangeFunc, url)
+function loadXMLDoc(externalFunc, url)
 {
-    xmlhttp=null;
+    var xmlhttp=null;
     if (window.XMLHttpRequest)
     {// code for all new browsers
         xmlhttp=new XMLHttpRequest();
@@ -12,7 +12,7 @@ function loadXMLDoc(xmlhttp, stateChangeFunc, url)
     
     if (xmlhttp!=null)
     {
-        xmlhttp.onreadystatechange=stateChangeFunc;
+        xmlhttp.onreadystatechange=externalFunc;
         xmlhttp.open("GET",url,true);
         xmlhttp.send(null);
         return xmlhttp;
