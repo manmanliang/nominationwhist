@@ -1,16 +1,10 @@
 package org.blim.whist;
 
-import com.google.common.collect.Lists;
-import java.util.List;
-
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import javax.persistence.Transient;
 
 @Entity
 public class Round {
-
-	private List<Card> deck = Card.createDeck();
 
 	private Long id;
 	
@@ -28,16 +22,4 @@ public class Round {
 	public Hand getHandThree() { return handThree; }
 	public Hand getHandFour() { return handFour; }
 
-	@Transient
-	public List<Card> getDeck() {
-		return deck;
-	}
-
-	public void resetData() {
-		handOne.clearCards();
-		handTwo.clearCards();
-		handThree.clearCards();
-		handFour.clearCards();
-		deck = Card.createDeck();
-	}
 }
