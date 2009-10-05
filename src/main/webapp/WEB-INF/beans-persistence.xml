@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="
+            http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+            http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd
+            http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd">
+
+  <!--
+    - Persistence configuration for whist.
+   -->
+  
+  <import resource="beans-entities.xml"/>
+  
+  <tx:annotation-driven/>
+      
+  <bean id="dataSource" class="org.springframework.jndi.JndiObjectFactoryBean">
+    <property name="jndiName" value="java:comp/env/jdbc/whist"/>
+  </bean>
+
+  <bean id="sessionFactory" class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
+    <property name="dataSource" ref="dataSource"/>
+    <property name="annotatedPackages">
+      <list>
+        <value>org.blim.whist</value>
+      </list>
+    </property>
+    <property name="annotatedClasses" ref="entityTypes" />
+    <property name="schemaUpdate" value="true" />
+    <property name="hibernateProperties">
+      <value>
+        hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
+        hibernate.show_sql=false
+        hibernate.jdbc.batch_size=50
+        hibernate.connection.release_mode=after_statement
+        hibernate.auto_commit=false
+      </value>
+    </property>
+  </bean>
+
+  <bean id="transactionManager" class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+    <property name="sessionFactory" ref="sessionFactory" />
+  </bean>
+
+</beans>
