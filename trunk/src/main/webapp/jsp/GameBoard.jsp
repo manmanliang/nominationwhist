@@ -3,50 +3,41 @@
     <title>Whist Game</title>
     <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
     <script type="text/javascript" src="<c:url value="/js/json.js"/>"></script>
-    <style>
-    	body { background: #008000; }
-    </style>
-  </head>
-  <body>
+    <script type="text/javascript" src="<c:url value="/js/xmlhttp.js"/>"></script>
     <script type="text/javascript">
-        function ajaxCall()
+    	var handxmlhttp;
+        function handStateChange()
         {
-            var xmlhttp;
-            if (window.XMLHttpRequest)
-            {
-                xmlhttp=new XMLHttpRequest();
-            }
-            else if (window.ActiveXObject)
-            {
-                xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
-            }
-            else
-            {
-                alert("Your browser does not support XMLHTTP!");
-            }
-            xmlhttp.onreadystatechange=function()
-            {               
-                if(xmlhttp.readyState==4)
-                {
+        alert("Got here");
+            if (handxmlhttp.readyState==4)
+            {// 4 = "loaded"
+                if (handxmlhttp.status==200)
+                {// 200 = OK
                     try {
-                        var hand = JSON.parse(xmlhttp.responseText);
+                        var hand = JSON.parse(handxmlhttp.responseText);
                     } catch (e) {
                         alert("An exception occurred in the script. Error name: " + e.name 
-                          + ". Error message: " + e.message + ". Response was " + xmlhttp.responseText); 
+                          + ". Error message: " + e.message + ". Response was " + handxmlhttp.responseText); 
                     }
                     var imgHTML = "";
                     for (card in hand) {
                         imgHTML = imgHTML + "<img src = \"images/" + hand[card] + ".png\"/>"
                     }
-                    
                     document.getElementById("handDiv").innerHTML = imgHTML;
                 }
+                else
+                {
+                    document.getElementById("handDiv").innerHTML = "<p>Data is out of data. Updating, please wait...</p>";
+                }
             }
-            xmlhttp.open("GET","hand",true);
-            xmlhttp.send(null); 
         }
-        ajaxCall();
+        LoadXMLDoc(handxmlhttp, handStateChange, "hand");    
     </script>    
+    <style>
+    	body { background: #008000; }
+    </style>
+  </head>
+  <body onload="loadXMLDoc('hand')">  
     <h1>Lets Play Nommy</h1>
     <hr>
     </br>
