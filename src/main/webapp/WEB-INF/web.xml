@@ -57,16 +57,16 @@
  	
     <servlet>
         <servlet-name>GameServlet</servlet-name>
-        <servlet-class>org.blim.whist.Game</servlet-class>
+        <servlet-class>org.blim.whist.GameBoardServlet</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>GameServlet</servlet-name>
-        <url-pattern>/whist</url-pattern>
+        <url-pattern>/board</url-pattern>
     </servlet-mapping>
 
     <servlet>
         <servlet-name>HandServlet</servlet-name>
-        <servlet-class>org.blim.whist.Hand</servlet-class>
+        <servlet-class>org.blim.whist.HandStateServlet</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>HandServlet</servlet-name>

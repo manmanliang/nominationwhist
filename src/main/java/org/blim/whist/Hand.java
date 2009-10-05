@@ -1,26 +1,27 @@
 package org.blim.whist;
 
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import org.json.simple.JSONValue;
+import java.util.List;
 
-public class Hand extends HttpServlet {
-	private GameData gameData = new GameData();
-	private GameService gameService = new GameService();
+import com.google.common.collect.Lists;
+
+public class Hand {
+
+	private List<Card> cards = Lists.newArrayList();
 	
-	public void doGet (HttpServletRequest request,
-	                       HttpServletResponse response) {
-
-	    try {
-	    	gameData.resetData();
-	    	gameService.dealRound(gameData.getDeck(), 13, gameData.playerOne(), gameData.playerTwo(), gameData.playerThree(), gameData.playerFour());
-	    	String jsonHand = JSONValue.toJSONString(gameData.playerOne().getCards());
-	    	
-	        request.setAttribute ("data", jsonHand);
-	        getServletConfig().getServletContext().getRequestDispatcher("/jsp/hand.jsp").forward(request, response);
-	    } catch (Exception ex) {
-	        ex.printStackTrace ();
-	    }
+	public List<Card> getCards() {
+		return cards;
 	}
+	
+	public void addCard(Card card) {
+		cards.add(card);
+	}
+	
+	public void setCards(List<Card> cards) {
+		this.cards = cards;
+	}
+	
+	public void clearCards() {
+		cards.clear();
+	}
+	
 }

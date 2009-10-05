@@ -6,7 +6,7 @@ import java.util.List;
 import org.blim.whist.GameService;
 import org.blim.whist.Card;
 import org.blim.whist.Trick;
-import org.blim.whist.Player;
+import org.blim.whist.Hand;
 
 import static org.hamcrest.Matchers.*;
 import static org.hamcrest.MatcherAssert.*;
@@ -18,10 +18,10 @@ public class GameServiceTest extends TestCase {
 	private GameService svcGame = new GameService();
 
 	public void testDealHandOfThirteenCards() throws Exception {
-		Player one = new Player();
-		Player two = new Player();
-		Player three = new Player();
-		Player four = new Player();
+		Hand one = new Hand();
+		Hand two = new Hand();
+		Hand three = new Hand();
+		Hand four = new Hand();
 		List<Card> deck = Card.createDeck();
 
 		svcGame.dealRound(deck, 13, one, two, three, four);
@@ -31,7 +31,7 @@ public class GameServiceTest extends TestCase {
 
 	public void testPlayCard() throws Exception {
 		List<Card> deck = Card.createDeck();
-		Player player = new Player();
+		Hand player = new Hand();
 		Trick trick = new Trick();
 
 		Collections.shuffle(deck);
