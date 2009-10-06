@@ -7,7 +7,7 @@ import org.json.simple.JSONAware;
 public class Card implements JSONAware {
 	
     public enum Value { TWO, THREE, FOUR, FIVE, SIX, SEVEN, EIGHT, NINE, TEN, JACK, QUEEN, KING, ACE }
-    public enum Suit { CLUBS, DIAMONDS, HEARTS, SPADES }
+    public enum Suit { SPADES, HEARTS, CLUBS, DIAMONDS }
 
     private final Value value;
     private final Suit suit;
@@ -34,6 +34,10 @@ public class Card implements JSONAware {
 
     public static List<Card> createDeck() {
         return Lists.newArrayList(cards);
+    }
+
+    public static List<Card> sortCards(List<Card> cards) {
+    	return Lists.sortedCopy(cards, new OrderComparator());
     }
 
 	public String toJSONString() {
