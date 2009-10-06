@@ -1,13 +1,17 @@
 package org.blim.whist;
 
+import java.io.IOException;
 import java.security.Principal;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.ServletResponse;
+
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.json.simple.JSONValue;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
@@ -46,6 +50,23 @@ public class GameController {
 		model.put("user", user.getName());
 		
 		return new ModelAndView("ListGames", model);
+	}
+	
+	@RequestMapping("/hand")
+	public void handState(ServletResponse response) throws IOException {
+		Game game = new Game();
+		GameService gameService = new GameService();
+		List<Card> sortedCards;
+				
+	    gameService.dealRound(Card.createDeck(), game.getCurrentRound());
+	    sortedCards = Card.sortCards(game.getCurrentRound().getHand(0).getCards());
+		String hand = JSONValue.toJSONString(sortedCards);
+		response.getWriter().print(hand);
+	}
+	
+	@RequestMapping("/board")
+	public ModelAndView gameBoard() {
+		return new ModelAndView("GameBoard");
 	}
 	
 	@Transactional
