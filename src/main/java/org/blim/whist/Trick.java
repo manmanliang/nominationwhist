@@ -1,14 +1,16 @@
 package org.blim.whist;
 
-import java.util.List;
-import com.google.common.collect.Lists;
+import java.util.Collections;
+import java.util.Map;
+
+import com.google.common.collect.Maps;
 
 public class Trick {
-	private List<Card> trickCards = Lists.newArrayList();
+	private Map<String, Card> trickCards = Maps.newHashMap();
 	
-	public List<Card> getCards() { return trickCards; }
+	public Map<String, Card> getCards() { return Collections.unmodifiableMap(trickCards); }
 	
-	public void addCard(Card card) {
-		trickCards.add(card);
+	public void addCard(String name, Card card) {
+		trickCards.put(name, card);
 	}
 }
