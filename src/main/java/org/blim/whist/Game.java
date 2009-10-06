@@ -8,6 +8,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 
 import com.google.common.collect.Lists;
 
@@ -82,10 +83,12 @@ public class Game {
 		return creationDate;
 	}
 
+	@Transient
 	public List<Round> getRounds() {
 		return rounds;
 	}
 
+	@Transient
 	public Round getCurrentRound() {
 		return currentRound;
 	}
