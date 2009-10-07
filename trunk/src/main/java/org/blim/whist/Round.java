@@ -18,6 +18,14 @@ public class Round {
 		trickHistory.add(new Trick());
 	}
 	
+	public Round(int numCards) {
+		for(int i=0;i<4;i++) {
+			hands.add(new Hand());
+		}
+		numberOfCards = numCards;
+		trickHistory.add(new Trick());
+	}
+	
 	public Long getId() { return this.id; }
     public void setId(Long id) { this.id = id; }
 	
