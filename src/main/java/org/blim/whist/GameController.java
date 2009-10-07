@@ -58,10 +58,29 @@ public class GameController {
 		GameService gameService = new GameService();
 		List<Card> sortedCards;
 				
+		// Set up data manually for now
 	    gameService.dealRound(Card.createDeck(), game.getCurrentRound());
 	    sortedCards = Card.sortCards(game.getCurrentRound().getHand(0).getCards());
-		String hand = JSONValue.toJSONString(sortedCards);
+
+	    String hand = JSONValue.toJSONString(sortedCards);
 		response.getWriter().print(hand);
+	}
+	
+	@RequestMapping("/trick")
+	public void trickState(ServletResponse response) throws IOException {
+		Game game = new Game();
+		Round round = game.getCurrentRound();
+		Trick trick = round.getTrickHistory().get(round.getTrickHistory().size() -1);
+		GameService gameService = new GameService();
+		
+		// Set up data manually for now
+	    gameService.dealRound(Card.createDeck(), game.getCurrentRound());
+	    gameService.playCard("Rob", round.getHand(0).getCards(), round.getHand(0).getCards().get(4), trick);
+	    gameService.playCard("Lee", round.getHand(1).getCards(), round.getHand(1).getCards().get(2), trick);
+	    gameService.playCard("Mum", round.getHand(2).getCards(), round.getHand(2).getCards().get(7), trick);
+
+	    String JSONTrick = JSONValue.toJSONString(trick.getCards());
+		response.getWriter().print(JSONTrick);
 	}
 	
 	@RequestMapping("/board")

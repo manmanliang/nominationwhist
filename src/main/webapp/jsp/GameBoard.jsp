@@ -5,18 +5,18 @@
     <script type="text/javascript" src="<c:url value="/js/json.js"/>"></script>
     <script type="text/javascript" src="<c:url value="/js/xmlhttp.js"/>"></script>
     <script type="text/javascript">
-      	var handxmlhttp;
+      	var handXmlHttp;
         function handStateChange()
         {
-            if (handxmlhttp.readyState==4)
+            if (handXmlHttp.readyState==4)
             {// 4 = "loaded"
-                if (handxmlhttp.status==200)
+                if (handXmlHttp.status==200)
                 {// 200 = OK
                     try {
-                        var hand = JSON.parse(handxmlhttp.responseText);
+                        var hand = JSON.parse(handXmlHttp.responseText);
                     } catch (e) {
                         alert("An exception occurred in the script. Error name: " + e.name 
-                          + ". Error message: " + e.message + ". Response was " + handxmlhttp.responseText); 
+                          + ". Error message: " + e.message + ". Response was " + handXmlHttp.responseText); 
                     }
                     var imgHTML = "";
                     for (card in hand) {
@@ -26,21 +26,73 @@
                 }
                 else
                 {
-                    document.getElementById("handDiv").innerHTML = "<p>" + handxmlhttp.status + ": Data is out of data. Updating, please wait...</p>";
+                    document.getElementById("handDiv").innerHTML = "<p>" + handXmlHttp.status + ": Data is out of data. Updating, please wait...</p>";
                 }
             }
+        }
+    </script>    
+    <script type="text/javascript">
+      	var trickXmlHttp;
+        function trickStateChange()
+        {
+            if (trickXmlHttp.readyState==4)
+            {// 4 = "loaded"
+                if (trickXmlHttp.status==200)
+                {// 200 = OK
+                    try {
+                        var trick = JSON.parse(trickXmlHttp.responseText);
+                    } catch (e) {
+                        alert("An exception occurred in the script. Error name: " + e.name 
+                          + ". Error message: " + e.message + ". Response was " + trickXmlHttp.responseText); 
+                    }
+
+                    // Clear out the old images
+                    var trickImgs = document.getElementById("trickDiv").getElementsByTagName("img");
+                    for (var i=0; i < trickImgs.length; i++) {
+                    	trickImgs[i].style.visibility = "hidden";
+                        trickImgs[i].src = "";
+                    }
+
+                    // Add the images for the ones we have a value for
+                    var imgHTML = "";
+                    for (key in trick) {
+                        var imgToUpdate = document.getElementById(key);
+                        imgHTML = "images/" + trick[key] + ".png";
+                        imgToUpdate.src = imgHTML;
+                        imgToUpdate.style.visibility = "visible";
+                    }
+                }
+                else
+                {
+                    document.getElementById("handDiv").innerHTML = "<p>" + trickXmlHttp.status + ": Data is out of data. Updating, please wait...</p>";
+                }
+            }
+        }
+    </script>
+    <script type="text/javascript">
+        function dataRefresh()
+        {
+            handXmlHttp = loadXMLDoc(handStateChange, '<c:url value="/hand"/>');
+            trickXmlHttp = loadXMLDoc(trickStateChange, '<c:url value="/trick"/>');
         }
     </script>    
     <style>
     	body { background: #008000; }
     </style>
   </head>
-  <body onload="handxmlhttp = loadXMLDoc(handStateChange, '<c:url value="/hand"/>');">    
+  <body onload="dataRefresh();">    
     <h1>Lets Play Nommy</h1>
     <hr>
     </br>
     <p>Here are the player cards:</p>
     <h2>Player 1</h2>
     <div id="handDiv"></div>
+    <p>Here are the trick cards:</p>
+    <div id="trickDiv">
+    	<img id="Dad" src="" height="96" width="72" style="visibility: hidden;"/>
+    	<img id="Lee" src="" height="96" width="72" style="visibility: hidden;"/>
+    	<img id="Mum" src="" height="96" width="72" style="visibility: hidden;"/>
+    	<img id="Rob" src="" height="96" width="72" style="visibility: hidden;"/>
+    </div>
   </body>
 </html>
