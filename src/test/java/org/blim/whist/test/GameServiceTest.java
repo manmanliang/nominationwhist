@@ -3,16 +3,13 @@ package org.blim.whist.test;
 import java.util.Collections;
 import java.util.List;
 
+import junit.framework.TestCase;
+
+import org.blim.whist.Card;
 import org.blim.whist.Game;
 import org.blim.whist.GameService;
-import org.blim.whist.Card;
-import org.blim.whist.Trick;
 import org.blim.whist.Hand;
-
-import static org.hamcrest.Matchers.*;
-import static org.hamcrest.MatcherAssert.*;
-
-import junit.framework.TestCase;
+import org.blim.whist.Trick;
 
 public class GameServiceTest extends TestCase {
 
@@ -37,7 +34,7 @@ public class GameServiceTest extends TestCase {
 
 	public void testPlayCard() throws Exception {
 		List<Card> deck = Card.createDeck();
-		String player = new String("rob");
+		String playerName = new String("rob");
 		Hand hand = new Hand();
 		Trick trick = new Trick();
 
@@ -47,10 +44,10 @@ public class GameServiceTest extends TestCase {
 		deck.removeAll(hand.getCards());
 		Card cardToPlay = hand.getCards().get(3);
 		
-		svcGame.playCard(player, hand.getCards(), cardToPlay, trick);
+		svcGame.playCard(playerName, hand.getCards(), cardToPlay, trick);
 
 		assertFalse("Card was not removed from players hand", hand.getCards().contains(cardToPlay));
-		assertTrue("Card was not added to the trick", trick.getCards().containsKey(player));
+		assertTrue("Card was not added to the trick", trick.getCards().containsKey(playerName));
 	}
 
 }
