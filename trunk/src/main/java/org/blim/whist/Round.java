@@ -19,11 +19,7 @@ public class Round {
 	}
 	
 	public Round(int numCards) {
-		for(int i=0;i<4;i++) {
-			hands.add(new Hand());
-		}
-		numberOfCards = numCards;
-		trickHistory.add(new Trick());
+		this(4, numCards);
 	}
 	
 	public Long getId() { return this.id; }
@@ -43,7 +39,7 @@ public class Round {
 	
 	public boolean roundFinished() { 
 		if (trickHistory.size() == numberOfCards &&
-		    trickHistory.get(trickHistory.size() - 1).getCards().size() == hands.size()) {
+		    trickHistory.get(numberOfCards - 1).getCards().size() == hands.size()) {
 		    	return true;
 		    } else 
 		    	return false;
