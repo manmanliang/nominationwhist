@@ -22,7 +22,6 @@ public class Game {
 	private String playerThree;
 	private String playerFour;
 	private List<Round> rounds = Lists.newArrayList();
-	private Round currentRound;
 	private static final int[] defaultRoundsNum = {13,12,11,10,9,8,7,6,5,4,3,2,2,2,2,3,4,5,6,7,8,9,10,11,12,13};
 	
 	public Game(int[] roundsNum, int numHands) {
@@ -30,7 +29,6 @@ public class Game {
 			Round newRound = new Round(numHands, roundNum);
 			rounds.add(newRound);
 		}
-		currentRound = rounds.get(0);
 	}
 
 	public Game() {
@@ -90,7 +88,7 @@ public class Game {
 
 	@Transient
 	public Round getCurrentRound() {
-		return currentRound;
+		return rounds.get(rounds.size() - 1);
 	}
 
 }
