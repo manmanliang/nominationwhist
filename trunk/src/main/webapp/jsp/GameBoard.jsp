@@ -55,16 +55,18 @@
 
                     // Add the images for the ones we have a value for
                     var imgHTML = "";
-                    for (key in trick) {
-                        var imgToUpdate = document.getElementById(key);
-                        imgHTML = "images/" + trick[key] + ".png";
-                        imgToUpdate.src = imgHTML;
-                        imgToUpdate.style.visibility = "visible";
+                    for (var i=0; i < trick.length; i++) {
+                    	if (trick[i] != null) {
+    	                    var imgToUpdate = document.getElementById("player" + i);
+	                        imgHTML = "images/" + trick[i] + ".png";
+        	                imgToUpdate.src = imgHTML;
+            	            imgToUpdate.style.visibility = "visible";
+            	        }
                     }
                 }
                 else
                 {
-                    document.getElementById("handDiv").innerHTML = "<p>" + trickXmlHttp.status + ": Data is out of data. Updating, please wait...</p>";
+                    document.getElementById("trickDiv").innerHTML = "<p>" + trickXmlHttp.status + ": Data is out of data. Updating, please wait...</p>";
                 }
             }
         }
@@ -89,10 +91,10 @@
     <div id="handDiv"></div>
     <p>Here are the trick cards:</p>
     <div id="trickDiv">
-    	<img id="Dad" src="" height="96" width="72" style="visibility: hidden;"/>
-    	<img id="Lee" src="" height="96" width="72" style="visibility: hidden;"/>
-    	<img id="Mum" src="" height="96" width="72" style="visibility: hidden;"/>
-    	<img id="Rob" src="" height="96" width="72" style="visibility: hidden;"/>
+    	<img id="player0" src="" height="96" width="72" style="visibility: hidden;"/>
+    	<img id="player1" src="" height="96" width="72" style="visibility: hidden;"/>
+    	<img id="player2" src="" height="96" width="72" style="visibility: hidden;"/>
+    	<img id="player3" src="" height="96" width="72" style="visibility: hidden;"/>
     </div>
   </body>
 </html>

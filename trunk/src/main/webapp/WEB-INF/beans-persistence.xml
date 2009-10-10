@@ -28,7 +28,11 @@
         <value>org.blim.whist</value>
       </list>
     </property>
-    <property name="schemaUpdate" value="true" />
+   <property name="annotatedClasses">
+     <list>
+       <value>org.blim.whist.Card</value>
+     </list>
+   </property>    <property name="schemaUpdate" value="true" />
     <property name="hibernateProperties">
       <value>
         hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
