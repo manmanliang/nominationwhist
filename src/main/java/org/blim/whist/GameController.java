@@ -2,12 +2,15 @@ package org.blim.whist;
 
 import java.io.IOException;
 import java.security.Principal;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletResponse;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -17,7 +20,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
+
+import com.google.common.collect.Iterables;
 
 /**
  * TODO: Does not protect against unauthenticated users.
@@ -29,6 +35,8 @@ public class GameController {
 
 	private SessionFactory sessionFactory;
 	
+	private GameService gameService;
+	
 	@Autowired
 	public void setSessionFactory(SessionFactory sessionFactory) {
 		this.sessionFactory = sessionFactory;
@@ -36,6 +44,15 @@ public class GameController {
 
 	public SessionFactory getSessionFactory() {
 		return sessionFactory;
+	}
+
+	@Autowired
+	public void setGameService(GameService gameService) {
+		this.gameService = gameService;
+	}
+
+	public GameService getGameService() {
+		return gameService;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -55,13 +72,18 @@ public class GameController {
 	@RequestMapping("/hand")
 	public void handState(ServletResponse response) throws IOException {
 		Game game = new Game();
-		GameService gameService = new GameService();
-		List<Card> sortedCards;
+		List<Card> sortedCards = new ArrayList<Card>();
 				
-		// Set up data manually for now
-	    gameService.dealRound(Card.createDeck(), game.getCurrentRound());
-	    sortedCards = Card.sortCards(game.getCurrentRound().getHand(0).getCards());
+		game.getPlayers().add("Rob");
+		game.getPlayers().add("Lee");
+		game.getPlayers().add("Mum");
+		game.getPlayers().add("Dad");
 
+		// Set up data manually for now
+	    gameService.createRound(game);
+	    sortedCards.addAll(Iterables.getLast(game.getRounds()).getHands().get(0).getCards());
+	    Collections.sort(sortedCards, new OrderComparator());
+	    
 	    String hand = JSONValue.toJSONString(sortedCards);
 		response.getWriter().print(hand);
 	}
@@ -69,22 +91,28 @@ public class GameController {
 	@RequestMapping("/trick")
 	public void trickState(ServletResponse response) throws IOException {
 		Game game = new Game();
-		Round round = game.getCurrentRound();
-		Trick trick = round.getTrickHistory().get(round.getTrickHistory().size() -1);
-		GameService gameService = new GameService();
+
+		game.getPlayers().add("Rob");
+		game.getPlayers().add("Lee");
+		game.getPlayers().add("Mum");
+		game.getPlayers().add("Dad");
+
+		Round round = gameService.createRound(game);
+		round.getTrickHistory().add(new Trick(0));
 		
 		// Set up data manually for now
-	    gameService.dealRound(Card.createDeck(), game.getCurrentRound());
-	    gameService.playCard("Rob", round.getHand(0).getCards(), round.getHand(0).getCards().get(4), trick);
-	    gameService.playCard("Lee", round.getHand(1).getCards(), round.getHand(1).getCards().get(2), trick);
-	    gameService.playCard("Mum", round.getHand(2).getCards(), round.getHand(2).getCards().get(7), trick);
+	    gameService.playCard(round, 0, round.getHands().get(0).getCards().get(4));
+	    gameService.playCard(round, 1, round.getHands().get(1).getCards().get(2));
+	    gameService.playCard(round, 2, round.getHands().get(2).getCards().get(7));
+
+		Trick trick = round.getTrickHistory().get(round.getTrickHistory().size() - 1);		
 
 	    String JSONTrick = JSONValue.toJSONString(trick.getCards());
 		response.getWriter().print(JSONTrick);
 	}
 	
-	@RequestMapping("/board")
-	public ModelAndView gameBoard() {
+	@RequestMapping("/game")
+	public ModelAndView gameBoard(@RequestParam("id") Long gameId, Principal user) {
 		return new ModelAndView("GameBoard");
 	}
 	
@@ -95,10 +123,29 @@ public class GameController {
 		Session session = sessionFactory.getCurrentSession();
 	
 		game.setCreationDate(new Date());
-		game.setPlayerOne(user.getName());
+		game.getPlayers().add(user.getName());
 		session.save(game);
 
 		return new ModelAndView("redirect:/");
 	}
 	
+	@Transactional
+	@RequestMapping(value = "/join-game", method = RequestMethod.POST)
+	public ModelAndView joinGame(HttpServletResponse response, @RequestParam("id") Long gameId, Principal user) {
+		Map<String, Object> model = new HashMap<String, Object>();
+		Game game = new Game();
+		Session session = sessionFactory.getCurrentSession();
+
+		session.load(game, gameId);
+				
+		if (!game.getPlayers().contains(user.getName())) {
+			game.getPlayers().add(user.getName());
+			session.save(game);
+		}
+
+		model.put("id", gameId);
+		
+		return new ModelAndView("redirect:/game", model);
+	}
+
 }

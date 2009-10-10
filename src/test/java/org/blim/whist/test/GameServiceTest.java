@@ -1,6 +1,5 @@
 package org.blim.whist.test;
 
-import java.util.Collections;
 import java.util.List;
 
 import junit.framework.TestCase;
@@ -9,45 +8,50 @@ import org.blim.whist.Card;
 import org.blim.whist.Game;
 import org.blim.whist.GameService;
 import org.blim.whist.Hand;
+import org.blim.whist.Round;
 import org.blim.whist.Trick;
+
+import com.google.common.collect.Iterables;
 
 public class GameServiceTest extends TestCase {
 
-	private GameService svcGame = new GameService();
+	private GameService gameService = new GameService();
 
 	public void testDealHandOfThirteenCards() throws Exception {
-		int roundsNum[] = {13};
-		Game game = new Game(roundsNum, 4);
-		List<Card> deck = Card.createDeck();
+		Game game = new Game();
+		game.getPlayers().add("Beer");
+		game.getPlayers().add("Tea");
+		game.getPlayers().add("Coffee");
+		game.getPlayers().add("Wine");
+		gameService.createRound(game);
 
-		svcGame.dealRound(deck, game.getCurrentRound());
+		List<Hand> hands = Iterables.getLast(game.getRounds()).getHands();
+		
+		assertTrue("Players do not have 13 cards each [" + hands.get(0).getCards().size() + ", " 
+														 + hands.get(1).getCards().size() + ", " 
+														 + hands.get(2).getCards().size() + ", " 
+														 + hands.get(3).getCards().size() + "].", 
+				   hands.get(0).getCards().size() == 13 && 
+				   hands.get(1).getCards().size() == 13 && 
+				   hands.get(2).getCards().size() == 13 && 
+				   hands.get(3).getCards().size() == 13);
 
-		assertTrue("Players do not have 13 cards each [" + game.getCurrentRound().getHand(0).getCards().size() + ", " 
-														 + game.getCurrentRound().getHand(1).getCards().size() + ", " 
-														 + game.getCurrentRound().getHand(2).getCards().size() + ", " 
-														 + game.getCurrentRound().getHand(3).getCards().size() + "].", 
-				   game.getCurrentRound().getHand(0).getCards().size() == 13 && 
-				   game.getCurrentRound().getHand(1).getCards().size() == 13 && 
-				   game.getCurrentRound().getHand(2).getCards().size() == 13 && 
-				   game.getCurrentRound().getHand(3).getCards().size() == 13);
 	}
 
 	public void testPlayCard() throws Exception {
-		List<Card> deck = Card.createDeck();
-		String playerName = new String("rob");
-		Hand hand = new Hand();
-		Trick trick = new Trick();
+		Game game = new Game();
+		game.getPlayers().add("Wibble");
+		Round round = gameService.createRound(game);
+		round.getTrickHistory().add(new Trick(0));
+		Hand hand = round.getHands().get(0);
 
-		Collections.shuffle(deck);
-
-		hand.getCards().addAll(deck.subList(3, 11));
-		deck.removeAll(hand.getCards());
-		Card cardToPlay = hand.getCards().get(3);
+		Card card = hand.getCards().get(3);
 		
-		svcGame.playCard(playerName, hand.getCards(), cardToPlay, trick);
+		gameService.playCard(round, 0, card);
 
-		assertFalse("Card was not removed from players hand", hand.getCards().contains(cardToPlay));
-		assertTrue("Card was not added to the trick", trick.getCards().containsKey(playerName));
+		assertFalse("Card was not removed from players hand", hand.getCards().contains(card));
+		assertTrue("Card was not added to the trick", Iterables.getLast(round.getTrickHistory()).getCards().contains(card));
+
 	}
 
 }

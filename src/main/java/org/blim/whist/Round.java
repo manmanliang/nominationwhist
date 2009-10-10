@@ -1,27 +1,28 @@
 package org.blim.whist;
 
-import com.google.common.collect.Lists;
 import java.util.List;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+
+import org.hibernate.annotations.CollectionOfElements;
+
+import com.google.common.collect.Lists;
+
+@Entity
 public class Round {
 
 	private Long id;
-	private List<Trick> trickHistory = Lists.newArrayList();
 	private int numberOfCards;
+	private List<Trick> trickHistory = Lists.newArrayList();
 	private List<Hand> hands = Lists.newArrayList();
-
-	public Round(int numHands, int numCards) {
-		for(int i=0;i<numHands;i++) {
-			hands.add(new Hand());
-		}
-		numberOfCards = numCards;
-		trickHistory.add(new Trick());
-	}
+	private List<Integer> bids = Lists.newArrayList();
 	
-	public Round(int numCards) {
-		this(4, numCards);
-	}
-	
+	@Id
+	@GeneratedValue
 	public Long getId() { return this.id; }
     public void setId(Long id) { this.id = id; }
 	
@@ -29,32 +30,47 @@ public class Round {
 		return numberOfCards;
 	}
 
+	public void setNumberOfCards(int numberOfCards) {
+		this.numberOfCards = numberOfCards;
+	}
+
+	@OneToMany(cascade = CascadeType.ALL)
 	public List<Trick> getTrickHistory() {
 		return trickHistory;
 	}
 
-	public Hand getHand(int hand) { return hands.get(hand); }
-
-	public List<Hand> getHands() { return hands; }
-	
-	public boolean roundFinished() { 
-		if (trickHistory.size() == numberOfCards &&
-		    trickHistory.get(numberOfCards - 1).getCards().size() == hands.size()) {
-		    	return true;
-		    } else 
-		    	return false;
+	public void setTrickHistory(List<Trick> trickHistory) {
+		this.trickHistory = trickHistory;
 	}
 
-	public void playCard(String name, int hand, Card card) {
-		Trick currentTrick = trickHistory.get(trickHistory.size() - 1);
-		hands.get(hand).getCards().remove(card);
-		// TODO: need to add check to make sure we're not going over our budgeted size
-		currentTrick.addCard(name, card);
-		if (currentTrick.getCards().size() == hands.size()) {
-			if (trickHistory.size() < numberOfCards) {
-				trickHistory.add(new Trick());
+	@OneToMany(cascade = CascadeType.ALL)
+	public List<Hand> getHands() {
+		return hands;
+	}
+
+	public void setHands(List<Hand> hands) {
+		this.hands = hands;
+	}
+
+	@CollectionOfElements
+	public List<Integer> getBids() {
+		return bids;
+	}
+
+	public void setBids(List<Integer> bids) {
+		this.bids = bids;
+	}
+
+	public int highestBidder() {
+		int maxBid = -1;
+		int maxBidder = -1;
+		
+		for (int i = 0; i < bids.size(); i++) {
+			if (bids.get(i) > maxBid) {
+				maxBidder = i;
 			}
 		}
+		
+		return maxBidder;
 	}
-
 }

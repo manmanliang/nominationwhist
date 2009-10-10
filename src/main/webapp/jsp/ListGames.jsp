@@ -20,7 +20,27 @@
     
     <ul>
     <c:forEach var="game" items="${games}">
-      <li>Game (${game.creationDate}): ${game.playerOne}, ${game.playerTwo}, ${game.playerThree}, ${game.playerFour}</li>
+      <li>Game (${game.creationDate}):
+        <c:forEach var="player" items="${game.players}">
+          ${player}
+        </c:forEach>
+        <form method="POST" action="join-game">
+ 	    	<fieldset>
+        		<legend>Join Game</legend>
+        		<input type="hidden" name="id" value="${game.id}" />
+        		<input type="submit" value="Join Game" />
+      		</fieldset>            
+        </form>
+        <c:if test="${game.players[0] eq user}">
+        <form method="POST" action="start-game">
+ 	    	<fieldset>
+        		<legend>Start Game</legend>
+        		<input type="hidden" name="id" value="${game.id}" />
+        		<input type="submit" value="Start Game" />
+      		</fieldset>            
+        </form>
+        </c:if>
+      </li>
     </c:forEach>
     </ul>
   </body>
