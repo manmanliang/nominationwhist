@@ -30,7 +30,7 @@ public class GameService {
 
 	public Round createRound(Game game) {
 		Round round = null;
-		int roundIdx = currentRound(game);
+		int roundIdx = nextRound(game);
 		
 		if (roundIdx < game.getRoundSequence().length) {
 			List<Card> deck = new ArrayList<Card>(EnumSet.allOf(Card.class));
@@ -54,7 +54,7 @@ public class GameService {
 		return round;
 	}
 	
-	public int currentRound(Game game) {
+	public int nextRound(Game game) {
 		int round = getNextPlayableRound(game, 0);
 		int roundsPlayed = game.getRounds().size();
 		
@@ -157,19 +157,6 @@ public class GameService {
 		return highestPlayer;
 	}
 	
-	private boolean candidateIsWinningCard(Card current, Card candidate, Card.Suit trumps) {
-		if (current == null) {
-			return true;
-		}
-		
-		if (current.getSuit().equals(candidate.getSuit())) {
-			return current.getValue().compareTo(candidate.getValue()) < 0;
-		}
-		else {
-			return candidate.getSuit().equals(trumps);
-		}
-	}
-
 	public Round bid(Game game, String name, int bid) {
 		Round round = Iterables.getLast(game.getRounds());
 		int player = game.getPlayerIndex(name);
@@ -189,7 +176,20 @@ public class GameService {
 		
 		return round;
 	}
-	
+
+	private boolean candidateIsWinningCard(Card current, Card candidate, Card.Suit trumps) {
+		if (current == null) {
+			return true;
+		}
+		
+		if (current.getSuit().equals(candidate.getSuit())) {
+			return current.getValue().compareTo(candidate.getValue()) < 0;
+		}
+		else {
+			return candidate.getSuit().equals(trumps);
+		}
+	}
+
 /*	public boolean roundFinished() { 
 		if (trickHistory.size() == numberOfCards &&
 		    trickHistory.get(numberOfCards - 1).getCards().size() == hands.size()) {
@@ -197,18 +197,6 @@ public class GameService {
 		    } else 
 		    	return false;
 		}
-
-	public void playCard(String name, int hand, Card card) {
-		Trick currentTrick = trickHistory.get(trickHistory.size() - 1);
-		hands.get(hand).getCards().remove(card);
-		// TODO: need to add check to make sure we're not going over our budgeted size
-		currentTrick.getCards().add(card);
-		if (currentTrick.getCards().size() == hands.size()) {
-			if (trickHistory.size() < numberOfCards) {
-				//trickHistory.add(new Trick());
-			}
-		}
-	}
 */
 		
 }
