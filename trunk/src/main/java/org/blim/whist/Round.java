@@ -71,6 +71,20 @@ public class Round {
 		this.trumps = trumps;
 	}
 
+	public void bid(int player, int bid) {
+		if (bids.size() - 1 < player) {
+			// (player - (cards.size() - 1)) - 1 for number of nulls we need
+			int missingPlayerCount = player - bids.size();
+			for (int i = 0; i < missingPlayerCount; i++) {
+				bids.add(null);
+			}
+			bids.add(bid);
+		}
+		else {
+			bids.set(player, bid);
+		}
+	}
+	
 	public int highestBidder() {
 		int maxBid = -1;
 		int maxBidder = -1;
