@@ -25,10 +25,6 @@ public class Trick {
 	public Long getId() { return this.id; }
     public void setId(Long id) { this.id = id; }
 
-    public void playCard(int player, Card card) {
-		getCards().set(player, card);
-	}
-
 	public void setFirstPlayer(int firstPlayer) {
 		this.firstPlayer = firstPlayer;
 	}
@@ -45,5 +41,19 @@ public class Trick {
     public List<Card> getCards() {
 		return cards;
 	}
-	
+
+	public void playCard(int player, Card card) {
+		if (cards.size() - 1 < player) {
+			// (player - (cards.size() - 1)) - 1 for number of nulls we need
+			int missingPlayerCount = player - cards.size();
+			for (int i = 0; i < missingPlayerCount; i++) {
+				cards.add(null);
+			}
+			cards.add(card);
+		}
+		else {
+			cards.set(player, card);
+		}
+	}
+
 }

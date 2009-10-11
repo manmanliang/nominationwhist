@@ -49,7 +49,7 @@ public class GameServiceTest extends TestCase {
 
 		Card card = hand.getCards().get(3);
 		
-		gameService.playCard(round, 0, card);
+		round.playCard(0, card);
 
 		assertFalse("Card was not removed from players hand", hand.getCards().contains(card));
 		assertTrue("Card was not added to the trick", Iterables.getLast(round.getTricks()).getCards().contains(card));
