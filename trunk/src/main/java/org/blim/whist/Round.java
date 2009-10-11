@@ -87,14 +87,6 @@ public class Round {
 		}
 	}
 	
-	public void playCard(int player, Card card) {
-		Trick trick = getCurrentTrick();
-		
-		trick.playCard(player, card);
-		
-		getHands().get(player).getCards().remove(card);
-	}
-	
 	public int highestBidder() {
 		int maxBid = -1;
 		int maxBidder = -1;
@@ -107,6 +99,41 @@ public class Round {
 		}
 		
 		return maxBidder;
+	}
+	
+	public void playCard(int player, Card card) {
+		Trick trick = getCurrentTrick();
+		
+		trick.playCard(player, card);
+		
+		getHands().get(player).getCards().remove(card);
+	}
+	
+	public List<Integer> scores() {
+		List<Integer> scores = tricksWon();
+		
+		for (int i = 0; i < hands.size(); i++) {
+			if (scores.get(i).equals(bids.get(i))) {
+				scores.set(i, new Integer(scores.get(i) + 10));
+			}
+		}		
+		
+		return scores;
+	}
+
+	public List<Integer> tricksWon() {
+		List<Integer> trickScores = Lists.newArrayList();
+
+		for (int i = 0; i < hands.size(); i++) {
+			trickScores.add(new Integer(0));	
+		}
+
+		for (Trick trick : tricks) {
+			int winningPlayer = trick.winner(trumps);
+			trickScores.set(winningPlayer, new Integer(trickScores.get(winningPlayer) + 1));
+		}
+		
+		return trickScores;
 	}
 	
 	@Transient

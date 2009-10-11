@@ -142,12 +142,12 @@ public class GameController {
 	    
 	    JSONPreviousRound.put("trumps", previousRound.getTrumps());
 	    JSONPreviousRound.put("bids", previousRound.getBids());
-	    JSONPreviousRound.put("tricks", gameService.tricksWon(previousRound));
-	    JSONPreviousRound.put("scores", gameService.roundScores(previousRound));
+	    JSONPreviousRound.put("tricks", previousRound.tricksWon());
+	    JSONPreviousRound.put("scores", previousRound.scores());
 	    
 	    JSONCurrentRound.put("trumps", currentRound.getTrumps());
 	    JSONCurrentRound.put("bids", currentRound.getBids());
-	    JSONCurrentRound.put("tricks", gameService.tricksWon(currentRound));
+	    JSONCurrentRound.put("tricks", currentRound.tricksWon());
 	    
 	    JSONScores.put("previousRound", JSONPreviousRound);
 	    JSONScores.put("currentRound", JSONCurrentRound);

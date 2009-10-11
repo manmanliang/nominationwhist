@@ -131,5 +131,23 @@ public class Game {
 		return round;
 	}
 	
+	public List<Integer> scores() {
+		List<Integer> gameScores = Lists.newArrayList();
+		List<Integer> roundScores = Lists.newArrayList();
+		
+		for (int i = 0; i < players.size(); i++) {
+			gameScores.set(i, new Integer(0));	
+		}
+
+		for (int i = 0; i < rounds.size(); i++) {
+			roundScores = rounds.get(i).scores();
+			for (int j = 0; j < players.size(); j++) {
+				gameScores.set(j, new Integer(gameScores.get(j) + roundScores.get(i)));
+			}
+		}		
+		
+		return gameScores;
+	}
+
 	
 }
