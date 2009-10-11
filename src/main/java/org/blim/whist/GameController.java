@@ -2,8 +2,6 @@ package org.blim.whist;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.StringBufferInputStream;
-import java.io.StringReader;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Arrays;
