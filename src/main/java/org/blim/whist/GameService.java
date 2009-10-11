@@ -156,26 +156,6 @@ public class GameService {
 		
 		return highestPlayer;
 	}
-	
-	public Round bid(Game game, String name, int bid) {
-		Round round = Iterables.getLast(game.getRounds());
-		int player = game.getPlayerIndex(name);
-		List<Integer> bids = round.getBids();
-		
-		if (bids.size() - 1 < player) {
-			// (player - (cards.size() - 1)) - 1 for number of nulls we need
-			int missingPlayerCount = player - bids.size();
-			for (int i = 0; i < missingPlayerCount; i++) {
-				bids.add(null);
-			}
-			bids.add(bid);
-		}
-		else {
-			bids.set(player, bid);
-		}
-		
-		return round;
-	}
 
 	private boolean candidateIsWinningCard(Card current, Card candidate, Card.Suit trumps) {
 		if (current == null) {

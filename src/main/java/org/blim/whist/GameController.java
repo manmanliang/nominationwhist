@@ -289,11 +289,14 @@ public class GameController {
 
 			session.load(game, gameId);
 				
-			Round currentRound = gameService.bid(game, user.getName(), bid);
+			Round currentRound = game.getCurrentRound();
+			int player = game.getPlayerIndex(user.getName());
+			currentRound.bid(player, bid);
 		
 			if (currentRound.getBids().size() == game.getPlayers().size()) {
 				currentRound.getTrickHistory().add(new Trick(game.getRounds().size() % game.getPlayers().size()));
 			}
+			
 			session.save(game);
 		}
 
