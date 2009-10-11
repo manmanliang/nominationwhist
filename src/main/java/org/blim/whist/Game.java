@@ -1,6 +1,9 @@
 package org.blim.whist;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
+import java.util.EnumSet;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -78,4 +81,55 @@ public class Game {
 		return Iterables.getLast(rounds);
 	}
 
+	public Round createRound() {
+		Round round = null;
+		int roundIdx = nextRound();
+		
+		if (roundIdx < roundSequence.length) {
+			List<Card> deck = new ArrayList<Card>(EnumSet.allOf(Card.class));
+			Collections.shuffle(deck);
+
+			round = new Round();
+			
+			for (int i = 0; i < players.size(); i++) {
+				round.getHands().add(new Hand());
+			}
+		
+			for (int j = 0; j < roundSequence[roundIdx]; j++) {
+				for (Hand hand : round.getHands()) {
+					hand.addCard(deck.remove(0));
+				}
+			}
+			
+			rounds.add(round);
+		}
+		
+		return round;
+	}
+	
+	public int nextRound() {
+		int round = getNextPlayableRound(0);
+		int roundsPlayed = rounds.size();
+		
+		while (round < roundSequence.length && roundsPlayed > 0) {
+			round = getNextPlayableRound(++round);
+			roundsPlayed--;
+		}
+		
+		return round;
+	}
+	
+	private int getNextPlayableRound(int idx) {
+		int round = idx;
+		
+		for (; round < roundSequence.length; round++) {
+			if (GameService.MAX_CARDS / roundSequence[round] >= players.size()) {
+				return round;
+			}
+		}
+		
+		return round;
+	}
+	
+	
 }
