@@ -7,6 +7,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
 import org.hibernate.annotations.CollectionOfElements;
+import org.hibernate.annotations.IndexColumn;
 
 import com.google.common.collect.Lists;
 
@@ -16,10 +17,6 @@ public class Trick {
 	private int firstPlayer;
 	private Long id;
 	
-	public Trick(int firstPlayer) {
-		this.setFirstPlayer(firstPlayer);
-	}
-
 	@Id
 	@GeneratedValue
 	public Long getId() { return this.id; }
@@ -37,6 +34,7 @@ public class Trick {
 		this.cards = cards;
 	}
 
+	@IndexColumn(name = "sortkey")
 	@CollectionOfElements
     public List<Card> getCards() {
 		return cards;
