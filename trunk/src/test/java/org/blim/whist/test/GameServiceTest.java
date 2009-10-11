@@ -44,7 +44,7 @@ public class GameServiceTest extends TestCase {
 		game.getPlayers().add("Wibble");
 		game.setRoundSequence(new int[] {13});
 		Round round = gameService.createRound(game);
-		round.getTrickHistory().add(new Trick(0));
+		round.getTricks().add(new Trick(0));
 		Hand hand = round.getHands().get(0);
 
 		Card card = hand.getCards().get(3);
@@ -52,7 +52,7 @@ public class GameServiceTest extends TestCase {
 		gameService.playCard(round, 0, card);
 
 		assertFalse("Card was not removed from players hand", hand.getCards().contains(card));
-		assertTrue("Card was not added to the trick", Iterables.getLast(round.getTrickHistory()).getCards().contains(card));
+		assertTrue("Card was not added to the trick", Iterables.getLast(round.getTricks()).getCards().contains(card));
 
 	}
 

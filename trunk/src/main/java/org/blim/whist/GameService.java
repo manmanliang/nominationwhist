@@ -79,7 +79,7 @@ public class GameService {
 	}
 	
 	public void playCard(Round round, int player, Card card) {
-		List<Card> cards = Iterables.getLast(round.getTrickHistory()).getCards();
+		List<Card> cards = Iterables.getLast(round.getTricks()).getCards();
 		
 		if (cards.size() - 1 < player) {
 			// (player - (cards.size() - 1)) - 1 for number of nulls we need
@@ -134,7 +134,7 @@ public class GameService {
 			tricks.add(new Integer(0));	
 		}
 
-		for (Trick trick : round.getTrickHistory()) {
+		for (Trick trick : round.getTricks()) {
 			int winningPlayer = trickWinner(trick, round.getTrumps());
 			tricks.set(winningPlayer, new Integer(tricks.get(winningPlayer) + 1));
 		}
