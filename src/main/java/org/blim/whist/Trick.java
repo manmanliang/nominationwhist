@@ -56,4 +56,32 @@ public class Trick {
 		}
 	}
 
+	public int winner(Card.Suit trumps) {
+		Card highestCard = null;
+		int highestPlayer = -1;
+		
+		int numberOfCards = cards.size();
+		for (int i = firstPlayer; i - firstPlayer < numberOfCards; i++) {
+			if (candidateIsWinningCard(highestCard, cards.get(i % numberOfCards), trumps)) {
+				highestPlayer = i % numberOfCards;
+				highestCard = cards.get(i % numberOfCards);
+			}
+		}
+		
+		return highestPlayer;
+	}
+
+	private boolean candidateIsWinningCard(Card current, Card candidate, Card.Suit trumps) {
+		if (current == null) {
+			return true;
+		}
+		
+		if (current.getSuit().equals(candidate.getSuit())) {
+			return current.getValue().compareTo(candidate.getValue()) < 0;
+		}
+		else {
+			return candidate.getSuit().equals(trumps);
+		}
+	}
+
 }
