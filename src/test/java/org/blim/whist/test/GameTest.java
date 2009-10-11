@@ -41,7 +41,8 @@ public class GameTest extends TestCase {
 		game.getPlayers().add("Wibble");
 		game.setRoundSequence(new int[] {13});
 		Round round = game.createRound();
-		round.getTricks().add(new Trick(0));
+		round.getTricks().add(new Trick());
+		Iterables.getLast(round.getTricks()).setFirstPlayer(0);
 		Hand hand = round.getHands().get(0);
 
 		Card card = hand.getCards().get(3);
