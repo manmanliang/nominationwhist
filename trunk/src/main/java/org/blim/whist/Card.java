@@ -57,8 +57,21 @@ public enum Card implements JSONAware {
 	KING_DIAMONDS(Value.KING, Suit.DIAMONDS),
 	ACE_DIAMONDS(Value.ACE, Suit.DIAMONDS);
 	
-    public enum Value { TWO, THREE, FOUR, FIVE, SIX, SEVEN, EIGHT, NINE, TEN, JACK, QUEEN, KING, ACE }
-    public enum Suit { SPADES, HEARTS, CLUBS, DIAMONDS }
+    public enum Value implements JSONAware { 
+    	TWO, THREE, FOUR, FIVE, SIX, SEVEN, EIGHT, NINE, TEN, JACK, QUEEN, KING, ACE;
+
+		public String toJSONString() {
+			return "\"" + toString() + "\"";
+		}
+    }
+    
+    public enum Suit implements JSONAware {
+    	SPADES, HEARTS, CLUBS, DIAMONDS;
+    
+		public String toJSONString() {
+			return "\"" + toString() + "\"";
+		}
+    }
 
     private final Value value;
     private final Suit suit;
@@ -68,8 +81,8 @@ public enum Card implements JSONAware {
         this.suit = suit;
     }
 
-    public Value value() { return value; }
-    public Suit suit() { return suit; }
+    public Value getValue() { return value; }
+    public Suit getSuit() { return suit; }
     
 	public String toJSONString() {
 		return "\"" + toString() + "\"";

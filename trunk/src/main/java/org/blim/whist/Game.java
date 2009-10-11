@@ -10,22 +10,22 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 
 import org.hibernate.annotations.CollectionOfElements;
 import org.hibernate.annotations.IndexColumn;
 
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 
 @Entity
 public class Game {
 
 	private Long id;
-
-	private Date creationDate;
-	
-	private List<Round> rounds = Lists.newArrayList();
-	
+	private Date creationDate;	
+	private List<Round> rounds = Lists.newArrayList();	
 	private List<String> players = Lists.newArrayList();
+	private int[] roundSequence;
 	
 	@Id
 	@GeneratedValue
@@ -58,6 +58,24 @@ public class Game {
 
 	public void setRounds(List<Round> rounds) {
 		this.rounds = rounds;
+	}
+	
+	public void setRoundSequence(int[] roundSequence) {
+		this.roundSequence = roundSequence;
+	}
+	
+	@CollectionOfElements
+	@IndexColumn(name = "sortkey")
+	public int[] getRoundSequence() {
+		return roundSequence;
+	}
+	public int getPlayerIndex(String name) {
+		return players.indexOf(name);
+	}
+	
+	@Transient
+	public Round getCurrentRound() {
+		return Iterables.getLast(rounds);
 	}
 
 }

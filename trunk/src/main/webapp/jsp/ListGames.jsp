@@ -31,15 +31,6 @@
         		<input type="submit" value="Join Game" />
       		</fieldset>            
         </form>
-        <c:if test="${game.players[0] eq user}">
-        <form method="POST" action="start-game">
- 	    	<fieldset>
-        		<legend>Start Game</legend>
-        		<input type="hidden" name="id" value="${game.id}" />
-        		<input type="submit" value="Start Game" />
-      		</fieldset>            
-        </form>
-        </c:if>
       </li>
     </c:forEach>
     </ul>
