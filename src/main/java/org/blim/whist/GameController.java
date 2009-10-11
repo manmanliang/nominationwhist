@@ -106,17 +106,17 @@ public class GameController {
 	    Round previousRound = gameService.createRound(game);
 	    previousRound.setBids(Arrays.asList(new Integer(1), new Integer(1), new Integer(0), new Integer(0)));
 	    previousRound.setTrumps(Card.Suit.SPADES);
-		previousRound.getTrickHistory().add(new Trick(0));
+		previousRound.getTricks().add(new Trick(0));
 		gameService.playCard(previousRound, 0, previousRound.getHands().get(0).getCards().get(1));
 	    gameService.playCard(previousRound, 1, previousRound.getHands().get(1).getCards().get(1));
 	    gameService.playCard(previousRound, 2, previousRound.getHands().get(2).getCards().get(1));
 	    gameService.playCard(previousRound, 3, previousRound.getHands().get(3).getCards().get(1));
-		previousRound.getTrickHistory().add(new Trick(1));
+		previousRound.getTricks().add(new Trick(1));
 		gameService.playCard(previousRound, 0, previousRound.getHands().get(1).getCards().get(1));
 	    gameService.playCard(previousRound, 1, previousRound.getHands().get(2).getCards().get(1));
 	    gameService.playCard(previousRound, 2, previousRound.getHands().get(3).getCards().get(1));
 	    gameService.playCard(previousRound, 3, previousRound.getHands().get(0).getCards().get(1));
-		previousRound.getTrickHistory().add(new Trick(2));
+		previousRound.getTricks().add(new Trick(2));
 		gameService.playCard(previousRound, 0, previousRound.getHands().get(2).getCards().get(0));
 	    gameService.playCard(previousRound, 1, previousRound.getHands().get(3).getCards().get(0));
 	    gameService.playCard(previousRound, 2, previousRound.getHands().get(0).getCards().get(0));
@@ -125,12 +125,12 @@ public class GameController {
 	    Round currentRound = gameService.createRound(game);
 	    currentRound.setBids(Arrays.asList(new Integer(1), new Integer(1), new Integer(1), new Integer(1)));
 	    currentRound.setTrumps(Card.Suit.HEARTS);
-		currentRound.getTrickHistory().add(new Trick(0));
+		currentRound.getTricks().add(new Trick(0));
 		gameService.playCard(currentRound, 0, currentRound.getHands().get(0).getCards().get(1));
 	    gameService.playCard(currentRound, 1, currentRound.getHands().get(1).getCards().get(1));
 	    gameService.playCard(currentRound, 2, currentRound.getHands().get(2).getCards().get(1));
 	    gameService.playCard(currentRound, 3, currentRound.getHands().get(3).getCards().get(1));
-		currentRound.getTrickHistory().add(new Trick(1));
+		currentRound.getTricks().add(new Trick(1));
 		gameService.playCard(currentRound, 0, currentRound.getHands().get(1).getCards().get(1));
 	    gameService.playCard(currentRound, 1, currentRound.getHands().get(2).getCards().get(1));
 	    gameService.playCard(currentRound, 2, currentRound.getHands().get(3).getCards().get(1));
@@ -166,8 +166,8 @@ public class GameController {
 		Trick trick = null;
 		String JSONTrick = "[]";
 			
-		if (round.getTrickHistory().size() > 0) {
-			trick = Iterables.getLast(round.getTrickHistory());
+		if (round.getTricks().size() > 0) {
+			trick = Iterables.getLast(round.getTricks());
 			JSONTrick = JSONValue.toJSONString(trick.getCards());
 		}
 
@@ -294,7 +294,7 @@ public class GameController {
 			currentRound.bid(player, bid);
 		
 			if (currentRound.getBids().size() == game.getPlayers().size()) {
-				currentRound.getTrickHistory().add(new Trick(game.getRounds().size() % game.getPlayers().size()));
+				currentRound.getTricks().add(new Trick(game.getRounds().size() % game.getPlayers().size()));
 			}
 			
 			session.save(game);

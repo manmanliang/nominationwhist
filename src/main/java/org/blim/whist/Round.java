@@ -7,10 +7,12 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.persistence.Transient;
 
 import org.blim.whist.Card.Suit;
 import org.hibernate.annotations.CollectionOfElements;
 
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 
 @Entity
@@ -18,7 +20,7 @@ public class Round {
 
 	private Long id;
 	private int numberOfCards;
-	private List<Trick> trickHistory = Lists.newArrayList();
+	private List<Trick> tricks = Lists.newArrayList();
 	private List<Hand> hands = Lists.newArrayList();
 	private List<Integer> bids = Lists.newArrayList();
 	private Suit trumps;
@@ -37,12 +39,12 @@ public class Round {
 	}
 
 	@OneToMany(cascade = CascadeType.ALL)
-	public List<Trick> getTrickHistory() {
-		return trickHistory;
+	public List<Trick> getTricks() {
+		return tricks;
 	}
 
-	public void setTrickHistory(List<Trick> trickHistory) {
-		this.trickHistory = trickHistory;
+	public void setTricks(List<Trick> tricks) {
+		this.tricks = tricks;
 	}
 
 	@OneToMany(cascade = CascadeType.ALL)
@@ -99,4 +101,9 @@ public class Round {
 		return maxBidder;
 	}
 	
+	@Transient
+	public Trick getCurrentTrick() {
+		return Iterables.getLast(tricks);
+	}
+
 }
