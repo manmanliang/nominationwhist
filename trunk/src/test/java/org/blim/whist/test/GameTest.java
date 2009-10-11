@@ -6,16 +6,13 @@ import junit.framework.TestCase;
 
 import org.blim.whist.Card;
 import org.blim.whist.Game;
-import org.blim.whist.GameService;
 import org.blim.whist.Hand;
 import org.blim.whist.Round;
 import org.blim.whist.Trick;
 
 import com.google.common.collect.Iterables;
 
-public class GameServiceTest extends TestCase {
-
-	private GameService gameService = new GameService();
+public class GameTest extends TestCase {
 
 	public void testDealHandOfThirteenCards() throws Exception {
 		Game game = new Game();
@@ -24,7 +21,7 @@ public class GameServiceTest extends TestCase {
 		game.getPlayers().add("Coffee");
 		game.getPlayers().add("Wine");
 		game.setRoundSequence(new int[] {13});
-		gameService.createRound(game);
+		game.createRound();
 
 		List<Hand> hands = Iterables.getLast(game.getRounds()).getHands();
 		
@@ -43,7 +40,7 @@ public class GameServiceTest extends TestCase {
 		Game game = new Game();
 		game.getPlayers().add("Wibble");
 		game.setRoundSequence(new int[] {13});
-		Round round = gameService.createRound(game);
+		Round round = game.createRound();
 		round.getTricks().add(new Trick(0));
 		Hand hand = round.getHands().get(0);
 

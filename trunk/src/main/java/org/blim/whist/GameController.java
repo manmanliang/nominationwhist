@@ -103,7 +103,7 @@ public class GameController {
 
 		game.setRoundSequence(new int[] {3, 3});
 	    
-	    Round previousRound = gameService.createRound(game);
+	    Round previousRound = game.createRound();
 	    previousRound.setBids(Arrays.asList(new Integer(1), new Integer(1), new Integer(0), new Integer(0)));
 	    previousRound.setTrumps(Card.Suit.SPADES);
 		previousRound.getTricks().add(new Trick(0));
@@ -122,7 +122,7 @@ public class GameController {
 	    previousRound.playCard(2, previousRound.getHands().get(0).getCards().get(0));
 	    previousRound.playCard(3, previousRound.getHands().get(1).getCards().get(0));
 	    
-	    Round currentRound = gameService.createRound(game);
+	    Round currentRound = game.createRound();
 	    currentRound.setBids(Arrays.asList(new Integer(1), new Integer(1), new Integer(1), new Integer(1)));
 	    currentRound.setTrumps(Card.Suit.HEARTS);
 		currentRound.getTricks().add(new Trick(0));
@@ -236,7 +236,7 @@ public class GameController {
 		session.load(game, gameId);
 				
 		if (game.getPlayers().get(0).equals(user.getName())) {
-			gameService.createRound(game);
+			game.createRound();
 			session.save(game);
 		}
 
@@ -259,7 +259,7 @@ public class GameController {
 		session.load(game, gameId);
 				
 		if (game.getPlayers().get(0).equals(user.getName())) {
-			gameService.createRound(game);
+			game.createRound();
 			session.save(game);
 		}
 

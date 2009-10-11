@@ -1,8 +1,5 @@
 package org.blim.whist;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.EnumSet;
 import java.util.List;
 
 import org.hibernate.SessionFactory;
@@ -12,7 +9,7 @@ import com.google.common.collect.Lists;
 
 public class GameService {
 
-	private static final int MAX_CARDS = 52;
+	public static final int MAX_CARDS = 52;
 	
 	public static final int[] ROUND_SEQUENCE_DFLT = {13,12,11,10,9,8,7,6,5,4,3,2,2,2,2,3,4,5,6,7,8,9,10,11,12,13};
 
@@ -27,56 +24,6 @@ public class GameService {
 		return sessionFactory;
 	}
 
-	public Round createRound(Game game) {
-		Round round = null;
-		int roundIdx = nextRound(game);
-		
-		if (roundIdx < game.getRoundSequence().length) {
-			List<Card> deck = new ArrayList<Card>(EnumSet.allOf(Card.class));
-			Collections.shuffle(deck);
-
-			round = new Round();
-			
-			for (int i = 0; i < game.getPlayers().size(); i++) {
-				round.getHands().add(new Hand());
-			}
-		
-			for (int j = 0; j < game.getRoundSequence()[roundIdx]; j++) {
-				for (Hand hand : round.getHands()) {
-					hand.addCard(deck.remove(0));
-				}
-			}
-			
-			game.getRounds().add(round);
-		}
-		
-		return round;
-	}
-	
-	public int nextRound(Game game) {
-		int round = getNextPlayableRound(game, 0);
-		int roundsPlayed = game.getRounds().size();
-		
-		while (round < game.getRoundSequence().length && roundsPlayed > 0) {
-			round = getNextPlayableRound(game, ++round);
-			roundsPlayed--;
-		}
-		
-		return round;
-	}
-	
-	private int getNextPlayableRound(Game game, int idx) {
-		int round = idx;
-		
-		for (; round < game.getRoundSequence().length; round++) {
-			if (MAX_CARDS / game.getRoundSequence()[round] >= game.getPlayers().size()) {
-				return round;
-			}
-		}
-		
-		return round;
-	}
-	
 	public List<Integer> gameScores(Game game) {
 		List<Integer> gameScores = Lists.newArrayList();
 		List<Integer> roundScores = Lists.newArrayList();
