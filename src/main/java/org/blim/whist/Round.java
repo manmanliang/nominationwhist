@@ -11,6 +11,7 @@ import javax.persistence.Transient;
 
 import org.blim.whist.Card.Suit;
 import org.hibernate.annotations.CollectionOfElements;
+import org.hibernate.annotations.IndexColumn;
 
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
@@ -56,6 +57,7 @@ public class Round {
 		this.hands = hands;
 	}
 
+	@IndexColumn(name = "sortkey")
 	@CollectionOfElements
 	public List<Integer> getBids() {
 		return bids;
