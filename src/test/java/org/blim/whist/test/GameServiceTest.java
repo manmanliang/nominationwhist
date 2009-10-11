@@ -23,6 +23,7 @@ public class GameServiceTest extends TestCase {
 		game.getPlayers().add("Tea");
 		game.getPlayers().add("Coffee");
 		game.getPlayers().add("Wine");
+		game.setRoundSequence(new int[] {13});
 		gameService.createRound(game);
 
 		List<Hand> hands = Iterables.getLast(game.getRounds()).getHands();
@@ -41,6 +42,7 @@ public class GameServiceTest extends TestCase {
 	public void testPlayCard() throws Exception {
 		Game game = new Game();
 		game.getPlayers().add("Wibble");
+		game.setRoundSequence(new int[] {13});
 		Round round = gameService.createRound(game);
 		round.getTrickHistory().add(new Trick(0));
 		Hand hand = round.getHands().get(0);
@@ -54,4 +56,33 @@ public class GameServiceTest extends TestCase {
 
 	}
 
+	/*
+ 		// Set up data manually for now
+		game.getPlayers().add("Rob");
+		game.getPlayers().add("Lee");
+		game.getPlayers().add("Mum");
+		game.getPlayers().add("Dad");
+		
+		game.setRoundSequence(new int[] {13});
+	    
+		gameService.createRound(game);
+	 */
+	
+	/*
+	    game.getPlayers().add("Rob");
+		game.getPlayers().add("Lee");
+		game.getPlayers().add("Mum");
+		game.getPlayers().add("Dad");
+
+		game.setRoundSequence(new int[] {13, 12});
+
+		Round round = gameService.createRound(game);
+		round.getTrickHistory().add(new Trick(0));
+		
+		// Set up data manually for now
+	    gameService.playCard(round, 0, round.getHands().get(0).getCards().get(4));
+	    gameService.playCard(round, 1, round.getHands().get(1).getCards().get(2));
+	    gameService.playCard(round, 2, round.getHands().get(2).getCards().get(7));
+
+	 */
 }

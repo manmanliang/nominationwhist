@@ -8,6 +8,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
+import org.blim.whist.Card.Suit;
 import org.hibernate.annotations.CollectionOfElements;
 
 import com.google.common.collect.Lists;
@@ -20,6 +21,7 @@ public class Round {
 	private List<Trick> trickHistory = Lists.newArrayList();
 	private List<Hand> hands = Lists.newArrayList();
 	private List<Integer> bids = Lists.newArrayList();
+	private Suit trumps;
 	
 	@Id
 	@GeneratedValue
@@ -61,6 +63,14 @@ public class Round {
 		this.bids = bids;
 	}
 
+	public Suit getTrumps() {
+		return this.trumps;
+	}
+	
+	public void setTrumps(Suit trumps) {
+		this.trumps = trumps;
+	}
+
 	public int highestBidder() {
 		int maxBid = -1;
 		int maxBidder = -1;
@@ -68,9 +78,11 @@ public class Round {
 		for (int i = 0; i < bids.size(); i++) {
 			if (bids.get(i) > maxBid) {
 				maxBidder = i;
+				maxBid = bids.get(i);
 			}
 		}
 		
 		return maxBidder;
 	}
+	
 }
