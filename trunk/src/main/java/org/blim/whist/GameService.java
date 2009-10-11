@@ -8,7 +8,6 @@ import java.util.List;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 
 public class GameService {
@@ -78,24 +77,6 @@ public class GameService {
 		return round;
 	}
 	
-	public void playCard(Round round, int player, Card card) {
-		List<Card> cards = Iterables.getLast(round.getTricks()).getCards();
-		
-		if (cards.size() - 1 < player) {
-			// (player - (cards.size() - 1)) - 1 for number of nulls we need
-			int missingPlayerCount = player - cards.size();
-			for (int i = 0; i < missingPlayerCount; i++) {
-				cards.add(null);
-			}
-			cards.add(card);
-		}
-		else {
-			cards.set(player, card);
-		}
-		
-		round.getHands().get(player).getCards().remove(card);
-	}
-
 	public List<Integer> gameScores(Game game) {
 		List<Integer> gameScores = Lists.newArrayList();
 		List<Integer> roundScores = Lists.newArrayList();

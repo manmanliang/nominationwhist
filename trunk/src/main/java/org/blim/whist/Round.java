@@ -87,6 +87,14 @@ public class Round {
 		}
 	}
 	
+	public void playCard(int player, Card card) {
+		Trick trick = getCurrentTrick();
+		
+		trick.playCard(player, card);
+		
+		getHands().get(player).getCards().remove(card);
+	}
+	
 	public int highestBidder() {
 		int maxBid = -1;
 		int maxBidder = -1;
