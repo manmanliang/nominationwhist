@@ -5,12 +5,22 @@
     <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
     <script type="text/javascript" src="<c:url value="/js/json.js"/>"></script>
     <script type="text/javascript" src="<c:url value="/js/xmlhttp.js"/>"></script>
-    <script type="text/javascript" src="<c:url value="/js/whist.js"/>"></script>    
+    <script type="text/javascript" src="<c:url value="/js/whist.js"/>"></script>
+    <script>
+    	user = ${user}
+    	
+    	xmlHttp['round'].init("<c:url value="/round?id=${game.id}" />", "roundDiv");
+    	xmlHttp['hand'].init("<c:url value="/hand?id=${game.id}" />", "handDiv");
+    	xmlHttp['trick'].init("<c:url value="/trick?id=${game.id}" />", "trickDiv");
+    	xmlHttp['bid'].init("<c:url value="/bid?id=${game.id}" />");
+    	xmlHttp['trumps'].init("<c:url value="/trumps?id=${game.id}" />");
+    	xmlHttp['playCard'].init("<c:url value="/play-card?id=${game.id}" />");
+    </script>   
     <style>
     	body { background: #008000; }
     </style>
   </head>
-  <body onload="dataRefresh();">    
+  <body onload="onLoadEventHandler();">    
     <h1>Lets Play Nommy</h1>
     <hr>
     </br>
