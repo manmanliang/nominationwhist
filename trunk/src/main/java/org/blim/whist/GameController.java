@@ -103,41 +103,39 @@ public class GameController {
 
 		game.setRoundSequence(new int[] {3, 3});
 	    
-	    Round previousRound = game.createRound();
+	    Round previousRound = game.addRound();
 	    previousRound.setBids(Arrays.asList(new Integer(1), new Integer(1), new Integer(0), new Integer(0)));
 	    previousRound.setTrumps(Card.Suit.SPADES);
-		previousRound.setFirstPlayer(0);
-		previousRound.addTrick();
+		game.addTrick();
 		previousRound.playCard(0, previousRound.getHands().get(0).getCards().get(1));
 	    previousRound.playCard(1, previousRound.getHands().get(1).getCards().get(1));
 	    previousRound.playCard(2, previousRound.getHands().get(2).getCards().get(1));
 	    previousRound.playCard(3, previousRound.getHands().get(3).getCards().get(1));
-		previousRound.addTrick();
+		game.addTrick();
 		previousRound.playCard(0, previousRound.getHands().get(1).getCards().get(1));
 	    previousRound.playCard(1, previousRound.getHands().get(2).getCards().get(1));
 	    previousRound.playCard(2, previousRound.getHands().get(3).getCards().get(1));
 	    previousRound.playCard(3, previousRound.getHands().get(0).getCards().get(1));
-		previousRound.addTrick();
+		game.addTrick();
 		previousRound.playCard(0, previousRound.getHands().get(2).getCards().get(0));
 	    previousRound.playCard(1, previousRound.getHands().get(3).getCards().get(0));
 	    previousRound.playCard(2, previousRound.getHands().get(0).getCards().get(0));
 	    previousRound.playCard(3, previousRound.getHands().get(1).getCards().get(0));
 	    
-	    Round currentRound = game.createRound();
-		currentRound.setFirstPlayer(0);
+	    Round currentRound = game.addRound();
 	  /*  currentRound.setBids(Arrays.asList(new Integer(1), new Integer(1), new Integer(1), new Integer(1)));
 	    currentRound.setTrumps(Card.Suit.HEARTS);
-		currentRound.addTrick();
+		game.addTrick();
 		currentRound.playCard(0, currentRound.getHands().get(0).getCards().get(1));
 	    currentRound.playCard(1, currentRound.getHands().get(1).getCards().get(1));
 	    currentRound.playCard(2, currentRound.getHands().get(2).getCards().get(1));
 	    currentRound.playCard(3, currentRound.getHands().get(3).getCards().get(1));
-		currentRound.addTrick();
+		game.addTrick();
 		currentRound.playCard(0, currentRound.getHands().get(1).getCards().get(1));
 	    currentRound.playCard(1, currentRound.getHands().get(2).getCards().get(1));
 	    currentRound.playCard(2, currentRound.getHands().get(3).getCards().get(1));
 	    currentRound.playCard(3, currentRound.getHands().get(0).getCards().get(1));
-		currentRound.addTrick();
+		game.addTrick();
 */
 	    JSONObject JSONPreviousRound = new JSONObject();
 	    JSONObject JSONCurrentRound = new JSONObject();
@@ -155,7 +153,7 @@ public class GameController {
 	    JSONCurrentRound.put("tricks", currentRound.tricksWon());
 	    JSONCurrentRound.put("playerToBid", currentRound.getFirstPlayer());
 	    JSONCurrentRound.put("bidWinner", currentRound.highestBidder());
-	    JSONCurrentRound.put("playerToPlayCard", Iterables.getLast(currentRound.getTricks()).);
+	    JSONCurrentRound.put("playerToPlayCard", game.playerToPlayCard());
 	    
 	    JSONScores.put("previousRound", JSONPreviousRound);
 	    JSONScores.put("currentRound", JSONCurrentRound);
@@ -245,7 +243,8 @@ public class GameController {
 		session.load(game, gameId);
 				
 		if (game.getPlayers().get(0).equals(user.getName())) {
-			game.createRound();
+			game.addRound();
+			game.addTrick();
 			session.save(game);
 		}
 
@@ -256,26 +255,35 @@ public class GameController {
 	
 	@Transactional
 	@RequestMapping(value = "/play-card", method = RequestMethod.POST)
-	public ModelAndView playCard(
-			HttpServletResponse response, 
-			@RequestParam("id") Long gameId, 
-			@RequestParam("card") Card card, 
-			Principal user) {
-		Map<String, Object> model = new HashMap<String, Object>();
+	public void playCard(
+			HttpServletResponse response,
+			HttpServletRequest request,
+			Principal user) throws IOException {
 		Game game = new Game();
 		Session session = sessionFactory.getCurrentSession();
 
-		session.load(game, gameId);
-				
-		if (game.getPlayers().get(0).equals(user.getName())) {
-			game.createRound();
+		BufferedReader reader = request.getReader();
+
+		Object obj = JSONValue.parse(reader);
+		
+		if (obj instanceof JSONObject) {
+			JSONObject json = (JSONObject) obj;
+			
+			Long gameId = ((Number) json.get("id")).longValue();
+			Card card = ((Card) json.get("card"));
+
+			session.load(game, gameId);
+
+			int player = game.getPlayerIndex(user.getName());
+			game.playCard(player, card);
+			
 			session.save(game);
 		}
 
-		model.put("id", gameId);
+		String JSONTrick = "[]";
 		
-		return new ModelAndView("redirect:/game", model);
-	}
+		response.getWriter().print(JSONTrick);
+	}	
 	
 	@Transactional
 	@RequestMapping(value = "/bid", method = RequestMethod.POST)
@@ -301,11 +309,6 @@ public class GameController {
 			Round currentRound = game.getCurrentRound();
 			int player = game.getPlayerIndex(user.getName());
 			currentRound.bid(player, bid);
-		
-			if (currentRound.getBids().size() == game.getPlayers().size()) {
-				currentRound.addTrick();
-				Iterables.getLast(currentRound.getTricks()).setFirstPlayer(game.getRounds().size() % game.getPlayers().size());
-			}
 			
 			session.save(game);
 		}

@@ -120,17 +120,6 @@ public class Round {
 		getHands().get(player).getCards().remove(card);
 	}
 	
-	public void addTrick() {
-		tricks.add(new Trick());
-		
-		if (tricks.size() == 1) {
-			Iterables.getLast(tricks).setFirstPlayer(firstPlayer);
-		} else {
-			int player = tricks.get(tricks.size() - 2).winner(trumps);
-			Iterables.getLast(tricks).setFirstPlayer(player);			
-		}
-	}
-	
 	public List<Integer> scores() {
 		List<Integer> scores = tricksWon();
 		
@@ -165,11 +154,23 @@ public class Round {
 
 	public boolean finished() { 
 		if (tricks.size() == numberOfCards &&
-				Iterables.getLast(tricks).getCards().size() == hands.size()) {
+				Iterables.getLast(tricks).getNumberOfCards() == hands.size()) {
 			return true;
 		} else { 
 			return false;
 		}
+	}
+	
+	public int getNumberOfBids() {
+		int count = 0;
+		
+		for (Integer bid : bids) {
+			if (bid != null) {
+				count++;
+			}
+		}
+		
+		return count;
 	}
 	
 }

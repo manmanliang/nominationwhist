@@ -20,7 +20,7 @@ public class GameTest extends TestCase {
 		game.getPlayers().add("Coffee");
 		game.getPlayers().add("Wine");
 		game.setRoundSequence(new int[] {13});
-		game.createRound();
+		game.addRound();
 
 		List<Hand> hands = Iterables.getLast(game.getRounds()).getHands();
 		
@@ -39,8 +39,8 @@ public class GameTest extends TestCase {
 		Game game = new Game();
 		game.getPlayers().add("Wibble");
 		game.setRoundSequence(new int[] {13});
-		Round round = game.createRound();
-		round.addTrick();
+		Round round = game.addRound();
+		game.addTrick();
 		Iterables.getLast(round.getTricks()).setFirstPlayer(0);
 		Hand hand = round.getHands().get(0);
 
@@ -62,7 +62,7 @@ public class GameTest extends TestCase {
 		
 		game.setRoundSequence(new int[] {13});
 	    
-		gameService.createRound(game);
+		gameService.addRound(game);
 	 */
 	
 	/*
@@ -73,7 +73,7 @@ public class GameTest extends TestCase {
 
 		game.setRoundSequence(new int[] {13, 12});
 
-		Round round = gameService.createRound(game);
+		Round round = gameService.addRound(game);
 		round.addTrick();
 		
 		// Set up data manually for now

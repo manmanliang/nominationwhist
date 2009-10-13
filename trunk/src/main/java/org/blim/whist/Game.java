@@ -81,7 +81,7 @@ public class Game {
 		return Iterables.getLast(rounds);
 	}
 
-	public Round createRound() {
+	public Round addRound() {
 		Round round = null;
 		int roundIdx = nextRound();
 		
@@ -149,11 +149,59 @@ public class Game {
 		return gameScores;
 	}
 
+	public Trick addTrick() {
+		Round currentRound = getCurrentRound();
+		Trick trick = null;
+		
+		if (currentRound.getTricks().size() < currentRound.getNumberOfCards()) {
+			trick = new Trick();
+			currentRound.getTricks().add(trick);
+			if (currentRound.getTricks().size() == 1) {
+				trick.setFirstPlayer(rounds.size() % players.size());
+			} else {
+				int previousWinner = currentRound.getTricks().get(currentRound.getTricks().size() - 2).winner(currentRound.getTrumps());
+				trick.setFirstPlayer(previousWinner);			
+			}
+		}
+		
+		return trick;
+	}
+	
 	public boolean finished() {
 		if (rounds.size() == roundSequence.length && Iterables.getLast(rounds).finished()) {
 			return true;
 		} else { 
 			return false;
+		}
+	}
+
+	public int playerToPlayCard() {
+		Round currentRound = getCurrentRound();
+		Trick currentTrick = Iterables.getLast(currentRound.getTricks());
+		
+		if (currentTrick.getNumberOfCards() == 0) {
+			return currentTrick.getFirstPlayer();
+		} else {
+			if (currentTrick.getNumberOfCards() == players.size()) {
+				return currentTrick.getCards().indexOf(null);
+			} else {
+				// return one more than the current highest index
+				return currentTrick.getNumberOfCards();
+			}
+		}
+	}
+
+	public void playCard(int player, Card card) {
+		Round currentRound = getCurrentRound();
+
+		currentRound.playCard(player, card);
+		
+		if (Iterables.getLast(currentRound.getTricks()).getNumberOfCards() == players.size()) {
+			if (addTrick() == null) {
+				if (addRound() != null) {
+					addTrick();
+				}
+			}
 		}
 	}
 	

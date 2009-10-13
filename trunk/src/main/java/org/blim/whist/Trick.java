@@ -5,6 +5,7 @@ import java.util.List;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Transient;
 
 import org.hibernate.annotations.CollectionOfElements;
 import org.hibernate.annotations.IndexColumn;
@@ -82,12 +83,17 @@ public class Trick {
 		}
 	}
 
-	private int playerToPlayCard() {
-		if (cards.size() == 0) {
-			return firstPlayer;
-		} else {
-			return 
+	@Transient
+	public int getNumberOfCards() {
+		int count = 0;
+		
+		for (Card card : cards) {
+			if (card != null) {
+				count++;
+			}
 		}
+		
+		return count;
 	}
-
+	
 }
