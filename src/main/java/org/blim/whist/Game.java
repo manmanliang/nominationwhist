@@ -149,5 +149,12 @@ public class Game {
 		return gameScores;
 	}
 
+	public boolean finished() {
+		if (rounds.size() == roundSequence.length && Iterables.getLast(rounds).finished()) {
+			return true;
+		} else { 
+			return false;
+		}
+	}
 	
 }

@@ -82,4 +82,12 @@ public class Trick {
 		}
 	}
 
+	private int playerToPlayCard() {
+		if (cards.size() == 0) {
+			return firstPlayer;
+		} else {
+			return 
+		}
+	}
+
 }

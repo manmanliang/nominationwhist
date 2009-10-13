@@ -5,126 +5,7 @@
     <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
     <script type="text/javascript" src="<c:url value="/js/json.js"/>"></script>
     <script type="text/javascript" src="<c:url value="/js/xmlhttp.js"/>"></script>
-    <script type="text/javascript">
-      	var handXmlHttp;
-        function handStateChange()
-        {
-            if (handXmlHttp.readyState==4)
-            {// 4 = "loaded"
-                if (handXmlHttp.status==200)
-                {// 200 = OK
-                    try {
-                        var hand = JSON.parse(handXmlHttp.responseText);
-                    } catch (e) {
-                        alert("An exception occurred in the script. Error name: " + e.name 
-                          + ". Error message: " + e.message + ". Response was " + handXmlHttp.responseText); 
-                    }
-                    var imgHTML = "";
-                    for (card in hand) {
-                        imgHTML = imgHTML + "<img src = \"images/" + hand[card] + ".png\"/>"
-                    }
-                    document.getElementById("handDiv").innerHTML = imgHTML;
-                }
-                else
-                {
-                    document.getElementById("handDiv").innerHTML = "<p>" + handXmlHttp.status + ": Data is out of data. Updating, please wait...</p>";
-                }
-            }
-        }
-    </script>
-    <script type="text/javascript">
-      	var trickXmlHttp;
-        function trickStateChange()
-        {
-            if (trickXmlHttp.readyState==4)
-            {// 4 = "loaded"
-                if (trickXmlHttp.status==200)
-                {// 200 = OK
-                    try {
-                        var trick = JSON.parse(trickXmlHttp.responseText);
-                    } catch (e) {
-                        alert("An exception occurred in the script. Error name: " + e.name 
-                          + ". Error message: " + e.message + ". Response was " + trickXmlHttp.responseText); 
-                    }
-
-                    // Clear out the old images
-                    var trickImgs = document.getElementById("trickDiv").getElementsByTagName("img");
-                    for (var i=0; i < trickImgs.length; i++) {
-                    	trickImgs[i].style.visibility = "hidden";
-                        trickImgs[i].src = "";
-                    }
-
-                    // Add the images for the ones we have a value for
-                    var imgHTML = "";
-                    for (var i=0; i < trick.length; i++) {
-                    	if (trick[i] != null) {
-    	                    var imgToUpdate = document.getElementById("player" + i);
-	                        imgHTML = "images/" + trick[i] + ".png";
-        	                imgToUpdate.src = imgHTML;
-            	            imgToUpdate.style.visibility = "visible";
-            	        }
-                    }
-                }
-                else
-                {
-                    document.getElementById("trickDiv").innerHTML = "<p>" + trickXmlHttp.status + ": Data is out of data. Updating, please wait...</p>";
-                }
-            }
-        }
-    </script>
-    <script type="text/javascript">
-      	var scoresXmlHttp;
-        function scoresStateChange()
-        {
-            if (scoresXmlHttp.readyState==4)
-            {// 4 = "loaded"
-                if (scoresXmlHttp.status==200)
-                {// 200 = OK
-                    try {
-                        var scores = JSON.parse(scoresXmlHttp.responseText);
-                    } catch (e) {
-                        alert("An exception occurred in the script. Error name: " + e.name 
-                          + ". Error message: " + e.message + ". Response was " + scoresXmlHttp.responseText); 
-                    }
-
-    	            document.getElementById("scoresDiv").innerHTML = scoresXmlHttp.responseText;
-                }
-                else
-                {
-                    document.getElementById("scoresDiv").innerHTML = "<p>" + scoresXmlHttp.status + ": Data is out of data. Updating, please wait...</p>";
-                }
-            }
-        }
-    </script>
-    <script type="text/javascript">
-      	var bidXmlHttp;
-        function bidStateChange()
-        {
-            if (bidXmlHttp.readyState==4)
-            {// 4 = "loaded"
-                if (bidXmlHttp.status==200)
-                {// 200 = OK
-                    try {
-                        var bidResponse = JSON.parse(bidXmlHttp.responseText);
-                    } catch (e) {
-                        alert("An exception occurred in the script. Error name: " + e.name 
-                          + ". Error message: " + e.message + ". Response was " + bidXmlHttp.responseText); 
-                    }
-                }
-                else
-                {
-                }
-            }
-        }
-    </script>
-    <script type="text/javascript">
-        function dataRefresh()
-        {
-            handXmlHttp = AJAXGet(handStateChange, '<c:url value="/hand?id=${param.id}"/>');
-            trickXmlHttp = AJAXGet(trickStateChange, '<c:url value="/trick?id=${param.id}"/>');
-            scoresXmlHttp = AJAXGet(scoresStateChange, '<c:url value="/score"/>');
-        }
-    </script>    
+    <script type="text/javascript" src="<c:url value="/js/whist.js"/>"></script>    
     <style>
     	body { background: #008000; }
     </style>
@@ -138,13 +19,21 @@
     <div id="handDiv"></div>
     <p>Here are the trick cards:</p>
     <div id="trickDiv">
-    	<img id="player0" src="" height="96" width="72" style="visibility: hidden;"/>
-    	<img id="player1" src="" height="96" width="72" style="visibility: hidden;"/>
-    	<img id="player2" src="" height="96" width="72" style="visibility: hidden;"/>
-    	<img id="player3" src="" height="96" width="72" style="visibility: hidden;"/>
+ 	  	<c:forEach var="player" begin="0" end="${fn:length(game.players) - 1}">
+ 	    	<img id="player${player}" src="" height="96" width="72" style="visibility: hidden;"/>
+ 	    </c:forEach>
     </div>
     <p>Scores</p>
-    <div id="scoresDiv"></div>
+    <div id="scoresDiv">
+    	<p>Base String is:</p><div id="scoresTestBaseString"></div>
+    	<p>Number of cards is:</p><div id="numberOfCards"></div>
+    	<p>Trumps are:</p><div id="trumps"></div>
+ 	  	<c:forEach var="player" begin="0" end="${fn:length(game.players) - 1}">
+ 		   	<p>Player ${player}'s bid is:</p><div id="player${player}Bid" class="playerBid"></div>
+ 	    </c:forEach>
+ 	    <p>Player to bid is:</p><div id="playerToBid"></div>
+ 	    <p>Player to choose trumps is:</p><div id="bidWinner"></div>
+    </div>
     <p>Actions</p>
       <c:if test="${game.players[0] eq user && fn:length(game.rounds) == 0}">
         <form method="POST" action="start-game">
@@ -155,11 +44,8 @@
       		</fieldset>            
         </form>
       </c:if>
-      <c:if test="${fn:length(game.currentRound.bids) <= userIndex || game.currentRound.bids[userIndex] == null}">
- 	    		<c:forEach var="bid" begin="0" end="${game.roundSequence[fn:length(game.rounds) - 1]}">
-	        		<a href="javascript:AJAXPost(bidStateChange, '<c:url value="/bid"/>', '{&quot;id&quot;:${game.id}, &quot;bid&quot;:${bid}}');">${bid}</a>
- 	    		</c:forEach>
-      </c:if>
+      <div id="bidsDiv"></div>
+      <div id="setTrumpsDiv"></div>
   </body>
 </html>
 

@@ -21,6 +21,7 @@ public class Round {
 
 	private Long id;
 	private int numberOfCards;
+	private int firstPlayer;
 	private List<Trick> tricks = Lists.newArrayList();
 	private List<Hand> hands = Lists.newArrayList();
 	private List<Integer> bids = Lists.newArrayList();
@@ -75,6 +76,14 @@ public class Round {
 		this.trumps = trumps;
 	}
 
+	public void setFirstPlayer(int firstPlayer) {
+		this.firstPlayer = firstPlayer;
+	}
+	
+	public int getFirstPlayer() {
+		return firstPlayer;
+	}
+	
 	public void bid(int player, int bid) {
 		if (bids.size() - 1 < player) {
 			// (player - (cards.size() - 1)) - 1 for number of nulls we need
@@ -111,6 +120,17 @@ public class Round {
 		getHands().get(player).getCards().remove(card);
 	}
 	
+	public void addTrick() {
+		tricks.add(new Trick());
+		
+		if (tricks.size() == 1) {
+			Iterables.getLast(tricks).setFirstPlayer(firstPlayer);
+		} else {
+			int player = tricks.get(tricks.size() - 2).winner(trumps);
+			Iterables.getLast(tricks).setFirstPlayer(player);			
+		}
+	}
+	
 	public List<Integer> scores() {
 		List<Integer> scores = tricksWon();
 		
@@ -143,4 +163,13 @@ public class Round {
 		return Iterables.getLast(tricks);
 	}
 
+	public boolean finished() { 
+		if (tricks.size() == numberOfCards &&
+				Iterables.getLast(tricks).getCards().size() == hands.size()) {
+			return true;
+		} else { 
+			return false;
+		}
+	}
+	
 }

@@ -19,15 +19,5 @@ public class GameService {
 	public SessionFactory getSessionFactory() {
 		return sessionFactory;
 	}
-	
-
-/*	public boolean roundFinished() { 
-		if (trickHistory.size() == numberOfCards &&
-		    trickHistory.get(numberOfCards - 1).getCards().size() == hands.size()) {
-		    	return true;
-		    } else 
-		    	return false;
-		}
-*/
-		
+			
 }

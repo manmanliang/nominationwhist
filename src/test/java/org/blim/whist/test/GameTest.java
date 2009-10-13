@@ -8,7 +8,6 @@ import org.blim.whist.Card;
 import org.blim.whist.Game;
 import org.blim.whist.Hand;
 import org.blim.whist.Round;
-import org.blim.whist.Trick;
 
 import com.google.common.collect.Iterables;
 
@@ -41,7 +40,7 @@ public class GameTest extends TestCase {
 		game.getPlayers().add("Wibble");
 		game.setRoundSequence(new int[] {13});
 		Round round = game.createRound();
-		round.getTricks().add(new Trick());
+		round.addTrick();
 		Iterables.getLast(round.getTricks()).setFirstPlayer(0);
 		Hand hand = round.getHands().get(0);
 
@@ -75,7 +74,7 @@ public class GameTest extends TestCase {
 		game.setRoundSequence(new int[] {13, 12});
 
 		Round round = gameService.createRound(game);
-		round.getTrickHistory().add(new Trick(0));
+		round.addTrick();
 		
 		// Set up data manually for now
 	    gameService.playCard(round, 0, round.getHands().get(0).getCards().get(4));
