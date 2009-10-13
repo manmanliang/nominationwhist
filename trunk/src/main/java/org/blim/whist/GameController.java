@@ -106,56 +106,60 @@ public class GameController {
 	    Round previousRound = game.createRound();
 	    previousRound.setBids(Arrays.asList(new Integer(1), new Integer(1), new Integer(0), new Integer(0)));
 	    previousRound.setTrumps(Card.Suit.SPADES);
-		previousRound.getTricks().add(new Trick());
-		Iterables.getLast(previousRound.getTricks()).setFirstPlayer(0);
+		previousRound.setFirstPlayer(0);
+		previousRound.addTrick();
 		previousRound.playCard(0, previousRound.getHands().get(0).getCards().get(1));
 	    previousRound.playCard(1, previousRound.getHands().get(1).getCards().get(1));
 	    previousRound.playCard(2, previousRound.getHands().get(2).getCards().get(1));
 	    previousRound.playCard(3, previousRound.getHands().get(3).getCards().get(1));
-		previousRound.getTricks().add(new Trick());
-		Iterables.getLast(previousRound.getTricks()).setFirstPlayer(1);
+		previousRound.addTrick();
 		previousRound.playCard(0, previousRound.getHands().get(1).getCards().get(1));
 	    previousRound.playCard(1, previousRound.getHands().get(2).getCards().get(1));
 	    previousRound.playCard(2, previousRound.getHands().get(3).getCards().get(1));
 	    previousRound.playCard(3, previousRound.getHands().get(0).getCards().get(1));
-		previousRound.getTricks().add(new Trick());
-		Iterables.getLast(previousRound.getTricks()).setFirstPlayer(2);
+		previousRound.addTrick();
 		previousRound.playCard(0, previousRound.getHands().get(2).getCards().get(0));
 	    previousRound.playCard(1, previousRound.getHands().get(3).getCards().get(0));
 	    previousRound.playCard(2, previousRound.getHands().get(0).getCards().get(0));
 	    previousRound.playCard(3, previousRound.getHands().get(1).getCards().get(0));
 	    
 	    Round currentRound = game.createRound();
-	    currentRound.setBids(Arrays.asList(new Integer(1), new Integer(1), new Integer(1), new Integer(1)));
+		currentRound.setFirstPlayer(0);
+	  /*  currentRound.setBids(Arrays.asList(new Integer(1), new Integer(1), new Integer(1), new Integer(1)));
 	    currentRound.setTrumps(Card.Suit.HEARTS);
-		currentRound.getTricks().add(new Trick());
-		Iterables.getLast(previousRound.getTricks()).setFirstPlayer(0);
+		currentRound.addTrick();
 		currentRound.playCard(0, currentRound.getHands().get(0).getCards().get(1));
 	    currentRound.playCard(1, currentRound.getHands().get(1).getCards().get(1));
 	    currentRound.playCard(2, currentRound.getHands().get(2).getCards().get(1));
 	    currentRound.playCard(3, currentRound.getHands().get(3).getCards().get(1));
-		currentRound.getTricks().add(new Trick());
-		Iterables.getLast(previousRound.getTricks()).setFirstPlayer(1);
+		currentRound.addTrick();
 		currentRound.playCard(0, currentRound.getHands().get(1).getCards().get(1));
 	    currentRound.playCard(1, currentRound.getHands().get(2).getCards().get(1));
 	    currentRound.playCard(2, currentRound.getHands().get(3).getCards().get(1));
-	    currentRound.playCard(3, currentRound.getHands().get(0).getCards().get(1));	    
-
+	    currentRound.playCard(3, currentRound.getHands().get(0).getCards().get(1));
+		currentRound.addTrick();
+*/
 	    JSONObject JSONPreviousRound = new JSONObject();
 	    JSONObject JSONCurrentRound = new JSONObject();
 	    JSONObject JSONScores = new JSONObject();
 	    
+	    JSONPreviousRound.put("numberOfCards", previousRound.getNumberOfCards());
 	    JSONPreviousRound.put("trumps", previousRound.getTrumps());
 	    JSONPreviousRound.put("bids", previousRound.getBids());
 	    JSONPreviousRound.put("tricks", previousRound.tricksWon());
 	    JSONPreviousRound.put("scores", previousRound.scores());
 	    
+	    JSONCurrentRound.put("numberOfCards", currentRound.getNumberOfCards());
 	    JSONCurrentRound.put("trumps", currentRound.getTrumps());
 	    JSONCurrentRound.put("bids", currentRound.getBids());
 	    JSONCurrentRound.put("tricks", currentRound.tricksWon());
+	    JSONCurrentRound.put("playerToBid", currentRound.getFirstPlayer());
+	    JSONCurrentRound.put("bidWinner", currentRound.highestBidder());
+	    JSONCurrentRound.put("playerToPlayCard", Iterables.getLast(currentRound.getTricks()).);
 	    
 	    JSONScores.put("previousRound", JSONPreviousRound);
 	    JSONScores.put("currentRound", JSONCurrentRound);
+	    JSONScores.put("gameFinished", game.finished());
 	    
 		response.getWriter().print(JSONScores);
 	}
@@ -299,7 +303,7 @@ public class GameController {
 			currentRound.bid(player, bid);
 		
 			if (currentRound.getBids().size() == game.getPlayers().size()) {
-				currentRound.getTricks().add(new Trick());
+				currentRound.addTrick();
 				Iterables.getLast(currentRound.getTricks()).setFirstPlayer(game.getRounds().size() % game.getPlayers().size());
 			}
 			
