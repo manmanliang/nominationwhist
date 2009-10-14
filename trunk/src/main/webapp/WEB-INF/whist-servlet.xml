@@ -34,5 +34,4 @@
       <property name="suffix"><value>.jsp</value></property>
     </bean>
 
-	<bean id="gameService" class="org.blim.whist.GameService" />
 </beans>

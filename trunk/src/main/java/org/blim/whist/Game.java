@@ -29,6 +29,8 @@ public class Game {
 	private List<Round> rounds = Lists.newArrayList();	
 	private List<String> players = Lists.newArrayList();
 	private int[] roundSequence;
+	public static final int MAX_CARDS = 52;
+	public static final int[] ROUND_SEQUENCE_DFLT = {13,12,11,10,9,8,7,6,5,4,3,2,2,2,2,3,4,5,6,7,8,9,10,11,12,13};
 	
 	@Id
 	@GeneratedValue
@@ -123,7 +125,7 @@ public class Game {
 		int round = idx;
 		
 		for (; round < roundSequence.length; round++) {
-			if (GameService.MAX_CARDS / roundSequence[round] >= players.size()) {
+			if (Game.MAX_CARDS / roundSequence[round] >= players.size()) {
 				return round;
 			}
 		}
@@ -167,7 +169,7 @@ public class Game {
 		return trick;
 	}
 	
-	public boolean finished() {
+	public boolean isFinished() {
 		if (rounds.size() == roundSequence.length && Iterables.getLast(rounds).finished()) {
 			return true;
 		} else { 
@@ -203,6 +205,13 @@ public class Game {
 				}
 			}
 		}
+	}
+	
+	public boolean isFinished(int roundIdx) {
+		Round round = rounds.get(roundIdx);
+		
+		return Iterables.getLast(round.getTricks()).getCards().size() == players.size()
+			&& round.getTricks().size() == roundSequence[roundIdx];
 	}
 	
 }

@@ -83,6 +83,14 @@ public class Trick {
 		}
 	}
 
+	private int playerToPlayCard() {
+		if (cards.size() == 0) {
+			return firstPlayer;
+		} else {
+			return 0; 
+		}		
+	}
+
 	@Transient
 	public int getNumberOfCards() {
 		int count = 0;
