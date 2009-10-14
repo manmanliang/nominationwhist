@@ -1,98 +1,100 @@
-var xmlHttp = new Array();
-
 var game = new Object();
-game.pollInterval = 500;
-
+var xmlHttp = new Array();
 var user = null;
 
-function onLoadEventHandler() 
-{
-	xmlHttp['round'].call();
+game.id = null;
+game.players = new Array();
+game.rounds = new Array();
+game.round.current = null;
+game.round.count = null;
+game.hand = null;
+game.trick = null;
+
+poll = new Object();
+poll.active = new Array();
+poll.interval = 500;
+poll.phase = "loading";
+poll.player = null;
+
+updated = new Object();
+updated.poll = false;
+updated.rounds = false;
+updated.hand = false;
+updated.trick = false;
+
+function onLoadEventHandler() {
 	xmlHttp['hand'].call();
 	xmlHttp['trick'].call();
 }
 
-function gameChangeEventHandler()
-{
-	var phase = gamePhase();
-	var actingPlayer = actingPlayer(phase);
-
-	updateUI(phase, actingPlayer);
+function gameUpdatedEventHandler() {
+	// Acts in response to the game state being
+	// updated by a poll event
 	
-	if (actingPlayer != user) {
-		switch (phase) {
-			case "bid":
-				setTimeout(xmlHttp['round'].call(), game.pollInterval); 
-				break;
-			case "trick":
-				setTimeout(xmlHttp['trick'].call(), game.pollInterval); 
-				break;
-		}
+	// Determine what phase of the game we are in
+	// and the currently active player
+	updatePhase();
+	updateActivePlayer();
+
+	// Update any UI components whose backing data has been 
+	// marked updated
+	updateUI();
+	
+	// Schedule any required polls to be executed
+	if (updated.poll) {
+		reschedulePolls();
 	}
 }
 
-function gamePhase() {
-	// TODO: refactor code below to determine game phase
+function reschedulePolls() {
+	while (poll.active.length > 0) {
+		clearInterval(poll.active.shift());
+	}
+		
+	if (poll.player == null || game.players[poll.player] != user) {
+		var pollId = null;
+		
+		switch (poll.phase) {
+			case "bid":
+			case "trumps":
+				pollId = setInterval(xmlHttp['round'].call(), poll.interval);
+				poll.active.push(pollId);
+				break;
+			case "trick":
+				pollId = setInterval(xmlHttp['trick'].call(), poll.interval); 
+				poll.active.push(pollId);
+				break;
+		}
+	}
+	
+	updated.poll = false;
+}
+
+function updatePhase() {
 	// Inspect the game data to determine what phase of the game 
 	// we are currently in
-	
-    if (game.card == 0) {
-        return;
-    }
+	var previousPhase = poll.phase;
+
+	if (game.hand == null || game.trick == null) {
+		poll.phase = "loading";
+	}
+	else if (game.round.current == game.round.count
+		&& game.rounds[game.round.current].finished == true) {
+		poll.phase = "finished";
+	}
+	else if (game.rounds[game.round.current].bids.length < game.players.length) {
+		poll.phase = "bid";
+	}
+	else if (game.rounds[game.round.current].trumps == null) {
+		poll.phase = "trumps";
+	else {
+		poll.phase = "trick";
+	}
     
-    // Check if we have a full set of bids
-    for (var i = 0; i < gameState.currentRound.bids.length; i++) {
-        if (gameState.currentRound.bids[i] == "") {
-			// We are missing at least 1 bid
-			if (gameState.currentRound.playerToBid == ${user}) {
-				// We are currently the one to bid, so show ui
-				showBidUI();
-			} else {
-				// We are waiting for someone else to bid
-				dataRefresh("scores");
-			}
-			
-			return;
-        }
-    }
-    
-    // Check to see if we have trumps
-    if (gameState.currentRound.trumps == "") {
-    	// Trumps are not decided yet
-    	if (gameState.bidWinner == ${user}) {
-    		showSetTrumpsUI();
-    	} else {
-    		dataRefresh("scores");
-    	}
-    	
-    	return;
-    }
-    
-    //Must be in the middle of a round of tricks
-    if (gameState.playerToPlay == ${user}) {
-    	allowCardPlay();
-    } else {
-    	stopCardPlay();
-    	dataRefresh("trick");
-    }
-  
-  	// Bidding test  
-    if ((numberOfBids != ${fn:length(game.players)} && playerToBid != ${user}) ||
-     	(numberOfBids == ${fn:length(game.players)} && scores.currentRound.trumps == "" && scores.currentRound.bidWinner != ${user})) {
-    }
+    updated.poll = poll.phase != previousPhase;
 }
 
-function actingPlayer(phase) {
-	// TODO: refactor code below to determine the currently acting player
-	// Returns true if the game is waiting on the current
-	// user to act, false otherwise
-	
-    if (output.length == ${fn:length(game.players)} ||
-    	gameState.currentRound.playerToPlay == ${user}) {
-    }
-}
-
-function updateUI(phase, actingPlayer) {
+function updateUI() {
 	// TODO: refactor the code below to update the UI components
 	// Determine which UI components to display based on phase
 	// and actingPlayer.  
@@ -196,32 +198,34 @@ function updateUI(phase, actingPlayer) {
 
 xmlHttp['round'] = new JSONCallback();
 xmlHttp['round'].callback = function(output) {
-	// TODO: refactor the code below to update the game state with round data
 	// Update game state based on JSON output
-    gameState.currentRound.bidWinner = scores.currentRound.bidWinner;
-    gameState.currentRound.playerTurn = scores.currentRound.playerTurn;
-    gameState.gameFinished = scores.gameFinished;
+    game.rounds[output['idx']] = output;
+    game.round.current = output['idx'];
+    updated.rounds = true;
+
+	// Update the currently active player    
+	var previousPlayer = poll.player;
+    poll.player = 
     
-    gameChangeEventHandler();
+    gameUpdatedEventHandler();
 }
 
 xmlHttp['hand'] = new JSONCallback();
-xmlHttp['hand'].callback = function(output)
-{
-	// TODO: refactor the code below to update the game state with hand data
+xmlHttp['hand'].callback = function(output) {
 	// Update game state based on JSON output
-    gameState.cardCount = output.length;
+    game.hand = output;
+    updated.hand = true;
 
-    gameChangeEventHandler();
+    gameUpdatedEventHandler();
 }
 
 xmlHttp['trick'] = new JSONCallback();
-xmlHttp['trick'].callback = function(output)
-{
-	// TODO: refactor the code below to update the game state with trick data
+xmlHttp['trick'].callback = function(output) {
 	// Update game state based on JSON output
+    game.trick = output;
+    updated.trick = true;
  
-    gameChangeEventHandler();
+    gameUpdatedEventHandler();
 }
         
 

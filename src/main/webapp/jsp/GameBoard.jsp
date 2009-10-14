@@ -9,6 +9,16 @@
     <script>
     	user = ${user}
     	
+    	game.id = ${game.id};
+      <c:forEach var="player" begin="0" end="${fn:length(game.players) - 1}">
+    	game.players[${player}] = '${game.players[player]}';
+      </c:forEach>
+      <c:forEach var="round" begin="0" end="${fn:length(rounds) - 1}">
+    	game.rounds[${round}] = '${rounds[round]}';
+      </c:forEach>
+      	game.round.current = ${fn:length(rounds) - 1};
+      	game.round.count = ${roundCount};
+    	
     	xmlHttp['round'].init("<c:url value="/round?id=${game.id}" />", "roundDiv");
     	xmlHttp['hand'].init("<c:url value="/hand?id=${game.id}" />", "handDiv");
     	xmlHttp['trick'].init("<c:url value="/trick?id=${game.id}" />", "trickDiv");
@@ -39,7 +49,7 @@
     	<p>Number of cards is:</p><div id="numberOfCards"></div>
     	<p>Trumps are:</p><div id="trumps"></div>
  	  	<c:forEach var="player" begin="0" end="${fn:length(game.players) - 1}">
- 		   	<p>Player ${player}'s bid is:</p><div id="player${player}Bid" class="playerBid"></div>
+ 		   	<p>${game.players[player]}'s bid is:</p><div id="player${player}Bid" class="playerBid"></div>
  	    </c:forEach>
  	    <p>Player to bid is:</p><div id="playerToBid"></div>
  	    <p>Player to choose trumps is:</p><div id="bidWinner"></div>
