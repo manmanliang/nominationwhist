@@ -1,5 +1,7 @@
 package org.blim.whist.test;
 
+import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 
 import junit.framework.TestCase;
@@ -8,6 +10,7 @@ import org.blim.whist.Card;
 import org.blim.whist.Game;
 import org.blim.whist.Hand;
 import org.blim.whist.Round;
+import org.blim.whist.Trick;
 
 import com.google.common.collect.Iterables;
 
@@ -40,16 +43,145 @@ public class GameTest extends TestCase {
 		game.getPlayers().add("Wibble");
 		game.setRoundSequence(new int[] {13});
 		Round round = game.addRound();
-		game.addTrick();
-		Iterables.getLast(round.getTricks()).setFirstPlayer(0);
-		Hand hand = round.getHands().get(0);
+		Trick trick = game.addTrick();
 
+		Hand hand = round.getHands().get(0);
 		Card card = hand.getCards().get(3);
 		
-		round.playCard(0, card);
+		game.playCard(0, card);
 
 		assertFalse("Card was not removed from players hand", hand.getCards().contains(card));
-		assertTrue("Card was not added to the trick", Iterables.getLast(round.getTricks()).getCards().contains(card));
+		assertTrue("Card was not added to the trick", trick.getCards().contains(card));
+
+	}
+
+	public void testPlayerToPlay() throws Exception {
+		Game game = new Game();
+		game.getPlayers().add("Wibble");
+		game.getPlayers().add("Grelp");
+		game.getPlayers().add("Flurp");
+		game.setRoundSequence(new int[] {13});
+		Round round = game.addRound();
+		game.addTrick();
+
+		Hand hand = round.getHands().get(0);
+		Card card = hand.getCards().get(3);
+		game.playCard(0, card);
+
+		assertTrue("Player 1 is not playerToPlayCard, playerToPlay is " + game.playerToPlayCard(), game.playerToPlayCard() == 1);
+
+		hand = round.getHands().get(1);
+		card = hand.getCards().get(8);
+		game.playCard(1, card);
+
+		assertTrue("Player 2 is not playerToPlayCard, playerToPlay is " + game.playerToPlayCard(), game.playerToPlayCard() == 2);
+
+	}
+
+	public void testGameFinished() throws Exception {
+		Game game = new Game();
+		game.getPlayers().add("Wibble");
+		game.getPlayers().add("Grelp");
+		game.setRoundSequence(new int[] {2, 2});
+		Round round = game.addRound();
+		game.addTrick();
+
+		// First Round
+		Hand hand = round.getHands().get(0);
+		Card card = hand.getCards().get(1);
+		game.playCard(0, card);
+		hand = round.getHands().get(1);
+		card = hand.getCards().get(0);
+		game.playCard(1, card);
+
+		hand = round.getHands().get(0);
+		card = hand.getCards().get(0);
+		game.playCard(0, card);
+		hand = round.getHands().get(1);
+		card = hand.getCards().get(0);
+		game.playCard(1, card);
+
+		assertFalse("Game should not be finished", game.isFinished());
+
+		// Second Round
+		round = game.getCurrentRound();
+		hand = round.getHands().get(0);
+		card = hand.getCards().get(0);
+		game.playCard(0, card);
+		hand = round.getHands().get(1);
+		card = hand.getCards().get(1);
+		game.playCard(1, card);
+		hand = round.getHands().get(0);
+		card = hand.getCards().get(0);
+		game.playCard(0, card);
+		hand = round.getHands().get(1);
+		card = hand.getCards().get(0);
+		game.playCard(1, card);
+
+		assertTrue("Game should be finished", game.isFinished());
+
+	}
+	
+	public void testGameScores() throws Exception {
+		Game game = new Game();
+		game.getPlayers().add("Wibble");
+		game.getPlayers().add("Grelp");
+		game.setRoundSequence(new int[] {2, 2});
+		
+		Round round = game.addRound();
+		round.setTrumps(Card.Suit.CLUBS);
+		round.bid(0, 2);
+		round.bid(1, 1);
+		
+		List<Card> deck = new ArrayList<Card>(EnumSet.allOf(Card.class));
+		round.getHands().get(0).setCards(deck.subList(47, 49));
+		round.getHands().get(1).setCards(deck.subList(45, 47));
+		game.addTrick();
+
+		// First Round
+		Hand hand = round.getHands().get(0);
+		Card card = hand.getCards().get(1);
+		game.playCard(0, card);
+		hand = round.getHands().get(1);
+		card = hand.getCards().get(0);
+		game.playCard(1, card);
+
+		hand = round.getHands().get(0);
+		card = hand.getCards().get(0);
+		game.playCard(0, card);
+		hand = round.getHands().get(1);
+		card = hand.getCards().get(0);
+		game.playCard(1, card);
+
+		assertTrue("Scores are wrong should be 12 and 0 but got " + game.scores().get(0) + " and " + game.scores().get(1),
+					game.scores().get(0) == 12 && game.scores().get(1) == 0);
+
+		// Second Round
+		round = game.getCurrentRound();
+		round.setTrumps(Card.Suit.CLUBS);
+		round.bid(0, 1);
+		round.bid(1, 1);
+
+		round.getHands().get(0).setCards(deck.subList(9, 11));
+		round.getHands().get(1).getCards().set(0, deck.get(7));
+		round.getHands().get(1).getCards().set(1, deck.get(11));
+		
+		hand = round.getHands().get(0);
+		card = hand.getCards().get(0);
+		game.playCard(0, card);
+		hand = round.getHands().get(1);
+		card = hand.getCards().get(1);
+		game.playCard(1, card);
+		hand = round.getHands().get(0);
+		card = hand.getCards().get(0);
+		game.playCard(0, card);
+		hand = round.getHands().get(1);
+		card = hand.getCards().get(0);
+		game.playCard(1, card);
+
+		assertTrue("Scores are wrong should be 23 and 11 but got " + game.scores().get(0) + " and " + game.scores().get(1),
+				game.scores().get(0) == 23 && game.scores().get(1) == 11);
+
 
 	}
 
