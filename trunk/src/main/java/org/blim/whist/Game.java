@@ -102,6 +102,7 @@ public class Game {
 					hand.addCard(deck.remove(0));
 				}
 			}
+			round.setNumberOfCards(roundSequence[roundIdx]);
 			
 			rounds.add(round);
 		}
@@ -138,13 +139,15 @@ public class Game {
 		List<Integer> roundScores = Lists.newArrayList();
 		
 		for (int i = 0; i < players.size(); i++) {
-			gameScores.set(i, new Integer(0));	
+			gameScores.add(new Integer(0));	
 		}
 
 		for (int i = 0; i < rounds.size(); i++) {
-			roundScores = rounds.get(i).scores();
-			for (int j = 0; j < players.size(); j++) {
-				gameScores.set(j, new Integer(gameScores.get(j) + roundScores.get(i)));
+			if (rounds.get(i).isFinished()) {
+				roundScores = rounds.get(i).scores();
+				for (int j = 0; j < players.size(); j++) {
+					gameScores.set(j, new Integer(gameScores.get(j) + roundScores.get(j)));
+				}
 			}
 		}		
 		
@@ -170,7 +173,7 @@ public class Game {
 	}
 	
 	public boolean isFinished() {
-		if (rounds.size() == roundSequence.length && Iterables.getLast(rounds).finished()) {
+		if (rounds.size() == roundSequence.length && Iterables.getLast(rounds).isFinished()) {
 			return true;
 		} else { 
 			return false;
@@ -205,13 +208,6 @@ public class Game {
 				}
 			}
 		}
-	}
-	
-	public boolean isFinished(int roundIdx) {
-		Round round = rounds.get(roundIdx);
-		
-		return Iterables.getLast(round.getTricks()).getCards().size() == players.size()
-			&& round.getTricks().size() == roundSequence[roundIdx];
 	}
 	
 }

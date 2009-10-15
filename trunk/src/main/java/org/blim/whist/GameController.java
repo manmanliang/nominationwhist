@@ -103,7 +103,7 @@ public class GameController {
 	    JSONRound.put("tricksWon", round.tricksWon());
 	    JSONRound.put("scores", round.scores());
 	    JSONRound.put("highestBidder", round.highestBidder());
-	    JSONRound.put("finished", game.isFinished(idx));
+	    JSONRound.put("finished", round.isFinished());
 
 	    return JSONRound;
 	}

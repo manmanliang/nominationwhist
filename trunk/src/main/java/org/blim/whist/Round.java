@@ -140,8 +140,10 @@ public class Round {
 		}
 
 		for (Trick trick : tricks) {
-			int winningPlayer = trick.winner(trumps);
-			trickScores.set(winningPlayer, new Integer(trickScores.get(winningPlayer) + 1));
+			if (trick.getNumberOfCards() == hands.size()) {
+				int winningPlayer = trick.winner(trumps);
+				trickScores.set(winningPlayer, new Integer(trickScores.get(winningPlayer) + 1));
+			}
 		}
 		
 		return trickScores;
@@ -152,7 +154,7 @@ public class Round {
 		return Iterables.getLast(tricks);
 	}
 
-	public boolean finished() { 
+	public boolean isFinished() { 
 		if (tricks.size() == numberOfCards &&
 				Iterables.getLast(tricks).getNumberOfCards() == hands.size()) {
 			return true;
