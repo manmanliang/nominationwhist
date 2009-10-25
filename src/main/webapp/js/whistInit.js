@@ -25,7 +25,7 @@ xmlHttp['gameStart'].callback = function(output) {
 
 function updatePlayerUI() {    
     // Update Scores UI
-    var scoresTableHTML = "<table><tr><th rowspan=\"2\">Cards</th><th rowspan=\"2\">Trumps</th>";
+    var scoresTableHTML = "<table id=\"scoresTable\"><tr><th rowspan=\"2\">Cards</th><th rowspan=\"2\">Trumps</th>";
     for (var i = 0; i < game.players.length; i++) {
         scoresTableHTML = scoresTableHTML + "<th colspan=\"3\">" + game.players[i] + "</th>";
     }
