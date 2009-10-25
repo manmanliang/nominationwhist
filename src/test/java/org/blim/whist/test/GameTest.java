@@ -61,20 +61,28 @@ public class GameTest extends TestCase {
 		game.getPlayers().add("Grelp");
 		game.getPlayers().add("Flurp");
 		game.setRoundSequence(new int[] {13});
+
 		Round round = game.addRound();
+		round.bid(0, 2);
+		round.bid(1, 1);
+		round.bid(2, 6);
+		round.setTrumps(Card.Suit.CLUBS);
+
 		game.addTrick();
 
+		assertTrue("Player 0 is not playerTo, playerToPlay is " + game.activePlayer(), game.activePlayer() == 0);
+		
 		Hand hand = round.getHands().get(0);
 		Card card = hand.getCards().get(3);
 		game.playCard(0, card);
 
-		assertTrue("Player 1 is not playerToPlayCard, playerToPlay is " + game.playerToPlayCard(), game.playerToPlayCard() == 1);
+		assertTrue("Player 1 is not playerTo, playerToPlay is " + game.activePlayer(), game.activePlayer() == 1);
 
 		hand = round.getHands().get(1);
 		card = hand.getCards().get(8);
 		game.playCard(1, card);
 
-		assertTrue("Player 2 is not playerToPlayCard, playerToPlay is " + game.playerToPlayCard(), game.playerToPlayCard() == 2);
+		assertTrue("Player 2 is not playerToPlay, playerToPlay is " + game.activePlayer(), game.activePlayer() == 2);
 
 	}
 
@@ -134,8 +142,10 @@ public class GameTest extends TestCase {
 		round.bid(1, 1);
 		
 		List<Card> deck = new ArrayList<Card>(EnumSet.allOf(Card.class));
-		round.getHands().get(0).setCards(deck.subList(47, 49));
-		round.getHands().get(1).setCards(deck.subList(45, 47));
+		round.getHands().get(0).getCards().clear();
+		round.getHands().get(1).getCards().clear();
+		round.getHands().get(0).getCards().addAll(deck.subList(47, 49));
+		round.getHands().get(1).getCards().addAll(deck.subList(45, 47));
 		game.addTrick();
 
 		// First Round
@@ -162,9 +172,11 @@ public class GameTest extends TestCase {
 		round.bid(0, 1);
 		round.bid(1, 1);
 
-		round.getHands().get(0).setCards(deck.subList(9, 11));
-		round.getHands().get(1).getCards().set(0, deck.get(7));
-		round.getHands().get(1).getCards().set(1, deck.get(11));
+		round.getHands().get(0).getCards().clear();
+		round.getHands().get(1).getCards().clear();
+		round.getHands().get(0).getCards().addAll(deck.subList(9, 11));
+		round.getHands().get(1).getCards().add(deck.get(7));
+		round.getHands().get(1).getCards().add(deck.get(11));
 		
 		hand = round.getHands().get(0);
 		card = hand.getCards().get(0);

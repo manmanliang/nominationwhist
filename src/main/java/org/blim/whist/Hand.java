@@ -31,8 +31,7 @@ public class Hand {
 	}
 	
 	public void setCards(List<Card> cards) {
-		this.cards.clear();
-		this.cards.addAll(cards);
+		this.cards = cards;
 	}
 	
 }

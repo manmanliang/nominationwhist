@@ -41,6 +41,7 @@ public class Trick {
 		return cards;
 	}
 
+	@Transient
 	public void playCard(int player, Card card) {
 		if (cards.size() - 1 < player) {
 			// (player - (cards.size() - 1)) - 1 for number of nulls we need
@@ -55,6 +56,7 @@ public class Trick {
 		}
 	}
 
+	@Transient
 	public int winner(Card.Suit trumps) {
 		Card highestCard = null;
 		int highestPlayer = -1;
@@ -70,6 +72,7 @@ public class Trick {
 		return highestPlayer;
 	}
 
+	@Transient
 	private boolean candidateIsWinningCard(Card current, Card candidate, Card.Suit trumps) {
 		if (current == null) {
 			return true;
@@ -81,14 +84,6 @@ public class Trick {
 		else {
 			return candidate.getSuit().equals(trumps);
 		}
-	}
-
-	private int playerToPlayCard() {
-		if (cards.size() == 0) {
-			return firstPlayer;
-		} else {
-			return 0; 
-		}		
 	}
 
 	@Transient

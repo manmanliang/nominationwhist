@@ -21,11 +21,10 @@ public class Round {
 
 	private Long id;
 	private int numberOfCards;
-	private int firstPlayer;
 	private List<Trick> tricks = Lists.newArrayList();
 	private List<Hand> hands = Lists.newArrayList();
 	private List<Integer> bids = Lists.newArrayList();
-	private Suit trumps;
+	private Suit trumps = null;
 	
 	@Id
 	@GeneratedValue
@@ -76,14 +75,7 @@ public class Round {
 		this.trumps = trumps;
 	}
 
-	public void setFirstPlayer(int firstPlayer) {
-		this.firstPlayer = firstPlayer;
-	}
-	
-	public int getFirstPlayer() {
-		return firstPlayer;
-	}
-	
+	@Transient
 	public void bid(int player, int bid) {
 		if (bids.size() - 1 < player) {
 			// (player - (cards.size() - 1)) - 1 for number of nulls we need
@@ -98,20 +90,7 @@ public class Round {
 		}
 	}
 	
-	public int highestBidder() {
-		int maxBid = -1;
-		int maxBidder = -1;
-		
-		for (int i = 0; i < bids.size(); i++) {
-			if (bids.get(i) > maxBid) {
-				maxBidder = i;
-				maxBid = bids.get(i);
-			}
-		}
-		
-		return maxBidder;
-	}
-	
+	@Transient
 	public void playCard(int player, Card card) {
 		Trick trick = getCurrentTrick();
 		
@@ -120,18 +99,27 @@ public class Round {
 		getHands().get(player).getCards().remove(card);
 	}
 	
+	@Transient
 	public List<Integer> scores() {
+		if (!isFinished()) {
+			return null;
+		}
+		
 		List<Integer> scores = tricksWon();
 		
-		for (int i = 0; i < hands.size(); i++) {
-			if (scores.get(i).equals(bids.get(i))) {
-				scores.set(i, new Integer(scores.get(i) + 10));
+		// Only add 10 for scores if we have all the bids in
+		if (getNumberOfBids() == hands.size()) {
+			for (int i = 0; i < hands.size(); i++) {
+				if (scores.get(i).equals(bids.get(i))) {
+					scores.set(i, new Integer(scores.get(i) + 10));
+				}
 			}
-		}		
+		}
 		
 		return scores;
 	}
 
+	@Transient
 	public List<Integer> tricksWon() {
 		List<Integer> trickScores = Lists.newArrayList();
 
@@ -154,6 +142,7 @@ public class Round {
 		return Iterables.getLast(tricks);
 	}
 
+	@Transient
 	public boolean isFinished() { 
 		if (tricks.size() == numberOfCards &&
 				Iterables.getLast(tricks).getNumberOfCards() == hands.size()) {
@@ -162,7 +151,8 @@ public class Round {
 			return false;
 		}
 	}
-	
+
+	@Transient
 	public int getNumberOfBids() {
 		int count = 0;
 		
