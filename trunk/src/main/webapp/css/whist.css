@@ -2,11 +2,36 @@ body {
     background: #008000;
 }
 
+#topSection {
+    overflow: auto;
+}
+
 #scoresPane {
     width: 30%;
     float: left;
 }
 
-#topSection {
-    overflow: auto;
+#scoresTable {
+    background: #fafafa;
+    border: 1px solid black;
+    border-collapse: collapse;
+}
+
+#scoresTable td,
+#scoresTable th {
+    border: 1px solid black;
+    padding: 2px;
+}
+
+#scoresTable th {
+    background-color: #BEC8D1;
+}
+
+#hand {
+    text-align: center;
+}
+
+#finalScores {
+    float: left;
+    width: 30%;
 }

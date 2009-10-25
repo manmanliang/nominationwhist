@@ -218,7 +218,7 @@ public class GameController {
 
 		// Bit of a hack, but as we automatically move on when you play a card
 		// the last trick winner of a round is never reported to the client
-		if (idx == 1 && round.getTricks().size() == 1) {
+		if (game.isFinished() || (idx == 1 && round.getTricks().size() == 1)) {
 		    JSONTrick.put("prevTricksWon", game.getRounds().get(idx - 1).tricksWon());
 		}
 
@@ -239,6 +239,7 @@ public class GameController {
 		}
 		
 		model.put("game", game);
+		model.put("rounds", JSONRounds.toString());
 		model.put("roundCount", game.getRoundSequence().length);
 		model.put("user", user.getName());
 		model.put("userIndex", game.getPlayerIndex(user.getName()));

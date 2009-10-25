@@ -14,10 +14,9 @@
       </c:forEach>
       <c:if test="${fn:length(game.rounds) > 0}">
       	<c:forEach var="round" begin="0" end="${fn:length(game.rounds) - 1}">
-			game.rounds[${round}] = '${game.rounds[round]}';
+			game.rounds = ${rounds};
 		</c:forEach>
 	  </c:if>
-      	game.round.current = ${fn:length(game.rounds) - 1};
       	game.round.count = ${roundCount};
     </script>   
     <script type="text/javascript" src="<c:url value="/js/json.js"/>"></script>

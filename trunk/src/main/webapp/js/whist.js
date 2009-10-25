@@ -24,7 +24,9 @@ function updateUI() {
 	    for (var i = 0; i < game.players.length; i++) {
 			document.getElementById("player" + i + "FinalScore").innerHTML = game.rounds[game.round.current].scores[i];
 		}
+        document.getElementById("scores").style.display = 'none';
         document.getElementById("finalScores").style.display = '';
+
        	// set active player to be us as we want no more ui polls from other players events
        	game.activePlayer = userId;
 	}
@@ -43,17 +45,17 @@ function updateUI() {
 	if (updated.round) {
 		var idx = game.round.current;
 		
-        if (idx > 0 && idx != game.round.currentLastPoll) {
+        if (idx > 0 && (!game.round.currentLastPoll || idx != game.round.currentLastPoll)) {
             for (i = 0; i < game.players.length; i++) {
+                // Use idx here not idx - 1 because round score doesn't see the final score after the round completes
                 document.getElementById("player" + i + "prevScore").innerHTML = game.rounds[idx].scores[i];
-                document.getElementById("player" + i + "prevBid").innerHTML = game.rounds[game.round.currentLastPoll].bids[i];
+                document.getElementById("player" + i + "prevBid").innerHTML = game.rounds[idx - 1].bids[i];
             }
-            document.getElementById("prevTrumps").innerHTML = prettify(game.rounds[game.round.currentLastPoll].trumps);
-            document.getElementById("prevCards").innerHTML = game.rounds[game.round.currentLastPoll].numberOfCards;
+            document.getElementById("prevTrumps").innerHTML = prettify(game.rounds[idx - 1].trumps);
+            document.getElementById("prevCards").innerHTML = game.rounds[idx - 1].numberOfCards;
         }
         
 	    for (i = 0; i < game.players.length; i++) {
-            document.getElementById("player" + i + "currentScore").innerHTML = (!game.rounds[idx].scores[i]) ? "" : game.rounds[idx].scores[i];
             document.getElementById("player" + i + "currentBid").innerHTML = (!game.rounds[idx].bids[i]) ? "" : game.rounds[idx].bids[i];
 	    }
         
@@ -256,7 +258,7 @@ function setHandOnClickHandler() {
 	var handHTML = "";
 
 	for (var i = 0; i < cardsLength; i++) {
-		handHTML = handHTML + "<a href = \"javascript:playCard('" + cards[i].id + "');\">";
+		handHTML = handHTML + " <a href = \"javascript:playCard('" + cards[i].id + "');\">";
 		handHTML = handHTML + cardHTML(cards[i].id, cards[i].style.display);
 		handHTML = handHTML + "</a>";
 	}		
