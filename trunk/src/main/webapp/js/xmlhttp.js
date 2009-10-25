@@ -1,5 +1,3 @@
-var JSONCallCount = 0;
-
 function JSONCallback() {}
 
 JSONCallback.prototype.xmlHttp;
@@ -17,32 +15,46 @@ JSONCallback.prototype.init = function(url, errorElement)
 	this.url = url;
 }
 
-JSONCallback.prototype.xmlHttpCallback = function (xmlHttp)
+JSONCallback.prototype.xmlHttpCallback = function ()
 {
-	if (xmlHttp.readyState == 4)
+	var errorDiv;
+	if (this.xmlHttp.readyState == 4)
     {// 4 = "loaded"
-        if (xmlHttp.status == 200)
+        if (this.xmlHttp.status == 200)
         {// 200 = OK
             try {
-                var JSONOutput = JSON.parse(xmlHttp.responseText);
+                var JSONOutput = JSON.parse(this.xmlHttp.responseText);
             } catch (e) {
                 alert("An exception occurred in the script. Error name: " + e.name 
                   + ". Error message: " + e.message + ". Response was " + this.xmlHttp.responseText); 
             }
 
-			this.callback(JSONOutput);
+			if (!JSONOutput.internalError)
+			{
+				this.callback(JSONOutput);
+				return;			
+			}
+			else
+			{
+	        	errorDiv = document.getElementById(this.errorElement);
+    	        errorDiv.innerHTML = errorDiv.innerHTML + "<p>" + JSONOutput.internalError + "</p>";				
+			}
         }
         else
         {
-            document.getElementById(this.errorElement).innerHTML = "<p>" + xmlHttp.status + ": Data is out of data. Updating, please wait...</p>";
+        	errorDiv = document.getElementById(this.errorElement);
+            errorDiv.innerHTML = errorDiv.innerHTML + "<p>" + this.xmlHttp.status + ": Data is out of data. Updating, please wait...</p>";
         }
-        
-        JSONCallCount--;
+        delete this.xmlHttp;
     }
 }
 
 JSONCallback.prototype.call = function(data)
 {
+	// Store a copy of this classes "this" so we can get it in the callback
+	// We'll use this when we make an anonymous function for the stateChange handler
+	var classInstanceThis = this;
+
 	var method = "POST";
 	
 	if (typeof data == 'undefined') {
@@ -50,8 +62,6 @@ JSONCallback.prototype.call = function(data)
 		data = null;
 	}
 		
-	JSONCallCount++;
-
     if (window.XMLHttpRequest)
     {// code for all new browsers
         this.xmlHttp = new XMLHttpRequest();
@@ -63,7 +73,7 @@ JSONCallback.prototype.call = function(data)
     
     if (this.xmlHttp != null)
     {
-        this.xmlHttp.onreadystatechange = this.xmlHttpCallback(this.xmlHttp);
+        this.xmlHttp.onreadystatechange = function () {classInstanceThis.xmlHttpCallback()};
         this.xmlHttp.open(method, this.url, true);
         this.xmlHttp.send(data);
         return this.xmlHttp;

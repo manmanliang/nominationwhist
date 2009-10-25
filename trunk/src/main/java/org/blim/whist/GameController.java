@@ -10,12 +10,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,83 +48,181 @@ public class GameController {
 		return sessionFactory;
 	}
 
-	@SuppressWarnings("unchecked")
 	@RequestMapping("/")
 	public ModelAndView gameList(Principal user) {
 		Map<String, Object> model = new HashMap<String, Object>();
-		Session session = sessionFactory.getCurrentSession();
 		
-		List<Game> games = session.createQuery("from Game").list();
-		
-		model.put("games", games);
 		model.put("user", user.getName());
 		
 		return new ModelAndView("ListGames", model);
 	}
 	
-	@RequestMapping("/hand")
-	public void handState(ServletResponse response, @RequestParam("id") Long gameId, Principal user) throws IOException {
-		Game game = new Game();
-		List<Card> sortedCards = new ArrayList<Card>();
+	@SuppressWarnings("unchecked")
+	@RequestMapping("/games")
+	public void games(
+			HttpServletResponse response,
+			Principal user) throws IOException {
 		Session session = sessionFactory.getCurrentSession();
+		JSONArray JSONGames = new JSONArray();
+		
+		List<Game> games = session.createQuery("from Game").list();
+
+		for (Game game : games) {
+			if (game.getRounds().size() == 0) {
+				JSONObject JSONGame = new JSONObject();
+				JSONGame.put("creationDate",game.getCreationDate().toString());
+				JSONGame.put("players",game.getPlayers());
+				JSONGame.put("id",game.getId());
+				JSONGames.add(JSONGame);				
+			}
+		}
+		
+		response.getWriter().print(JSONGames);
+	}
+	
+	@Transactional
+	@RequestMapping(value = "/gameStart", method = RequestMethod.POST)
+	@SuppressWarnings("unchecked")
+	public void gameStart(
+			HttpServletResponse response,
+			HttpServletRequest request,
+			Principal user) throws IOException {
+		Game game = new Game();
+		JSONObject JSONResult = new JSONObject();
+
+		JSONObject JSONInput = parseInput(request);		
+		if (JSONInput.containsKey("internalError")) {
+			response.getWriter().print(JSONInput);
+			return;
+		}
+					
+		Session session = sessionFactory.getCurrentSession();
+			
+		Long gameId = ((Number) JSONInput.get("id")).longValue();
+		session.load(game, gameId);
+
+		Round currentRound = game.getCurrentRound();
+		
+		if (currentRound == null) {
+			// Not started yet
+			JSONResult.put("phase", -1);
+		} else {
+			JSONResult.put("phase", 0);
+		}
+
+		JSONResult.put("players", game.getPlayers());
+		response.getWriter().print(JSONResult);
+		return;
+	}
+	
+	@Transactional
+	@RequestMapping(value = "/update", method = RequestMethod.POST)
+	@SuppressWarnings("unchecked")
+	public void gameState(
+			HttpServletResponse response,
+			HttpServletRequest request,
+			Principal user) throws IOException {
+		Game game = new Game();
+		JSONObject JSONResult = new JSONObject();
+
+		JSONObject JSONInput = parseInput(request);		
+		if (JSONInput.containsKey("internalError")) {
+			response.getWriter().print(JSONInput);
+			return;
+		}
+					
+		Session session = sessionFactory.getCurrentSession();
+			
+		Long gameId = ((Number) JSONInput.get("id")).longValue();
+		Integer clientPhase = ((Number) JSONInput.get("phase")).intValue();
 
 		session.load(game, gameId);
+
+		Round currentRound = game.getCurrentRound();
+		int idx = game.getRounds().indexOf(currentRound);
+
+		// Check for game end
+		if (game.getRounds().size() == game.getRoundSequence().length &&
+				Iterables.getLast(game.getRounds()).isFinished()) {
+			JSONResult.put("round", roundAsJSON(game, idx));
+			JSONResult.put("trick", trickAsJSON(game, idx));
+			JSONResult.put("phase", 3);
+			response.getWriter().print(JSONResult);
+			return;
+		}
+
+		int currentPhase;
+		if (currentRound.getNumberOfBids() < game.getPlayers().size()) {
+			currentPhase = 0;
+		} else if (currentRound.getTrumps() == null) {
+			currentPhase = 1;
+		} else {
+			currentPhase = 2;
+		}
+
+		if (clientPhase <= 0 || currentPhase == 0) {
+			JSONResult.put("hand", handAsJSON(game, game.getPlayerIndex(user.getName())));
+		}
+		if (clientPhase != 2 || currentPhase != 2) {
+			JSONResult.put("round", roundAsJSON(game, idx));
+		}
+		if (clientPhase == 2 || currentPhase == 2) {
+			JSONResult.put("trick", trickAsJSON(game, idx));
+		}
 		
-		int player = game.getPlayerIndex(user.getName());
+		// Calculate activePlayer
+		JSONResult.put("activePlayer", game.activePlayer());
+		JSONResult.put("phase", currentPhase);
+		
+		response.getWriter().print(JSONResult);
+	}
+	
+	@SuppressWarnings("unchecked")
+	private JSONArray handAsJSON(Game game, int player) {
+		JSONArray JSONHand = new JSONArray();
+		List<Card> sortedCards = new ArrayList<Card>();
 		
 	    sortedCards.addAll(Iterables.getLast(game.getRounds()).getHands().get(player).getCards());
 	    Collections.sort(sortedCards, new OrderComparator());
 	    
-	    String hand = JSONValue.toJSONString(sortedCards);
-		response.getWriter().print(hand);
-	}
-	
-	@RequestMapping("/round")
-	public void roundState(ServletResponse response, @RequestParam("id") Long gameId, Principal user) throws IOException {
-		Game game = new Game();
-		Session session = sessionFactory.getCurrentSession();
-
-		session.load(game, gameId);
-		
-		int idx = game.getRounds().size();
-		JSONObject JSONRound = roundAsJSON(game, idx);
+	    JSONHand.addAll(sortedCards);
 	    
-		response.getWriter().print(JSONRound);
+	    return JSONHand;
 	}
 	
 	@SuppressWarnings("unchecked")
 	private JSONObject roundAsJSON(Game game, int idx) {
-		Round round = game.getRounds().get(idx);
 	    JSONObject JSONRound = new JSONObject();
+		Round round = game.getRounds().get(idx);
 	    
 	    JSONRound.put("idx", idx);
 	    JSONRound.put("trumps", round.getTrumps());
 	    JSONRound.put("bids", round.getBids());
-	    JSONRound.put("tricksWon", round.tricksWon());
-	    JSONRound.put("scores", round.scores());
-	    JSONRound.put("highestBidder", round.highestBidder());
-	    JSONRound.put("finished", round.isFinished());
+	    JSONRound.put("scores", game.scores());
+	    JSONRound.put("highestBidder", game.highestBidder());
+	    JSONRound.put("numberOfCards", round.getNumberOfCards());
 
 	    return JSONRound;
 	}
 	
-	@RequestMapping("/trick")
-	public void trickState(ServletResponse response, @RequestParam("id") Long gameId) throws IOException {
-		Game game = new Game();
-		Session session = sessionFactory.getCurrentSession();
-
-		session.load(game, gameId);
-		
+	@SuppressWarnings("unchecked")
+	private JSONObject trickAsJSON(Game game, int idx) {
 		Round round = game.getCurrentRound();
-		Trick trick = null;
-		String JSONTrick = "[]";
+		JSONObject JSONTrick = new JSONObject();
 			
 		if (round.getTricks().size() > 0) {
-			trick = Iterables.getLast(round.getTricks());
-			JSONTrick = JSONValue.toJSONString(trick.getCards());
+			Trick trick = Iterables.getLast(round.getTricks());
+			JSONTrick.put("cards", trick.getCards());
+		    JSONTrick.put("tricksWon", round.tricksWon());
 		}
 
-		response.getWriter().print(JSONTrick);
+		// Bit of a hack, but as we automatically move on when you play a card
+		// the last trick winner of a round is never reported to the client
+		if (idx == 1 && round.getTricks().size() == 1) {
+		    JSONTrick.put("prevTricksWon", game.getRounds().get(idx - 1).tricksWon());
+		}
+
+		return JSONTrick;
 	}
 	
 	@RequestMapping("/game")
@@ -136,12 +234,11 @@ public class GameController {
 
 		session.load(game, gameId);
 
-		for (int i = 0; i < game.getRounds().size(); i++) {
-			JSONRounds.add(roundAsJSON(game, i));
+		for (int idx = 0; idx < game.getRounds().size(); idx++) {
+			JSONRounds.add(roundAsJSON(game, idx));
 		}
 		
 		model.put("game", game);
-		model.put("rounds", JSONRounds);
 		model.put("roundCount", game.getRoundSequence().length);
 		model.put("user", user.getName());
 		model.put("userIndex", game.getPlayerIndex(user.getName()));
@@ -207,67 +304,128 @@ public class GameController {
 	}
 	
 	@Transactional
+	@SuppressWarnings("unchecked")
 	@RequestMapping(value = "/play-card", method = RequestMethod.POST)
 	public void playCard(
 			HttpServletResponse response,
 			HttpServletRequest request,
 			Principal user) throws IOException {
 		Game game = new Game();
-		Session session = sessionFactory.getCurrentSession();
+		JSONObject JSONResult = new JSONObject();
 
-		BufferedReader reader = request.getReader();
-
-		Object obj = JSONValue.parse(reader);
-		
-		if (obj instanceof JSONObject) {
-			JSONObject json = (JSONObject) obj;
-			
-			Long gameId = ((Number) json.get("id")).longValue();
-			Card card = ((Card) json.get("card"));
-
-			session.load(game, gameId);
-
-			int player = game.getPlayerIndex(user.getName());
-			game.playCard(player, card);
-			
-			session.save(game);
+		JSONObject JSONInput = parseInput(request);		
+		if (JSONInput.containsKey("internalError")) {
+			response.getWriter().print(JSONInput);
+			return;
 		}
 
-		String JSONTrick = "[]";
+		Session session = sessionFactory.getCurrentSession();
+
+		Long gameId = ((Number) JSONInput.get("id")).longValue();
+		JSONResult.put("card", JSONInput.get("card").toString());
+		String enumConstant = JSONInput.get("card").toString().replace("-", "_");
+		Card card = Enum.valueOf(Card.class, enumConstant);
+
+		session.load(game, gameId);
+
+		int player = game.getPlayerIndex(user.getName());
+		game.playCard(player, card);
 		
-		response.getWriter().print(JSONTrick);
+		session.save(game);
+		
+		JSONResult.put("result", "0");
+				
+		response.getWriter().print(JSONResult);
 	}	
 	
 	@Transactional
+	@SuppressWarnings("unchecked")
 	@RequestMapping(value = "/bid", method = RequestMethod.POST)
 	public void bid(
 			HttpServletResponse response,
 			HttpServletRequest request,
 			Principal user) throws IOException {
 		Game game = new Game();
+		JSONObject JSONResult = new JSONObject();
+
+		JSONObject JSONInput = parseInput(request);		
+		if (JSONInput.containsKey("internalError")) {
+			response.getWriter().print(JSONInput);
+			return;
+		}
+					
 		Session session = sessionFactory.getCurrentSession();
 
-		BufferedReader reader = request.getReader();
+		Long gameId = ((Number) JSONInput.get("id")).longValue();
+		Integer bid = ((Number) JSONInput.get("bid")).intValue();
+
+		session.load(game, gameId);
+			
+		Round currentRound = game.getCurrentRound();
+		int player = game.getPlayerIndex(user.getName());
+		currentRound.bid(player, bid);
+		
+		session.save(game);
+
+		JSONResult.put("result", "0");
+		
+		response.getWriter().print(JSONResult);
+	}	
+
+	@Transactional
+	@SuppressWarnings("unchecked")
+	@RequestMapping(value = "/trumps", method = RequestMethod.POST)
+	public void trumps(
+			HttpServletResponse response,
+			HttpServletRequest request,
+			Principal user) throws IOException {
+		Game game = new Game();
+		JSONObject JSONResult = new JSONObject();
+
+		JSONObject JSONInput = parseInput(request);		
+		if (JSONInput.containsKey("internalError")) {
+			response.getWriter().print(JSONInput);
+			return;
+		}
+					
+		Session session = sessionFactory.getCurrentSession();
+
+		Long gameId = ((Number) JSONInput.get("id")).longValue();
+		Card.Suit trumps = Enum.valueOf(Card.Suit.class, JSONInput.get("trumps").toString());
+
+		session.load(game, gameId);
+			
+		Round currentRound = game.getCurrentRound();
+		currentRound.setTrumps(trumps);
+		
+		session.save(game);
+
+		JSONResult.put("result", "0");
+		
+		response.getWriter().print(JSONResult);
+	}
+	
+	@SuppressWarnings("unchecked")
+	private JSONObject parseInput(HttpServletRequest request) {
+		JSONObject json = new JSONObject();
+		BufferedReader reader = null;
+		
+		try {
+			reader = request.getReader();
+		} catch (IOException error) {
+			json.put("internalError", error.getMessage());
+			return json;
+		}
 
 		Object obj = JSONValue.parse(reader);
 		
-		if (obj instanceof JSONObject) {
-			JSONObject json = (JSONObject) obj;
-			
-			Long gameId = ((Number) json.get("id")).longValue();
-			Integer bid = ((Number) json.get("bid")).intValue();
-
-			session.load(game, gameId);
-				
-			Round currentRound = game.getCurrentRound();
-			int player = game.getPlayerIndex(user.getName());
-			currentRound.bid(player, bid);
-			
-			session.save(game);
+		if (!(obj instanceof JSONObject)) {
+			json.put("internalError", "Received an invalid JSONObject");
+		} else {
+			json = (JSONObject) obj;			
 		}
-
-		String JSONTrick = "[]";
 		
-		response.getWriter().print(JSONTrick);
-	}	
+		return json;
+	}
+	
 }

@@ -1,0 +1,12 @@
+body {
+    background: #008000;
+}
+
+#scoresPane {
+    width: 30%;
+    float: left;
+}
+
+#topSection {
+    overflow: auto;
+}

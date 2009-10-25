@@ -30,7 +30,8 @@ public class Game {
 	private List<String> players = Lists.newArrayList();
 	private int[] roundSequence;
 	public static final int MAX_CARDS = 52;
-	public static final int[] ROUND_SEQUENCE_DFLT = {13,12,11,10,9,8,7,6,5,4,3,2,2,2,2,3,4,5,6,7,8,9,10,11,12,13};
+	//public static final int[] ROUND_SEQUENCE_DFLT = {13,12,11,10,9,8,7,6,5,4,3,2,2,2,2,3,4,5,6,7,8,9,10,11,12,13};
+	public static final int[] ROUND_SEQUENCE_DFLT = {3,3};
 	
 	@Id
 	@GeneratedValue
@@ -74,15 +75,22 @@ public class Game {
 	public int[] getRoundSequence() {
 		return roundSequence;
 	}
+	
+	@Transient
 	public int getPlayerIndex(String name) {
 		return players.indexOf(name);
 	}
 	
 	@Transient
 	public Round getCurrentRound() {
+		if (rounds.size() == 0) {
+			return null;
+		}
+		
 		return Iterables.getLast(rounds);
 	}
 
+	@Transient
 	public Round addRound() {
 		Round round = null;
 		int roundIdx = nextRound();
@@ -110,6 +118,7 @@ public class Game {
 		return round;
 	}
 	
+	@Transient
 	public int nextRound() {
 		int round = getNextPlayableRound(0);
 		int roundsPlayed = rounds.size();
@@ -122,6 +131,7 @@ public class Game {
 		return round;
 	}
 	
+	@Transient
 	private int getNextPlayableRound(int idx) {
 		int round = idx;
 		
@@ -134,6 +144,7 @@ public class Game {
 		return round;
 	}
 	
+	@Transient
 	public List<Integer> scores() {
 		List<Integer> gameScores = Lists.newArrayList();
 		List<Integer> roundScores = Lists.newArrayList();
@@ -154,6 +165,7 @@ public class Game {
 		return gameScores;
 	}
 
+	@Transient
 	public Trick addTrick() {
 		Round currentRound = getCurrentRound();
 		Trick trick = null;
@@ -162,7 +174,7 @@ public class Game {
 			trick = new Trick();
 			currentRound.getTricks().add(trick);
 			if (currentRound.getTricks().size() == 1) {
-				trick.setFirstPlayer(rounds.size() % players.size());
+				trick.setFirstPlayer((rounds.size() - 1) % players.size());
 			} else {
 				int previousWinner = currentRound.getTricks().get(currentRound.getTricks().size() - 2).winner(currentRound.getTrumps());
 				trick.setFirstPlayer(previousWinner);			
@@ -171,7 +183,8 @@ public class Game {
 		
 		return trick;
 	}
-	
+
+	@Transient
 	public boolean isFinished() {
 		if (rounds.size() == roundSequence.length && Iterables.getLast(rounds).isFinished()) {
 			return true;
@@ -180,22 +193,52 @@ public class Game {
 		}
 	}
 
-	public int playerToPlayCard() {
+	@Transient
+	public int activePlayer() {
 		Round currentRound = getCurrentRound();
+		
+		// TODO: is returning -1 the right thing to do here?
+		if (currentRound == null) {
+			return -1;
+		}
+		
+		int numberOfBids = currentRound.getNumberOfBids();
+		
+		if (numberOfBids == 0) {
+			return rounds.indexOf(currentRound) % players.size();
+		}
+		
+		if (numberOfBids < players.size()) {
+			List<Integer> currentBids = currentRound.getBids();
+			int i = rounds.indexOf(currentRound) % players.size();
+			
+			do {
+				i = (i + 1) % players.size();
+			} while (i < currentBids.size() &&
+					 currentBids.get(i) != null);
+			
+			return i;
+		}
+		
+		if (currentRound.getTrumps() == null) {
+			return highestBidder();
+		}
+		
 		Trick currentTrick = Iterables.getLast(currentRound.getTricks());
 		
 		if (currentTrick.getNumberOfCards() == 0) {
 			return currentTrick.getFirstPlayer();
 		} else {
 			if (currentTrick.getNumberOfCards() == players.size()) {
-				return currentTrick.getCards().indexOf(null);
+				return -1;
 			} else {
 				// return one more than the current highest index
-				return currentTrick.getNumberOfCards();
+				return (currentTrick.getNumberOfCards() + currentTrick.getFirstPlayer()) % players.size();
 			}
 		}
 	}
 
+	@Transient
 	public void playCard(int player, Card card) {
 		Round currentRound = getCurrentRound();
 
@@ -208,6 +251,47 @@ public class Game {
 				}
 			}
 		}
+	}
+	
+	@Transient
+	public int highestBidder() {
+		int maxBid = -1;
+		int maxBidder = -1;
+		Round currentRound = getCurrentRound();
+		int numberOfBids = currentRound.getNumberOfBids();
+		int firstPlayer = rounds.indexOf(currentRound) % players.size();
+
+		for (int i = firstPlayer; i - firstPlayer < numberOfBids; i++) {
+			if (currentRound.getBids().get(i % players.size()) > maxBid) {
+				maxBidder = i % players.size();
+				maxBid = currentRound.getBids().get(i % players.size());
+			}
+		}
+		
+		return maxBidder;
+	}
+	
+	@Transient
+	public String gamePhase() {
+		Round currentRound = getCurrentRound();
+		
+		if (currentRound.getHands().get(0).getCards().size() == 0 || 
+				Iterables.getLast(currentRound.getTricks()).getNumberOfCards() == 0) {
+			return "loading";
+		}
+		else if (rounds.size() == roundSequence.length &&
+					Iterables.getLast(rounds).isFinished()) {
+			return "finished";
+		}
+		else if (currentRound.getNumberOfBids() < players.size()) {
+			return "bid";
+		}
+		else if (currentRound.getTrumps() == null) {
+			return "trumps";
+		} else {
+			return "trick";
+		}
+	    
 	}
 	
 }
