@@ -27,7 +27,7 @@ function updatePlayerUI() {
     // Update Scores UI
     var scoresTableHTML = "<table id=\"scoresTable\"><tr><th rowspan=\"2\">Cards</th><th rowspan=\"2\">Trumps</th>";
     for (var i = 0; i < game.players.length; i++) {
-        scoresTableHTML = scoresTableHTML + "<th colspan=\"3\">" + game.players[i] + "</th>";
+        scoresTableHTML = scoresTableHTML + "<th id=\"player" + i + "ScoreColumn\" colspan=\"3\">" + game.players[i] + "</th>";
     }
     scoresTableHTML = scoresTableHTML + "</tr><tr>";
     for (var i = 0; i < game.players.length; i++) {

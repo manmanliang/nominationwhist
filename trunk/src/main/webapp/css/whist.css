@@ -27,6 +27,10 @@ body {
     background-color: #BEC8D1;
 }
 
+#scoresTable th.active {
+    background-color: #FFCCCC;
+}
+
 #hand {
     text-align: center;
 }
