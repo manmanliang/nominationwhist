@@ -31,6 +31,14 @@ function updateUI() {
        	game.activePlayer = userId;
 	}
 	
+    // Active Player Update
+    if (game.activePlayer != null) {
+        for (var i = 0; i < game.players.length; i++) {
+            document.getElementById("player" + i + "ScoreColumn").className = "";            
+        }
+        document.getElementById("player" + game.activePlayer + "ScoreColumn").className = "active";
+    }
+
     // Hand update
     if (updated.hand) {
         var imgHTML = "";
