@@ -59,7 +59,7 @@ function updatePlayerUI() {
 
     // Update Final Scores UI
     var fsColumnCount = game.players.length * 2;
-    var finalScoresHTML = "<table><th colpan=\"" + fsColumnCount + "\">Final Scores</th>";
+    var finalScoresHTML = "<table><th colspan=\"" + fsColumnCount + "\">Final Scores</th>";
     finalScoresHTML = finalScoresHTML + "<tr>";
     for (var i = 0; i < game.players.length; i++) {
         finalScoresHTML = finalScoresHTML + "<td>" + game.players[i] + "</td><td id=\"player" + i + "FinalScore\"></td>"
