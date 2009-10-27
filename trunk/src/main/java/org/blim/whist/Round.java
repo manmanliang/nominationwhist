@@ -91,11 +91,23 @@ public class Round {
 	}
 	
 	@Transient
-	public void playCard(int player, Card card) {
+	public void playCard(int player, Card card) throws WhistException {
 		Trick trick = getCurrentTrick();
 		
-		trick.playCard(player, card);
+		// Check to see if it was legal to play that card
+		if (trick.getNumberOfCards() > 0) {
+			Suit firstCardSuit = trick.getCards().get(trick.getFirstPlayer()).getSuit();
+			
+			if (firstCardSuit != card.getSuit()) {
+				for (Card handCard : hands.get(player).getCards()) {
+					if (firstCardSuit == handCard.getSuit()) {
+						throw new WhistException("You are not allowed to play that card, when possible you must follow suit");
+					}
+				}
+			}
+		}
 		
+		trick.playCard(player, card);
 		getHands().get(player).getCards().remove(card);
 	}
 	

@@ -239,7 +239,7 @@ public class Game {
 	}
 
 	@Transient
-	public void playCard(int player, Card card) {
+	public void playCard (int player, Card card) throws WhistException {
 		Round currentRound = getCurrentRound();
 
 		currentRound.playCard(player, card);

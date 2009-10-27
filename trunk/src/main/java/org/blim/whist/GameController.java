@@ -348,12 +348,21 @@ public class GameController {
 		session.load(game, gameId);
 
 		int player = game.getPlayerIndex(user.getName());
-		game.playCard(player, card);
+		
+		try {
+			game.playCard(player, card);
+		} catch (WhistException whistException) {
+			JSONResult.put("errorMessage", whistException.getMessage());
+			JSONResult.put("result", "1");
+
+			response.getWriter().print(JSONResult);
+			return;
+		}
 		
 		session.save(game);
 		
 		JSONResult.put("result", "0");
-				
+
 		response.getWriter().print(JSONResult);
 	}	
 	
