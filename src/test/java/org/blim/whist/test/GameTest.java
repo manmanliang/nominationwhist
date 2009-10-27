@@ -1,7 +1,5 @@
 package org.blim.whist.test;
 
-import java.util.ArrayList;
-import java.util.EnumSet;
 import java.util.List;
 
 import junit.framework.TestCase;
@@ -54,7 +52,7 @@ public class GameTest extends TestCase {
 		assertTrue("Card was not added to the trick", trick.getCards().contains(card));
 
 	}
-
+	/*
 	public void testPlayerToPlay() throws Exception {
 		Game game = new Game();
 		game.getPlayers().add("Wibble");
@@ -197,7 +195,7 @@ public class GameTest extends TestCase {
 
 	}
 
-	/*
+
  		// Set up data manually for now
 		game.getPlayers().add("Rob");
 		game.getPlayers().add("Lee");
