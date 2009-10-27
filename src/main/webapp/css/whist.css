@@ -11,23 +11,23 @@ body {
     float: left;
 }
 
-#scoresTable {
+table {
     background: #fafafa;
     border: 1px solid black;
     border-collapse: collapse;
 }
 
-#scoresTable td,
-#scoresTable th {
+table td,
+table th {
     border: 1px solid black;
     padding: 2px;
 }
 
-#scoresTable th {
+table th {
     background-color: #BEC8D1;
 }
 
-#scoresTable th.active {
+table th.active {
     background-color: #FFCCCC;
 }
 
