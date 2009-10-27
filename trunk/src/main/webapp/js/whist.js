@@ -43,7 +43,7 @@ function updateUI() {
     if (updated.hand) {
         var imgHTML = "";
         for (card in game.hand) {
-        	imgHTML = imgHTML + cardHTML(game.hand[card]);
+        	imgHTML = imgHTML + " " + cardHTML(game.hand[card]);
         }
         document.getElementById("hand").innerHTML = imgHTML;
        	updated.hand = false;
@@ -281,7 +281,7 @@ function removeHandOnClickHandler() {
 	var handHTML = "";
 
 	for (var i = 0; i < cardsLength; i++) {
-		handHTML = handHTML + cardHTML(cards[i].id, cards[i].style.display);
+		handHTML = handHTML + " " + cardHTML(cards[i].id, cards[i].style.display);
 	}		
 	
 	handDiv.innerHTML = handHTML;
