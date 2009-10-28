@@ -255,6 +255,33 @@ public class Game {
 	}
 	
 	@Transient
+	public void bid(int player, int bid) throws WhistException {
+		Round currentRound = getCurrentRound();
+		int maxZeroCount = 3;
+		
+		// Make sure this isn't a fourth bid of 0
+		if (bid == 0) {
+			if (rounds.size() > maxZeroCount) {
+				int currentRoundIdx = rounds.indexOf(currentRound);
+				int i = currentRoundIdx - maxZeroCount;
+				int zeroCount = 0;
+				
+				while (i != currentRoundIdx &&
+					   rounds.get(i).getBids().get(player) == 0) {
+					zeroCount++;
+					i++;
+				}
+				
+				if (zeroCount == maxZeroCount) {
+					throw new WhistException("Cannot make bid, you can't bid 0 more than " + maxZeroCount + " times in a row");
+				}
+			}
+		}
+		
+		currentRound.bid(player, bid);
+	}
+	
+	@Transient
 	public String gamePhase() {
 		Round currentRound = getCurrentRound();
 		
