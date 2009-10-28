@@ -277,10 +277,19 @@ public class GameController {
 		Integer bid = ((Number) JSONInput.get("bid")).intValue();
 
 		session.load(game, gameId);
-			
+
 		Round currentRound = game.getCurrentRound();
 		int player = game.getPlayerIndex(user.getName());
-		currentRound.bid(player, bid);
+
+		try {
+			currentRound.bid(player, bid);
+		} catch (WhistException whistException) {
+			JSONResult.put("errorMessage", whistException.getMessage());
+			JSONResult.put("result", "-1");
+
+			response.getWriter().print(JSONResult);
+			return;
+		}
 		
 		session.save(game);
 
@@ -304,7 +313,7 @@ public class GameController {
 			response.getWriter().print(JSONInput);
 			return;
 		}
-					
+
 		Session session = sessionFactory.getCurrentSession();
 
 		Long gameId = ((Number) JSONInput.get("id")).longValue();
@@ -313,7 +322,17 @@ public class GameController {
 		session.load(game, gameId);
 			
 		Round currentRound = game.getCurrentRound();
-		currentRound.setTrumps(trumps);
+		int player = game.getPlayerIndex(user.getName());
+
+		try {
+			currentRound.selectTrumps(player, trumps);
+		} catch (WhistException whistException) {
+			JSONResult.put("errorMessage", whistException.getMessage());
+			JSONResult.put("result", "-1");
+
+			response.getWriter().print(JSONResult);
+			return;
+		}
 		
 		session.save(game);
 
@@ -411,7 +430,7 @@ public class GameController {
 	    JSONRound.put("trumps", round.getTrumps());
 	    JSONRound.put("bids", round.getBids());
 	    JSONRound.put("scores", game.scores());
-	    JSONRound.put("highestBidder", game.highestBidder());
+	    JSONRound.put("highestBidder", round.highestBidder());
 	    JSONRound.put("numberOfCards", round.getNumberOfCards());
 
 	    return JSONRound;

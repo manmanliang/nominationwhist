@@ -1,20 +1,21 @@
 package org.blim.whist;
 
 public class WhistException extends Exception {
-	private String message;
 
-	public WhistException()
-	{
-		message = "unknown";
+	public WhistException() {
+		super();
 	}
-	  
-	public WhistException(String message)
-	{
-		this.message = message;  // save message
+
+	public WhistException(String message, Throwable cause) {
+		super(message, cause);
 	}
-	  
-	public String getMessage()
-	{
-		return message;
+
+	public WhistException(String message) {
+		super(message);
 	}
+
+	public WhistException(Throwable cause) {
+		super(cause);
+	}
+	
 }

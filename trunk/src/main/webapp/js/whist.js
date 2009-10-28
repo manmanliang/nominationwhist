@@ -53,7 +53,7 @@ function updateUI() {
 	if (updated.round) {
 		var idx = game.round.current;
 		
-        if (idx > 0 && (!game.round.currentLastPoll || idx != game.round.currentLastPoll)) {
+        if (idx > 0 && (game.round.currentLastPoll == null || idx != game.round.currentLastPoll)) {
             for (i = 0; i < game.players.length; i++) {
                 // Use idx here not idx - 1 because round score doesn't see the final score after the round completes
                 document.getElementById("player" + i + "prevScore").innerHTML = game.rounds[idx].scores[i];
@@ -64,7 +64,7 @@ function updateUI() {
         }
         
 	    for (i = 0; i < game.players.length; i++) {
-            document.getElementById("player" + i + "currentBid").innerHTML = (!game.rounds[idx].bids[i]) ? "" : game.rounds[idx].bids[i];
+            document.getElementById("player" + i + "currentBid").innerHTML = (game.rounds[idx].bids[i] != null) ? game.rounds[idx].bids[i] : "";
 	    }
         
         document.getElementById("currentTrumps").innerHTML = (game.rounds[idx].trumps) ? prettify(game.rounds[idx].trumps) : "";
