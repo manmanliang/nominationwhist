@@ -278,11 +278,10 @@ public class GameController {
 
 		session.load(game, gameId);
 
-		Round currentRound = game.getCurrentRound();
 		int player = game.getPlayerIndex(user.getName());
 
 		try {
-			currentRound.bid(player, bid);
+			game.bid(player, bid);
 		} catch (WhistException whistException) {
 			JSONResult.put("errorMessage", whistException.getMessage());
 			JSONResult.put("result", "-1");
