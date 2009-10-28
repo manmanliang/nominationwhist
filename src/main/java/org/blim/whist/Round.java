@@ -21,6 +21,7 @@ public class Round {
 
 	private Long id;
 	private int numberOfCards;
+	private int firstPlayer;
 	private List<Trick> tricks = Lists.newArrayList();
 	private List<Hand> hands = Lists.newArrayList();
 	private List<Integer> bids = Lists.newArrayList();
@@ -39,6 +40,13 @@ public class Round {
 		this.numberOfCards = numberOfCards;
 	}
 
+	public int getFirstPlayer() {
+		return firstPlayer;
+	}
+	public void setFirstPlayer(int firstPlayer) {
+		this.firstPlayer = firstPlayer;
+	}
+	
 	@OneToMany(cascade = CascadeType.ALL)
 	public List<Trick> getTricks() {
 		return tricks;
@@ -76,7 +84,32 @@ public class Round {
 	}
 
 	@Transient
-	public void bid(int player, int bid) {
+	public void bid(int player, int bid) throws WhistException {
+		
+		if ((getNumberOfBids() + firstPlayer) % hands.size() != player) {
+			throw new WhistException("Cannot make bid, it isn't your turn");
+		}
+		
+		if (bid < 0 || bid > numberOfCards) {
+			throw new WhistException("Cannot make bid, this round doesn't have " + bid + " cards");
+		}
+		
+		if (bids.size() > player && bids.get(player) != null) {
+			throw new WhistException("Cannot make bid, you have already bid");			
+		}
+		
+		if (getNumberOfBids() == hands.size() - 1) {
+			int bidCount = 0;
+			
+			for (int i = firstPlayer; i - firstPlayer < getNumberOfBids(); i++) {
+				bidCount += bids.get(i % hands.size());
+			}
+
+			if (bidCount + bid == numberOfCards) {
+				throw new WhistException("Cannot make bid, the total bids cannot equal the number of cards");							
+			}
+		}
+		
 		if (bids.size() - 1 < player) {
 			// (player - (cards.size() - 1)) - 1 for number of nulls we need
 			int missingPlayerCount = player - bids.size();
@@ -91,17 +124,35 @@ public class Round {
 	}
 	
 	@Transient
+	public void selectTrumps(int player, Suit trumps) throws WhistException {
+
+		if (highestBidder() != player) {
+			throw new WhistException("Cannot select trumps, you didn't bid highest");
+		}
+		
+		setTrumps(trumps);
+	}
+	
+	@Transient
 	public void playCard(int player, Card card) throws WhistException {
 		Trick trick = getCurrentTrick();
 		
 		// Check to see if it was legal to play that card
+		if (!hands.get(player).getCards().contains(card)) {
+			throw new WhistException("Cannot play that card, it is not in your hand");			
+		}
+		
+		if ((trick.getNumberOfCards() + trick.getFirstPlayer()) % hands.size() != player) {
+			throw new WhistException("Cannot play card, it isn't your turn");
+		}
+		
 		if (trick.getNumberOfCards() > 0) {
 			Suit firstCardSuit = trick.getCards().get(trick.getFirstPlayer()).getSuit();
 			
 			if (firstCardSuit != card.getSuit()) {
 				for (Card handCard : hands.get(player).getCards()) {
 					if (firstCardSuit == handCard.getSuit()) {
-						throw new WhistException("You are not allowed to play that card, when possible you must follow suit");
+						throw new WhistException("Cannot play that card, when possible you must follow suit");
 					}
 				}
 			}
@@ -175,6 +226,22 @@ public class Round {
 		}
 		
 		return count;
+	}
+	
+	@Transient
+	public int highestBidder() {
+		int maxBid = -1;
+		int maxBidder = -1;
+		int numberOfPlayers = hands.size();
+
+		for (int i = firstPlayer; i - firstPlayer < getNumberOfBids(); i++) {
+			if (bids.get(i % numberOfPlayers) > maxBid) {
+				maxBidder = i % numberOfPlayers;
+				maxBid = bids.get(i % numberOfPlayers);
+			}
+		}
+		
+		return maxBidder;
 	}
 	
 }

@@ -111,6 +111,7 @@ public class Game {
 				}
 			}
 			round.setNumberOfCards(roundSequence[roundIdx]);
+			round.setFirstPlayer(rounds.size() % players.size());
 			
 			rounds.add(round);
 		}
@@ -221,7 +222,7 @@ public class Game {
 		}
 		
 		if (currentRound.getTrumps() == null) {
-			return highestBidder();
+			return currentRound.highestBidder();
 		}
 		
 		Trick currentTrick = Iterables.getLast(currentRound.getTricks());
@@ -251,24 +252,6 @@ public class Game {
 				}
 			}
 		}
-	}
-	
-	@Transient
-	public int highestBidder() {
-		int maxBid = -1;
-		int maxBidder = -1;
-		Round currentRound = getCurrentRound();
-		int numberOfBids = currentRound.getNumberOfBids();
-		int firstPlayer = rounds.indexOf(currentRound) % players.size();
-
-		for (int i = firstPlayer; i - firstPlayer < numberOfBids; i++) {
-			if (currentRound.getBids().get(i % players.size()) > maxBid) {
-				maxBidder = i % players.size();
-				maxBid = currentRound.getBids().get(i % players.size());
-			}
-		}
-		
-		return maxBidder;
 	}
 	
 	@Transient
