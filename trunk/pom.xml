@@ -61,6 +61,9 @@
 								<groupId>blim</groupId>
 								<artifactId>whist</artifactId>
 								<type>war</type>
+								<properties>
+          							<context>whist</context>
+        						</properties>
 							</deployable>
 						</deployables>
 					</deployer>
