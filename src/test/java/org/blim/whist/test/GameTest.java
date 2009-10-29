@@ -48,7 +48,7 @@ public class GameTest extends TestCase {
 		game.getPlayers().add("Flurp");
 		game.setRoundSequence(new int[] {13, 13, 13, 13});
 
-		Round round = game.addRound();
+		game.addRound();
 
 		try {
 			game.bid(1, 2);
@@ -98,17 +98,17 @@ public class GameTest extends TestCase {
 		assertTrue("Exception thrown when player 2 was validly bidding", exceptionThrown == 0);
 		exceptionThrown = 0;
 
-		round = game.addRound();
+		game.addRound();
 		game.bid(1, 2);
 		game.bid(2, 2);
 		game.bid(0, 0);
 
-		round = game.addRound();
+		game.addRound();
 		game.bid(2, 2);
 		game.bid(0, 0);
 		game.bid(1, 2);
 
-		round = game.addRound();
+		game.addRound();
 		try {
 			game.bid(0, 0);
 		} catch (WhistException whistException) {
