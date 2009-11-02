@@ -141,22 +141,28 @@ function updateUI() {
     if (game.players.length > game.rounds[game.round.current].bids.length) {
         if (game.activePlayer == userId) {
             status.innerHTML = "Select your bid";
+            status.className = "active";
         } else {
             status.innerHTML = game.players[game.activePlayer] + " is bidding";
+            status.style.color = "";
         }
     } else if (game.rounds[game.round.current].trumps == null) {
         var highestBidder = game.rounds[game.round.current].highestBidder;
         if (game.activePlayer == userId) {
             status.innerHTML = "Choose trumps";
+            status.style.color = "active";
         } else {
             status.innerHTML = game.players[game.activePlayer] + " is choosing trumps";
+            status.style.color = "";
         }
     } else {
         // Must be in a trick
         if (game.activePlayer == userId) {
             status.innerHTML = "Your turn to play a card";
+            status.style.color = "active";
         } else {
             status.innerHTML = game.players[game.activePlayer] + "'s turn to play a card";
+            status.style.color = "";
         }        
     }
     status.style.visibility = 'visible';
@@ -354,5 +360,5 @@ function writeMessage(message) {
         if (timer.messages != null) {
             clearTimeout(timer.messages);
         }
-        timer.messages = setTimeout("regulariseMessages()", 3000);
+        timer.messages = setTimeout("regulariseMessages()", 1500);
 }

@@ -26,6 +26,15 @@ body {
     margin: 0px;
 }
 
+#status.active {
+    color: #991114;
+}
+
+#trumpsUI,
+#bidUI {
+    text-align: center;
+}
+
 #trick {
     height: 370px;
 }
