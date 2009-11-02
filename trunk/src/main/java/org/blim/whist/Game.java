@@ -30,8 +30,7 @@ public class Game {
 	private List<String> players = Lists.newArrayList();
 	private int[] roundSequence;
 	public static final int MAX_CARDS = 52;
-	//public static final int[] ROUND_SEQUENCE_DFLT = {13,12,11,10,9,8,7,6,5,4,3,2,2,2,2,3,4,5,6,7,8,9,10,11,12,13};
-	public static final int[] ROUND_SEQUENCE_DFLT = {3,3};
+	public static final int[] ROUND_SEQUENCE_DFLT = {13,12,11,10,9,8,7,6,5,4,3,2,2,2,2,3,4,5,6,7,8,9,10,11,12,13};
 	
 	@Id
 	@GeneratedValue
@@ -146,7 +145,7 @@ public class Game {
 	}
 	
 	@Transient
-	public List<Integer> scores() {
+	public List<Integer> scores(int startRound, int endRound) {
 		List<Integer> gameScores = Lists.newArrayList();
 		List<Integer> roundScores = Lists.newArrayList();
 		
@@ -154,7 +153,7 @@ public class Game {
 			gameScores.add(new Integer(0));	
 		}
 
-		for (int i = 0; i < rounds.size(); i++) {
+		for (int i = startRound; i <= endRound; i++) {
 			if (rounds.get(i).isFinished()) {
 				roundScores = rounds.get(i).scores();
 				for (int j = 0; j < players.size(); j++) {
@@ -273,7 +272,7 @@ public class Game {
 				}
 				
 				if (zeroCount == maxZeroCount) {
-					throw new WhistException("Cannot make bid, you can't bid 0 more than " + maxZeroCount + " times in a row");
+					throw new WhistException("Sorry, you can't bid 0 more than " + maxZeroCount + " times");
 				}
 			}
 		}

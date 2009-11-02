@@ -344,8 +344,8 @@ public class GameTest extends TestCase {
 		card = hand.getCards().get(0);
 		game.playCard(1, card);
 
-		assertTrue("Scores are wrong should be 12 and 0 but got " + game.scores().get(0) + " and " + game.scores().get(1),
-				game.scores().get(0) == 12 && game.scores().get(1) == 0);
+		assertTrue("Scores are wrong should be 12 and 0 but got " + game.scores(0,0).get(0) + " and " + game.scores(0,0).get(1),
+				game.scores(0,0).get(0) == 12 && game.scores(0,0).get(1) == 0);
 
 		// Second Round
 		
@@ -375,8 +375,8 @@ public class GameTest extends TestCase {
 		card = hand.getCards().get(0);
 		game.playCard(1, card);
 
-		assertTrue("Scores are wrong should be 13 and 11 but got " + game.scores().get(0) + " and " + game.scores().get(1),
-				game.scores().get(0) == 13 && game.scores().get(1) == 11);
+		assertTrue("Scores are wrong should be 13 and 11 but got " + game.scores(0,1).get(0) + " and " + game.scores(0,1).get(1),
+				game.scores(0,1).get(0) == 13 && game.scores(0,1).get(1) == 11);
 
 	}
 

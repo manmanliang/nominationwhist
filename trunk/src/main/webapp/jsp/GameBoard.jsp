@@ -13,9 +13,7 @@
     	game.players[${player}] = '${game.players[player]}';
       </c:forEach>
       <c:if test="${fn:length(game.rounds) > 0}">
-      	<c:forEach var="round" begin="0" end="${fn:length(game.rounds) - 1}">
-			game.rounds = ${rounds};
-		</c:forEach>
+		game.rounds = ${rounds};
 	  </c:if>
       	game.round.count = ${roundCount};
     </script>   
@@ -33,30 +31,34 @@
 	<link rel="stylesheet" type="text/css" href="<c:url value="/css/whist.css"/>" />
   </head>
   <body onload="onLoadEventHandler();">
-    <h1>Nomination Whist</h1>
- 	<h2>Player ${user}</h2>
-    <hr>
-    <div id="finalScores" style="display:none;"></div>
- 	<div id="gameArea">
- 	<div id="topSection">
- 	<div id="scoresPane"><div id="scores"></div><div id="messages"></div></div>
- 	<div id="table">
-	 	<c:if test="${game.players[0] eq user && fn:length(game.rounds) == 0}">
-		<p>Actions</p>
-	    <form method="POST" action="start-game">
-	 	  <fieldset>
-	        <legend>Start Game</legend>
-	          <input type="hidden" name="id" value="${game.id}" />
-	       	  <input type="submit" value="Start Game" />
-	      </fieldset>            
-	    </form>
-	    </c:if>
-		<div id="bidUI" style="display:none"></div>
-		<div id="trumpsUI" style="display:none"></div>
-		<div id="trick" style="display:none"></div>
- 	</div>
- 	</div>
- 	<div id="hand"></div>
+ 	<div id="header">
+ 		<div id="scores"></div>
+    	<h1>Nomination Whist</h1>
+    	<h3>Player ${user}</h3>
     </div>
+    <hr>
+	<div id="messagesPane">
+		<div id="messagesArea">
+	 		<h3>Messages</h3>
+ 			<div id="messages"></div>
+ 		</div>
+ 	</div>
+	<div id="gamePane">
+	 	<div id="finalScores" style="display: none;"></div>
+    	<div id="gameTable">
+	    	<p id="status"></p>
+	 		<c:if test="${game.players[0] eq user && fn:length(game.rounds) == 0}">
+    		<form method="POST" action="start-game">
+        	  	<input type="hidden" name="id" value="${game.id}" />
+       	  		<input type="submit" value="Start Game" />
+    		</form>
+    		</c:if>
+			<div id="bidUI" style="display: none"></div>
+			<div id="trumpsUI" style="display: none"></div>
+			<div id="trick" style="display: none"></div>
+            <div id="previousTrick"></div>
+		</div>
+	</div>
+ 	<div id="hand"></div>
   </body>
 </html>
