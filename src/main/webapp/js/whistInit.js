@@ -51,15 +51,22 @@ function updatePlayerUI() {
     
     // Update Trick UI
     var trickHTML = "";
+    var positions = getCardElementPositions();
     for (var i = 0; i < game.players.length; i++) {
-        trickHTML = trickHTML + "<div class=\"trickElement\"><p>" + game.players[i] + "</p>";
-        trickHTML = trickHTML + "<img id=\"player" + i + "TrickCard\" src=\"\" height=\"96\" width=\"72\" style=\"visibility: hidden;\"/>"
-        trickHTML = trickHTML + "</div>";
+        trickHTML = trickHTML + "<table class=\"trickElement\" id=\"player" + i + "TrickElement\" style=\"visibility: hidden;";
+        if (positions) {
+            trickHTML = trickHTML + " position: absolute; " + positions[i];
+        }
+        trickHTML = trickHTML + "\"><tr><td>" + game.players[i] + "</td></tr>";
+        trickHTML = trickHTML + "<tr><td><img id=\"player" + i + "TrickCard\" src=\"\" height=\"96\" width=\"72\"/></td></tr>";
+        trickHTML = trickHTML + "</table>";
     }
     document.getElementById("trick").innerHTML = trickHTML;    
     trickHTML = "";
     for (var i = 0; i < game.players.length; i++) {
-        trickHTML = trickHTML + "<img id=\"player" + i + "PreviousTrickCard\" src=\"\" height=\"64\" width=\"48\" style=\"visibility: hidden;\"/> "
+        trickHTML = trickHTML + "<table class=\"trickElement\" id=\"player" + i + "PreviousTrickElement\" style=\"visibility: hidden;\">";
+        trickHTML = trickHTML + "<tr><td><img id=\"player" + i + "PreviousTrickCard\" src=\"\" height=\"64\" width=\"48\"/></td></tr>";
+        trickHTML = trickHTML + "<tr><td>" + game.players[i] + "</td></tr></table>";
     }
     document.getElementById("previousTrick").innerHTML = trickHTML;    
 
@@ -73,4 +80,27 @@ function updatePlayerUI() {
     finalScoresHTML = finalScoresHTML + "</tr>";
     finalScoresHTML = finalScoresHTML + "</table>";
     document.getElementById("finalScores").innerHTML = finalScoresHTML;
+}
+
+function getCardElementPositions() {
+    var positions = new Array();
+    
+    switch(game.players.length) {
+    case 2:
+        positions[userId] = "left: 47%; bottom: 2px;";
+        positions[(userId + 1) % 2] = "left: 47%; top: 2px;";
+        break;
+    case 3:
+        positions[userId] = "left: 47%; bottom: 2px;";
+        positions[(userId + 1) % 3] = "left: 2px; top: 75px;";
+        positions[(userId + 2) % 3] = "right: 2px; top: 75px;";
+        break;
+    case 4:
+        positions[userId] = "left: 47%; bottom: 2px;";
+        positions[(userId + 1) % 4] = "left: 2px; top: 125px;";
+        positions[(userId + 2) % 4] = "left: 47%; top: 2px;";
+        positions[(userId + 3) % 4] = "right: 2px; top: 125px;";
+    }
+    
+    return positions;
 }

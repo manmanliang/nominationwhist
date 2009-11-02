@@ -87,17 +87,18 @@ function updateUI() {
 		    }
 
 	    	var imgToUpdate = document.getElementById("player" + i + "TrickCard");
+	    	var trickElement = document.getElementById("player" + i + "TrickElement");
 	      	if (!game.trick.cards[i]) {
-				imgToUpdate.style.visibility = "hidden";
+				trickElement.style.visibility = "hidden";
 	        	imgToUpdate.src = "";
 		    } else {
 		    	imgToUpdate.src = "images/" + game.trick.cards[i] + ".png";
-		        imgToUpdate.style.visibility = "visible";
+		        trickElement.style.visibility = "visible";
 		    }
 
             if (game.trick.previousCards) {
                 document.getElementById("player" + i + "PreviousTrickCard").src = "images/" + game.trick.previousCards[i] + ".png";
-                document.getElementById("player" + i + "PreviousTrickCard").style.visibility = "visible";
+                document.getElementById("player" + i + "PreviousTrickElement").style.visibility = "visible";
             }
 	    }
 	   	updated.trick = false;
@@ -258,7 +259,7 @@ function playCard(card) {
 	// Remove the card from our hand and add it to the trick
 	document.getElementById(card).style.display = 'none';
 	document.getElementById("player" + userId + "TrickCard").src = "images/" + card + ".png";
-	document.getElementById("player" + userId + "TrickCard").style.visibility = "visible";
+	document.getElementById("player" + userId + "TrickElement").style.visibility = "visible";
 	
 	// Now remove the onClick handler
 	removeHandOnClickHandler();
@@ -275,7 +276,7 @@ xmlHttp['playCard'].callback = function(output) {
 	    gameUpdatedEventHandler();
 	} else {
 		// Show the ui again along with an error and clear our unacceptable trumps choice
-		document.getElementById("player" + userId + "TrickCard").style.visibility = "hidden";
+		document.getElementById("player" + userId + "TrickElement").style.visibility = "hidden";
 		document.getElementById("player" + userId + "TrickCard").src = "";
 		document.getElementById(output.card).style.display = '';
 		writeMessage(output.errorMessage);
