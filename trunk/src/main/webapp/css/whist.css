@@ -18,25 +18,31 @@ body {
 }
 
 #gameTable {
-    height: 330px;
+    height: 370px;
     position: relative;
 }
 
 #status {
-    margin-top: 0px;
-}
-
-.trickElement {
-    display: inline;
-}
-
-.trickElement p {
-    text-align: center;
     margin: 0px;
 }
 
+#trick {
+    height: 370px;
+}
+
+.trickElement {
+    background: none;
+    border: 0px;
+    display: inline;
+}
+
+.trickElement td {
+    text-align: center;
+    border: 0px;
+}
+
 #previousTrick {
-    bottom: 5px;
+    bottom: 0px;
     right: 5px;
     position: absolute;
 }
@@ -51,8 +57,8 @@ body {
 
 #messagesArea {
     background: #fafafa;
-    height: 318px;
-    max-height: 318px;
+    height: 358px;
+    max-height: 358px;
     border: 1px solid black;
     padding: 5px;
     overflow: hidden;
@@ -69,7 +75,7 @@ body {
 
 #hand {
     text-align: center;
-    margin-top: 30px;
+    margin-top: 10px;
 }
 
 table {
