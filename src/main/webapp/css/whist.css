@@ -2,13 +2,74 @@ body {
     background: #008000;
 }
 
-#topSection {
+#header {
     overflow: auto;
 }
 
-#scoresPane {
-    width: 30%;
-    float: left;
+#scores {
+    float: right;
+}
+
+#gamePane {
+    width: 68%;
+    padding: 0px;
+    margin: 0px;
+    border: 0px;
+}
+
+#gameTable {
+    height: 330px;
+    position: relative;
+}
+
+#status {
+    margin-top: 0px;
+}
+
+.trickElement {
+    display: inline;
+}
+
+.trickElement p {
+    text-align: center;
+    margin: 0px;
+}
+
+#previousTrick {
+    bottom: 5px;
+    right: 5px;
+    position: absolute;
+}
+
+#messagesPane {
+    float: right;
+    width: 32%;
+    padding: 0px;
+    margin: 0px;
+    border: 0px;
+}
+
+#messagesArea {
+    background: #fafafa;
+    height: 318px;
+    max-height: 318px;
+    border: 1px solid black;
+    padding: 5px;
+    overflow: hidden;
+}
+
+#messages {
+    border-top: 1px solid black;
+    padding-top: 5px;
+}
+
+#messages p {
+    margin: 0 0 0.5em 0;
+}
+
+#hand {
+    text-align: center;
+    margin-top: 30px;
 }
 
 table {
@@ -31,11 +92,10 @@ table th.active {
     background-color: #FFCCCC;
 }
 
-#hand {
-    text-align: center;
+h1, h3 {
+    margin: 5px 0;
 }
 
-#finalScores {
-    float: left;
-    width: 30%;
+*|*:-moz-any-link img, img[usemap], object[usemap] {
+    border: 0px;
 }

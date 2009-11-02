@@ -223,8 +223,11 @@ public class GameController {
 		if (game.getRounds().size() == game.getRoundSequence().length &&
 				Iterables.getLast(game.getRounds()).isFinished()) {
 			JSONResult.put("round", roundAsJSON(game, idx));
-			JSONResult.put("trick", trickAsJSON(game, idx));
+			JSONResult.put("trick", trickAsJSON(game));
 			JSONResult.put("phase", 3);
+			if (idx > 0) {
+				JSONResult.put("previousRound", roundAsJSON(game, idx - 1));
+			}
 			response.getWriter().print(JSONResult);
 			return;
 		}
@@ -240,12 +243,16 @@ public class GameController {
 	
 		if (clientPhase <= 0 || currentPhase == 0) {
 			JSONResult.put("hand", handAsJSON(game, game.getPlayerIndex(user.getName())));
+			// We have changed round, need to let the client know how the last round finished
+			if (idx > 0) {
+				JSONResult.put("previousRound", roundAsJSON(game, idx - 1));
+			}
 		}
 		if (clientPhase != 2 || currentPhase != 2) {
 			JSONResult.put("round", roundAsJSON(game, idx));
 		}
 		if (clientPhase == 2 || currentPhase == 2) {
-			JSONResult.put("trick", trickAsJSON(game, idx));
+			JSONResult.put("trick", trickAsJSON(game));
 		}
 		
 		// Calculate activePlayer
@@ -428,15 +435,16 @@ public class GameController {
 	    JSONRound.put("idx", idx);
 	    JSONRound.put("trumps", round.getTrumps());
 	    JSONRound.put("bids", round.getBids());
-	    JSONRound.put("scores", game.scores());
+	    JSONRound.put("scores", game.scores(0, idx));
 	    JSONRound.put("highestBidder", round.highestBidder());
 	    JSONRound.put("numberOfCards", round.getNumberOfCards());
+	    JSONRound.put("tricksWon", round.tricksWon());
 
 	    return JSONRound;
 	}
 	
 	@SuppressWarnings("unchecked")
-	private JSONObject trickAsJSON(Game game, int idx) {
+	private JSONObject trickAsJSON(Game game) {
 		Round round = game.getCurrentRound();
 		JSONObject JSONTrick = new JSONObject();
 			
@@ -445,12 +453,18 @@ public class GameController {
 			JSONTrick.put("cards", trick.getCards());
 		    JSONTrick.put("tricksWon", round.tricksWon());
 		}
-
-		// Bit of a hack, but as we automatically move on when you play a card
-		// the last trick winner of a round is never reported to the client
-		if (game.isFinished() || (idx == 1 && round.getTricks().size() == 1)) {
-		    JSONTrick.put("prevTricksWon", game.getRounds().get(idx - 1).tricksWon());
-		}
+		
+	    Trick previousTrick = null;
+	    int idx = game.getRounds().indexOf(round);
+	    if (round.getTricks().size() > 1) {
+	    	previousTrick = round.getTricks().get(round.getTricks().size() - 2);
+	    } else if (idx > 0) {
+	    	previousTrick = Iterables.getLast(game.getRounds().get(idx - 1).getTricks());		    	
+	    }
+	    
+	    if (previousTrick != null) {
+	    	JSONTrick.put("previousCards", previousTrick.getCards());
+	    }
 
 		return JSONTrick;
 	}

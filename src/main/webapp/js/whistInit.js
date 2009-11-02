@@ -37,7 +37,7 @@ function updatePlayerUI() {
     var rowTypes = new Array("prev", "current");
     for (rowType in rowTypes) {
         scoresTableHTML = scoresTableHTML + "<tr>";
-        scoresTableHTML = scoresTableHTML + "<td id=\"" + rowTypes[rowType] + "Cards\"></td>";
+        scoresTableHTML = scoresTableHTML + "<td id=\"" + rowTypes[rowType] + "Cards\">&nbsp;</td>";
         scoresTableHTML = scoresTableHTML + "<td id=\"" + rowTypes[rowType] + "Trumps\"></td>";
         for (var i = 0; i < game.players.length; i++) {
             scoresTableHTML = scoresTableHTML + "<td id=\"player" + i + rowTypes[rowType] + "Bid\"></td>";
@@ -47,15 +47,21 @@ function updatePlayerUI() {
         scoresTableHTML = scoresTableHTML + "</tr>";
     }
     scoresTableHTML = scoresTableHTML + "</table>";
-    scoresTableHTML = scoresTableHTML + "<p id=\"status\"></p>";
     document.getElementById("scores").innerHTML = scoresTableHTML;    
     
     // Update Trick UI
     var trickHTML = "";
     for (var i = 0; i < game.players.length; i++) {
-        trickHTML = trickHTML + "<img id=\"player" + i + "TrickCard\" src=\"\" height=\"96\" width=\"72\" style=\"visibility: hidden;\"/> "
+        trickHTML = trickHTML + "<div class=\"trickElement\"><p>" + game.players[i] + "</p>";
+        trickHTML = trickHTML + "<img id=\"player" + i + "TrickCard\" src=\"\" height=\"96\" width=\"72\" style=\"visibility: hidden;\"/>"
+        trickHTML = trickHTML + "</div>";
     }
     document.getElementById("trick").innerHTML = trickHTML;    
+    trickHTML = "";
+    for (var i = 0; i < game.players.length; i++) {
+        trickHTML = trickHTML + "<img id=\"player" + i + "PreviousTrickCard\" src=\"\" height=\"64\" width=\"48\" style=\"visibility: hidden;\"/> "
+    }
+    document.getElementById("previousTrick").innerHTML = trickHTML;    
 
     // Update Final Scores UI
     var fsColumnCount = game.players.length * 2;

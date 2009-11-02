@@ -87,15 +87,15 @@ public class Round {
 	public void bid(int player, int bid) throws WhistException {
 		
 		if ((getNumberOfBids() + firstPlayer) % hands.size() != player) {
-			throw new WhistException("Cannot make bid, it isn't your turn");
+			throw new WhistException("Sorry, it isn't your turn");
 		}
 		
 		if (bid < 0 || bid > numberOfCards) {
-			throw new WhistException("Cannot make bid, this round doesn't have " + bid + " cards");
+			throw new WhistException("Sorry, this round doesn't have " + bid + " cards");
 		}
 		
 		if (bids.size() > player && bids.get(player) != null) {
-			throw new WhistException("Cannot make bid, you have already bid");			
+			throw new WhistException("Sorry, you have already bid");			
 		}
 		
 		if (getNumberOfBids() == hands.size() - 1) {
@@ -106,7 +106,7 @@ public class Round {
 			}
 
 			if (bidCount + bid == numberOfCards) {
-				throw new WhistException("Cannot make bid, the total bids cannot equal the number of cards");							
+				throw new WhistException("Sorry, the bids can't add up to " + numberOfCards);							
 			}
 		}
 		
@@ -127,7 +127,7 @@ public class Round {
 	public void selectTrumps(int player, Suit trumps) throws WhistException {
 
 		if (highestBidder() != player) {
-			throw new WhistException("Cannot select trumps, you didn't bid highest");
+			throw new WhistException("Sorry, you didn't bid highest");
 		}
 		
 		setTrumps(trumps);
@@ -139,11 +139,11 @@ public class Round {
 		
 		// Check to see if it was legal to play that card
 		if (!hands.get(player).getCards().contains(card)) {
-			throw new WhistException("Cannot play that card, it is not in your hand");			
+			throw new WhistException("Sorry, it is not in your hand");			
 		}
 		
 		if ((trick.getNumberOfCards() + trick.getFirstPlayer()) % hands.size() != player) {
-			throw new WhistException("Cannot play card, it isn't your turn");
+			throw new WhistException("Sorry, it isn't your turn");
 		}
 		
 		if (trick.getNumberOfCards() > 0) {
@@ -152,7 +152,7 @@ public class Round {
 			if (firstCardSuit != card.getSuit()) {
 				for (Card handCard : hands.get(player).getCards()) {
 					if (firstCardSuit == handCard.getSuit()) {
-						throw new WhistException("Cannot play that card, when possible you must follow suit");
+						throw new WhistException("Sorry, when possible you must follow suit");
 					}
 				}
 			}
