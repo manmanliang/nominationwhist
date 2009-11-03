@@ -355,10 +355,24 @@ function regulariseMessages() {
 }
 
 function writeMessage(message) {
-		document.getElementById("messages").innerHTML = "<p style=\"color: #b91114\">" + message + "</p>" + document.getElementById("messages").innerHTML;
+    document.getElementById("messages").innerHTML = "<p style=\"color: #b91114\">" + message + "</p>" + document.getElementById("messages").innerHTML;
         
-        if (timer.messages != null) {
-            clearTimeout(timer.messages);
-        }
-        timer.messages = setTimeout("regulariseMessages()", 1500);
+    if (timer.messages != null) {
+        clearTimeout(timer.messages);
+    }
+    timer.messages = setTimeout("regulariseMessages()", 1500);
+}
+
+function toggleInstructions() {
+    var instructionsLink = document.getElementById("instructionsLink");
+    
+    if (instructionsLink.innerHTML == "Show Instructions") {
+        instructionsLink.innerHTML = "Hide Instructions";
+        document.getElementById("gameArea").style.display = "none";
+        document.getElementById("instructions").style.display = "";
+    } else {
+        instructionsLink.innerHTML = "Show Instructions";
+        document.getElementById("instructions").style.display = "none";
+        document.getElementById("gameArea").style.display = "";
+    }
 }
