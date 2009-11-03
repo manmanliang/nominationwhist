@@ -35,7 +35,7 @@
  		<div id="scores"></div>
     	<h1>Nomination Whist</h1>
     	<h3>Player ${user}</h3>
-	    <a href="javascript:toggleInstructions()"><p id="instructionsLink">Show Instructions</p></a>
+	    <p><a href="javascript:toggleInstructions()" id="instructionsLink">Show Instructions</a></p>
     </div>
     <hr>
     <div id="gameArea">
