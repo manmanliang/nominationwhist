@@ -87,6 +87,11 @@ body {
     margin-top: 10px;
 }
 
+#instructions {
+    background: #fafafa;
+    border: 1px solid black;
+}
+
 table {
     background: #fafafa;
     border: 1px solid black;
