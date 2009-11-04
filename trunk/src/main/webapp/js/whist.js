@@ -144,25 +144,25 @@ function updateUI() {
             status.className = "active";
         } else {
             status.innerHTML = game.players[game.activePlayer] + " is bidding";
-            status.style.color = "";
+            status.className = "";
         }
     } else if (game.rounds[game.round.current].trumps == null) {
         var highestBidder = game.rounds[game.round.current].highestBidder;
         if (game.activePlayer == userId) {
             status.innerHTML = "Choose trumps";
-            status.style.color = "active";
+            status.className = "active";
         } else {
             status.innerHTML = game.players[game.activePlayer] + " is choosing trumps";
-            status.style.color = "";
+            status.className = "";
         }
     } else {
         // Must be in a trick
         if (game.activePlayer == userId) {
             status.innerHTML = "Your turn to play a card";
-            status.style.color = "active";
+            status.className = "active";
         } else {
             status.innerHTML = game.players[game.activePlayer] + "'s turn to play a card";
-            status.style.color = "";
+            status.className = "";
         }        
     }
     status.style.visibility = 'visible';
