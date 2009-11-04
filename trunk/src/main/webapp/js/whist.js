@@ -144,36 +144,30 @@ function updateUI() {
 		}
 	}
 
-    // Set the status string
-    var status = document.getElementById("status");
+    // Set the message string
+    var message = document.getElementById("message");
     if (game.players.length > game.rounds[game.round.current].bids.length) {
         if (game.activePlayer == userId) {
-            status.innerHTML = "Select your bid";
-            status.className = "active";
+            message.innerHTML = "Please select your bid";
         } else {
-            status.innerHTML = game.players[game.activePlayer] + " is bidding";
-            status.className = "";
+            message.innerHTML = game.players[game.activePlayer] + " is bidding";
         }
     } else if (game.rounds[game.round.current].trumps == null) {
         var highestBidder = game.rounds[game.round.current].highestBidder;
         if (game.activePlayer == userId) {
-            status.innerHTML = "Choose trumps";
-            status.className = "active";
+            message.innerHTML = "Please choose trumps";
         } else {
-            status.innerHTML = game.players[game.activePlayer] + " is choosing trumps";
-            status.className = "";
+            message.innerHTML = game.players[game.activePlayer] + " is choosing trumps";
         }
     } else {
         // Must be in a trick
         if (game.activePlayer == userId) {
-            status.innerHTML = "Your turn to play a card";
-            status.className = "active";
+            message.innerHTML = "Please play a card";
         } else {
-            status.innerHTML = game.players[game.activePlayer] + "'s turn to play a card";
-            status.className = "";
+            message.innerHTML = game.players[game.activePlayer] + "'s turn to play a card";
         }        
     }
-    status.style.visibility = 'visible';
+    message.style.visibility = 'visible';
 
 }
 
@@ -227,7 +221,7 @@ function bid(bid) {
 	document.getElementById("bidUI").style.display = 'none';
 	document.getElementById("trick").style.display = '';
 	document.getElementById("player" + userId + "currentBid").innerHTML = bid;
-	document.getElementById("status").style.visibility = 'hidden';
+	document.getElementById("message").style.visibility = 'hidden';
 	
 	xmlHttp['bid'].call('{"id":' + game.id + ', "bid":' + bid + '}');
 }
@@ -242,7 +236,7 @@ xmlHttp['bid'].callback = function(output) {
 		document.getElementById("player" + userId + "currentBid").innerHTML = "";
         document.getElementById("trick").style.display = 'none';
 		document.getElementById("bidUI").style.display = '';
-		document.getElementById("status").style.visibility = 'visible';
+		document.getElementById("message").style.visibility = 'visible';
 		writeMessage(output.errorMessage);
 	}
 }
@@ -266,7 +260,7 @@ xmlHttp['trumps'].callback = function(output) {
 		document.getElementById("currentTrumps").innerHTML = "";
         document.getElementById("trick").style.display = 'none';
 		document.getElementById("trumpsUI").style.display = '';
-		document.getElementById("status").innerHTML = "Please choose trumps";
+		document.getElementById("message").innerHTML = "Please choose trumps";
 		writeMessage(output.errorMessage);
 	}
 }
@@ -364,18 +358,18 @@ function prettify(string) {
 }
 
 function regulariseMessages() {
-	var messages = document.getElementById("messages").getElementsByTagName("p");
-	var messagesLength = messages.length;
-
-	for (var i = 0; i < messagesLength; i++) {
-        messages[i].style.color = "black";
-	}
+	var messages = document.getElementById("message").style.color = "black";
     
     timer.messages = null;
 }
 
 function writeMessage(message) {
-    document.getElementById("messages").innerHTML = "<p style=\"color: #b91114\">" + message + "</p>" + document.getElementById("messages").innerHTML;
+    var messageId = document.getElementById("message");
+    
+    messageId.visibility = "hidden";
+    messageId.style.color="#b91114";
+    messageId.innerHTML = message;
+    messageId.visibility = "visible";
         
     if (timer.messages != null) {
         clearTimeout(timer.messages);

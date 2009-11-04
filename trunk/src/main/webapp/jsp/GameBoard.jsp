@@ -40,15 +40,17 @@
     <hr>
     <div id="gameArea">
 		<div id="messagesPane">
-			<div id="messagesArea">
-	 			<h3>Messages</h3>
- 				<div id="messages"></div>
-	 		</div>
- 		</div>
+ 			<div id="messages">
+ 				<p id="message">Server messages will be shown here</p>
+ 			</div>
+	 		<div id="chat">
+ 				<h3>Chat</h3>
+ 				<p>Coming soon...</p>	
+ 			</div>
+	 	</div>
 		<div id="gamePane">
 		 	<div id="finalScores" style="display: none;"></div>
     		<div id="gameTable">
-		    	<p id="status"></p>
 		 		<c:if test="${game.players[0] eq user && fn:length(game.rounds) == 0}">
     			<form method="POST" action="start-game">
     	    	  	<input type="hidden" name="id" value="${game.id}" />
