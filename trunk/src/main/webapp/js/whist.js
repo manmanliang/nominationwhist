@@ -120,7 +120,7 @@ function updateUI() {
 		// Trumps UI Update
 		if (game.phase == 1) {
 			// Trumps snippet
-			var suits = new Array("SPADES", "HEARTS", "DIAMONDS", "CLUBS");
+			var suits = new Array("SPADES", "HEARTS", "DIAMONDS", "CLUBS", "NO-TRUMPS");
 			var html = "";
 			for (suit in suits) {
 				html = 	html + "<a href=\"javascript:setTrumps('" + suits[suit] + "');\"><img src=\"images/" + suits[suit] + ".png\"/></a> ";
@@ -333,11 +333,17 @@ function cardHTML(card, displayState) {
 }
 
 function prettify(string) {
+    var pretty = "";
+    
     if (string) {
-        var pretty = string.substr(0,1);
-        var tmp = string.substr(1);
-        pretty = pretty.toUpperCase();
-        pretty = pretty + tmp.toLowerCase();
+        var stringWordArray = string.split("-");
+        for (word in stringWordArray) {
+            var prettyWord = stringWordArray[word].substr(0,1);
+            var tmp = stringWordArray[word].substr(1);
+            prettyWord = prettyWord.toUpperCase();
+            prettyWord = prettyWord + tmp.toLowerCase();
+            pretty = pretty + " " + prettyWord;
+        }
     }
     
     return pretty;

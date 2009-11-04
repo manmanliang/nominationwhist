@@ -66,10 +66,14 @@ public enum Card implements JSONAware {
     }
     
     public enum Suit implements JSONAware {
-    	SPADES, HEARTS, CLUBS, DIAMONDS;
+    	SPADES, HEARTS, CLUBS, DIAMONDS, NO_TRUMPS;
     
 		public String toJSONString() {
 			return "\"" + toString() + "\"";
+		}
+		
+		public String toString() {
+			return super.toString().replace("_", "-");
 		}
     }
 

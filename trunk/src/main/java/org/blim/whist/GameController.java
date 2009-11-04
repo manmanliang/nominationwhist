@@ -323,7 +323,7 @@ public class GameController {
 		Session session = sessionFactory.getCurrentSession();
 
 		Long gameId = ((Number) JSONInput.get("id")).longValue();
-		Card.Suit trumps = Enum.valueOf(Card.Suit.class, JSONInput.get("trumps").toString());
+		Card.Suit trumps = Enum.valueOf(Card.Suit.class, JSONInput.get("trumps").toString().replace("-", "_"));
 
 		session.load(game, gameId);
 			
