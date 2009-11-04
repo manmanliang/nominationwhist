@@ -3,6 +3,8 @@ body {
     font-family: arial, sans-serif;
 }
 
+/* Header */
+
 #header {
     overflow: auto;
 }
@@ -14,6 +16,8 @@ body {
 #scores {
     float: right;
 }
+
+/* Table Area */
 
 #gamePane {
     width: 68%;
@@ -61,6 +65,7 @@ body {
     position: absolute;
 }
 
+/* Messages Area */
 #messagesPane {
     float: right;
     width: 32%;
@@ -87,15 +92,25 @@ body {
     margin: 0 0 0.5em 0;
 }
 
+/* Hand */
+
 #hand {
     text-align: center;
     margin-top: 10px;
 }
 
+/* Instructions */
+
 #instructions {
     background: #fafafa;
     border: 1px solid black;
     padding: 0 10px;
+}
+
+/* Footer */
+
+#footer p {
+    margin: 0;
 }
 
 #footer-right {
