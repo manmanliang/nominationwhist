@@ -11,18 +11,19 @@ game.round = new Object();
 game.trick = new Object();
 game.trick.tricksWon = new Array();
 game.trick.cards = new Array();
-game.previousTrick = new Object();
-game.previousTrick.tricksWon = new Array();
-game.previousTrick.cards = new Array();
+game.trick.previousCards = new Array();
+game.trick.trickNum = null;
 game.round.current = null;
 game.round.currentLastPoll = null;
 game.round.count = null;
 game.hand = null;
 game.phase = null;
 game.activePlayer = null;
+game.showPreviousTrickCards = false;
 
 timer = new Object();
 timer.messages = null;
+timer.showPreviousTrickCards = null;
 
 updated = new Object();
 updated.hand = false;

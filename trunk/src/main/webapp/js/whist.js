@@ -88,18 +88,26 @@ function updateUI() {
 
 	    	var imgToUpdate = document.getElementById("player" + i + "TrickCard");
 	    	var trickElement = document.getElementById("player" + i + "TrickElement");
-	      	if (!game.trick.cards[i]) {
+            var trickListToShow;
+            
+            if (game.showPreviousTrickCards) {
+                trickListToShow = game.trick.previousCards;
+            } else {
+                trickListToShow = game.trick.cards;
+
+                if (game.trick.previousCards) {
+                    document.getElementById("player" + i + "PreviousTrickCard").src = "images/" + game.trick.previousCards[i] + ".png";
+                    document.getElementById("player" + i + "PreviousTrickElement").style.visibility = "visible";
+                }
+            }
+            
+	      	if (!trickListToShow[i]) {
 				trickElement.style.visibility = "hidden";
 	        	imgToUpdate.src = "";
 		    } else {
-		    	imgToUpdate.src = "images/" + game.trick.cards[i] + ".png";
+		    	imgToUpdate.src = "images/" + trickListToShow[i] + ".png";
 		        trickElement.style.visibility = "visible";
 		    }
-
-            if (game.trick.previousCards) {
-                document.getElementById("player" + i + "PreviousTrickCard").src = "images/" + game.trick.previousCards[i] + ".png";
-                document.getElementById("player" + i + "PreviousTrickElement").style.visibility = "visible";
-            }
 	    }
 	   	updated.trick = false;
 	}
@@ -187,12 +195,14 @@ xmlHttp['update'].callback = function(output) {
 	    updated.round = true;
 	}
 	if (output.trick) {
+        if (output.trick.trickNum != game.trick.trickNum) {
+            // Changed tricks, show previous trick briefly
+            game.showPreviousTrickCards = true;
+            timer.showPreviousTrickCards = setTimeout("showCurrentTrickCards()", 1000);
+        }
+        
 	    game.trick = output.trick;
         
-        if (output.trick.previousCards) {
-            game.trick.previousCards = output.trick.previousCards;
-        }
-	    
 	    updated.trick = true;
 	}
 
@@ -205,7 +215,11 @@ xmlHttp['update'].callback = function(output) {
 	// Update the currently active player    
 	game.activePlayer = output.activePlayer;
 	    		    
-    gameUpdatedEventHandler();
+    updateUI();
+    if (userId != game.activePlayer) {
+        setTimeout("xmlHttp['update'].call('{\"id\":' + game.id + ', \"phase\":' + game.phase + '}')", 500);
+	}
+
 }
 
 function bid(bid) {
@@ -222,9 +236,7 @@ xmlHttp['bid'].callback = function(output) {
 	if (output.result == 0) {
 		document.getElementById("bidUI").innerHTML = "";
 		
-		userAction = true;
-		game.activePlayer = null;
-		gameUpdatedEventHandler();
+		xmlHttp['update'].call('{\"id\":' + game.id + ', \"phase\":' + game.phase + '}');
 	} else {
 		// Show the ui again along with an error and clear our unacceptable bid
 		document.getElementById("player" + userId + "currentBid").innerHTML = "";
@@ -248,9 +260,7 @@ xmlHttp['trumps'].callback = function(output) {
 	if (output.result == 0) {
 		document.getElementById("trumpsUI").innerHTML = "";
 		
-		userAction = true;		
-		game.activePlayer = null;
-	    gameUpdatedEventHandler();
+		xmlHttp['update'].call('{\"id\":' + game.id + ', \"phase\":' + game.phase + '}');
 	} else {
 		// Show the ui again along with an error and clear our unacceptable trumps choice
 		document.getElementById("currentTrumps").innerHTML = "";
@@ -262,6 +272,12 @@ xmlHttp['trumps'].callback = function(output) {
 }
 
 function playCard(card) {
+    // If we are showing previous cards, stop
+    if (timer.showPreviousTrickCards) {
+        clearTimeout(timer.showPreviousTrickCards);
+        showCurrentTrickCards();
+    }
+    
 	// Remove the card from our hand and add it to the trick
 	document.getElementById(card).style.display = 'none';
 	document.getElementById("player" + userId + "TrickCard").src = "images/" + card + ".png";
@@ -277,9 +293,7 @@ xmlHttp['playCard'].callback = function(output) {
 	if (output.result == 0) {
 		document.getElementById("hand").removeChild(document.getElementById(output.card));
 		
-		userAction = true;		
-		game.activePlayer = null;
-	    gameUpdatedEventHandler();
+		xmlHttp['update'].call('{\"id\":' + game.id + ', \"phase\":' + game.phase + '}');
 	} else {
 		// Show the ui again along with an error and clear our unacceptable trumps choice
 		document.getElementById("player" + userId + "TrickElement").style.visibility = "hidden";
@@ -381,4 +395,11 @@ function toggleInstructions() {
         document.getElementById("instructions").style.display = "none";
         document.getElementById("gameArea").style.display = "";
     }
+}
+
+function showCurrentTrickCards() {
+    game.showPreviousTrickCards = false;
+    timer.showPreviousTrickCards = null;
+    updated.trick = true;
+    updateUI();
 }

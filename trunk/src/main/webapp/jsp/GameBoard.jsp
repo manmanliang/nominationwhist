@@ -16,6 +16,7 @@
 		game.rounds = ${rounds};
 	  </c:if>
       	game.round.count = ${roundCount};
+      	game.trick.trickNum = ${trickNum};
     </script>   
     <script type="text/javascript" src="<c:url value="/js/json.js"/>"></script>
     <script type="text/javascript" src="<c:url value="/js/xmlhttp.js"/>"></script>
