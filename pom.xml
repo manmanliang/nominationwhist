@@ -4,7 +4,7 @@
   <artifactId>whist</artifactId>
   <packaging>war</packaging>
   <name>whist</name>
-  <version>1.0.0-ALPHA</version>
+  <version>1.0.2-ALPHA</version>
   <description>A nomination whist game.</description>
   <ciManagement>
   </ciManagement>

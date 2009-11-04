@@ -71,24 +71,31 @@ body {
     width: 32%;
     padding: 0px;
     margin: 0px;
-    border: 0px;
-}
-
-#messagesArea {
-    background: #fafafa;
-    height: 358px;
-    max-height: 358px;
-    border: 1px solid black;
-    padding: 5px;
+    border-bottom: 1px solid black;
+    height: 369px;
+    max-height: 369px;
     overflow: hidden;
 }
 
 #messages {
-    border-top: 1px solid black;
-    padding-top: 5px;
+    background: #fafafa;
+    border: 1px solid black;
+    margin-bottom: 5px;
+    padding: 5px;
 }
 
-#messages p {
+#message {
+    margin: 0;
+}
+
+#chat {
+    background: #fafafa;
+    border: 1px solid black;
+    padding: 5px;
+    height: 100%;
+}
+
+#chat p {
     margin: 0 0 0.5em 0;
 }
 
@@ -97,6 +104,7 @@ body {
 #hand {
     text-align: center;
     margin-top: 10px;
+    height: 106px;
 }
 
 /* Instructions */
@@ -123,14 +131,16 @@ table {
     border-collapse: collapse;
 }
 
-table td,
-table th {
+table td {
     border: 1px solid black;
     padding: 2px;
+    text-align: center;
 }
 
 table th {
     background-color: #BEC8D1;
+    border: 1px solid black;
+    padding: 2px;
 }
 
 table th.active {
