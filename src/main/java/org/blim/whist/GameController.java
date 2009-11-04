@@ -139,12 +139,18 @@ public class GameController {
 		
 		String version = getVersion(request);
 		
+		int trickNum = 0;
+		if (game.getCurrentRound() != null) {
+			trickNum = game.getCurrentRound().getTricks().size() - 1;
+		}
+		
 		model.put("game", game);
 		model.put("rounds", JSONRounds.toString());
 		model.put("roundCount", game.getRoundSequence().length);
 		model.put("user", user.getName());
 		model.put("userIndex", game.getPlayerIndex(user.getName()));
 		model.put("version", version);
+		model.put("trickNum", trickNum);
 		
 		return new ModelAndView("GameBoard", model);
 	}
@@ -465,6 +471,7 @@ public class GameController {
 			Trick trick = Iterables.getLast(round.getTricks());
 			JSONTrick.put("cards", trick.getCards());
 		    JSONTrick.put("tricksWon", round.tricksWon());
+		    JSONTrick.put("trickNum", round.getTricks().size() - 1);
 		}
 		
 	    Trick previousTrick = null;
