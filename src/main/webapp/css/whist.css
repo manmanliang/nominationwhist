@@ -7,12 +7,6 @@ body {
     overflow: auto;
 }
 
-#header p {
-    display: inline;
-    float: right;
-    margin: 5px 10px;
-}
-
 #header h3 {
     display: inline;
 }
@@ -102,6 +96,10 @@ body {
     background: #fafafa;
     border: 1px solid black;
     padding: 0 10px;
+}
+
+#footer-right {
+    float: right;
 }
 
 table {

@@ -2,6 +2,7 @@ package org.blim.whist;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -9,6 +10,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -49,10 +51,15 @@ public class GameController {
 	}
 
 	@RequestMapping("/")
-	public ModelAndView gameList(Principal user) {
+	public ModelAndView gameList(
+			HttpServletRequest request,
+			Principal user) throws IOException {
 		Map<String, Object> model = new HashMap<String, Object>();
 		
+		String version = getVersion(request);
+
 		model.put("user", user.getName());
+		model.put("version", version);
 		
 		return new ModelAndView("ListGames", model);
 	}
@@ -115,7 +122,10 @@ public class GameController {
 	}
 
 	@RequestMapping("/game")
-	public ModelAndView gameState(@RequestParam("id") Long gameId, Principal user) {
+	public ModelAndView gameState(
+			HttpServletRequest request,
+			@RequestParam("id") Long gameId,
+			Principal user) throws IOException {
 		Map<String, Object> model = new HashMap<String, Object>();
 		Game game = new Game();
 		List<JSONObject> JSONRounds = Lists.newArrayList();
@@ -127,11 +137,14 @@ public class GameController {
 			JSONRounds.add(roundAsJSON(game, idx));
 		}
 		
+		String version = getVersion(request);
+		
 		model.put("game", game);
 		model.put("rounds", JSONRounds.toString());
 		model.put("roundCount", game.getRoundSequence().length);
 		model.put("user", user.getName());
 		model.put("userIndex", game.getPlayerIndex(user.getName()));
+		model.put("version", version);
 		
 		return new ModelAndView("GameBoard", model);
 	}
@@ -467,6 +480,16 @@ public class GameController {
 	    }
 
 		return JSONTrick;
+	}
+	
+	private String getVersion(HttpServletRequest request) throws IOException {
+		InputStream pomProperties = 
+			request.getSession().getServletContext().getResourceAsStream("META-INF/maven/blim/whist/pom.properties");  
+		Properties mavenProperties = new Properties();  
+		mavenProperties.load(pomProperties);
+		String version = (String) mavenProperties.get("version");
+		
+		return version;
 	}
 	
 }
