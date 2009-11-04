@@ -80,8 +80,7 @@ public class Trick {
 		
 		if (current.getSuit().equals(candidate.getSuit())) {
 			return current.getValue().compareTo(candidate.getValue()) < 0;
-		}
-		else {
+		} else {
 			return candidate.getSuit().equals(trumps);
 		}
 	}
