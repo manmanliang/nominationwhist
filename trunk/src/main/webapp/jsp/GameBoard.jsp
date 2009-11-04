@@ -35,7 +35,6 @@
  		<div id="scores"></div>
     	<h1>Nomination Whist</h1>
     	<h3>Player ${user}</h3>
-	    <p><a href="javascript:toggleInstructions()" id="instructionsLink">Show Instructions</a></p>
     </div>
     <hr>
     <div id="gameArea">
@@ -97,6 +96,11 @@
  			<li>On the right is a space for any messages</li>
  			<li>At the bottom of the screen are your current cards</li>
  		</ul>
+ 	</div>
+ 	<div id="footer">
+ 		<hr>
+		<p id="footer-right">Version: ${version}</p>
+ 		<p><a href="javascript:toggleInstructions()" id="instructionsLink">Show Instructions</a></p>
  	</div>
   </body>
 </html>
