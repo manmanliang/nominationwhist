@@ -115,6 +115,10 @@ body {
     padding: 0 10px;
 }
 
+#instructionsInternalLink {
+    float: right;
+}
+
 /* Footer */
 
 #footer p {

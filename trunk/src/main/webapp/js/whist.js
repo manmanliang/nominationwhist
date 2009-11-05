@@ -391,6 +391,18 @@ function toggleInstructions() {
     }
 }
 
+function showInstructions(selectedPane) {
+    var panesArray = new Array("gameInstructions", "boardInstructions");
+
+    for (pane in panesArray) {
+        if (panesArray[pane] == selectedPane) {
+            document.getElementById(panesArray[pane]).style.display = "";
+        } else {
+            document.getElementById(panesArray[pane]).style.display = "none";
+        }
+    }
+}
+
 function showCurrentTrickCards() {
     game.showPreviousTrickCards = false;
     timer.showPreviousTrickCards = null;
