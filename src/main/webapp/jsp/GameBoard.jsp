@@ -52,9 +52,11 @@
     				</c:if>
  				</p>
  			</div>
-	 		<div id="chat">
- 				<h3>Chat</h3>
- 				<p>Coming soon...</p>	
+	 		<div id="statsPane">
+ 				<h3>Player Stats</h3>
+		 		<div id="stats">
+	 				<p>Coming soon...</p>
+	 			</div>	
  			</div>
 	 	</div>
 		<div id="gamePane">
