@@ -88,14 +88,19 @@ body {
     margin: 0;
 }
 
-#chat {
+#statsPane {
     background: #fafafa;
     border: 1px solid black;
     padding: 5px;
     height: 100%;
 }
 
-#chat p {
+#stats {
+    border-top: 1px solid black;
+    padding-top: 5px;
+}
+
+#stats p {
     margin: 0 0 0.5em 0;
 }
 
