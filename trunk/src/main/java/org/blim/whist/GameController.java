@@ -161,20 +161,51 @@ public class GameController {
 			HttpServletResponse response,
 			Principal user) throws IOException {
 		Session session = sessionFactory.getCurrentSession();
-		JSONArray JSONGames = new JSONArray();
+		JSONObject JSONGames = new JSONObject();
 		
 		List<Game> games = session.createQuery("from Game").list();
-	
+
+		JSONArray JSONNewGames = new JSONArray();
+		JSONArray JSONRunningGames = new JSONArray();
+
+		boolean gameAdded;
+		
 		for (Game game : games) {
-			if (game.getRounds().size() == 0) {
-				JSONObject JSONGame = new JSONObject();
-				JSONGame.put("creationDate",game.getCreationDate().toString());
-				JSONGame.put("players",game.getPlayers());
-				JSONGame.put("id",game.getId());
-				JSONGames.add(JSONGame);				
+			int roundSize = game.getRounds().size();
+
+			if (!game.isFinished()) {
+				gameAdded = false;
+				for (String player : game.getPlayers()) {
+					if (player.equals(user.getName())) {
+						JSONObject JSONGame = new JSONObject();
+						JSONGame.put("creationDate",game.getCreationDate().toString());
+						JSONGame.put("players",game.getPlayers());
+						JSONGame.put("id",game.getId());
+						JSONGame.put("roundNum", roundSize);
+						JSONRunningGames.add(JSONGame);
+						gameAdded = true;
+						break;
+					}
+				}
+				if (!gameAdded && roundSize == 0) {
+					JSONObject JSONGame = new JSONObject();
+					JSONGame.put("creationDate",game.getCreationDate().toString());
+					JSONGame.put("players",game.getPlayers());
+					JSONGame.put("id",game.getId());
+					JSONGame.put("roundNum", roundSize);
+					JSONNewGames.add(JSONGame);
+				}
 			}
 		}
 		
+		if (JSONNewGames.size() > 0) {
+			JSONGames.put("newGames", JSONNewGames);
+		}
+		
+		if (JSONRunningGames.size() > 0) {
+			JSONGames.put("runningGames", JSONRunningGames);
+		}
+
 		response.getWriter().print(JSONGames);
 	}
 

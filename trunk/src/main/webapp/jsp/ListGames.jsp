@@ -14,13 +14,19 @@
 	<h1>List of Games</h1>
 	<p>User: ${user}</p>
 	
+	<p>You can create a new game:</p>
 	<form method="POST" action="create-game">
-      <fieldset>
-        <legend>Create Game</legend>
-        <input type="submit" value="Create Game" />
-      </fieldset>
+    	<input type="submit" value="Create Game" />
     </form>
     
-    <ul id="gameList"></ul>
+    <div id="runningGames" style="display: none;">
+		<p>Rejoin a game you are already in:</p>
+    	<div id="runningGamesList"></div>
+	</div>
+	
+    <div id="newGames" style="display: none;">
+		<p>Or join an existing new game:</p>
+    	<div id="newGamesList"></div>
+    <div>
   </body>
 </html>
