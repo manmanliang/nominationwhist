@@ -7,20 +7,70 @@ function onLoadEventHandler() {
 xmlHttp['gameList'] = new JSONCallback();
 xmlHttp['gameList'].callback = function(output) {
     
-    var listLength = output.length;
-    var gameListHTML = "";
+    var gameListHTML;
     var player;
-    
-    for (i = 0; i < listLength; i++) {
-        gameListHTML = gameListHTML + "<li>Game (" + output[i].creationDate + "):";
-        for (player in output[i].players) {
-            gameListHTML = gameListHTML + output[i].players[player] + " ";
+
+    var listLength;
+
+    if (output.runningGames) {
+        listLength = output.runningGames.length;
+        
+        gameListHTML = "<ul>";
+        for (i = 0; i < listLength; i++) {
+            gameListHTML = gameListHTML + "<li>Game (" + output.runningGames[i].creationDate + ") Players: ";
+            for (player in output.runningGames[i].players) {
+                gameListHTML = gameListHTML + output.runningGames[i].players[player] + " ";
+            }
+            
+            gameListHTML = gameListHTML + "Round: ";
+            if (output.runningGames[i].roundNum == 0) {
+                gameListHTML = gameListHTML + "Game Not Started";
+            } else {
+                gameListHTML = gameListHTML + output.runningGames[i].roundNum;
+            }
+            
+            gameListHTML = gameListHTML + "<form method=\"POST\" action=\"join-game\">";
+            gameListHTML = gameListHTML + "<input type=\"hidden\" name=\"id\" value=\"" + output.runningGames[i].id + "\" />";
+            gameListHTML = gameListHTML + "<input type=\"submit\" value=\"Rejoin Game\"/></form></li>";
         }
-        gameListHTML = gameListHTML + "<form method=\"POST\" action=\"join-game\"><fieldset><legend>Join Game</legend>";
-        gameListHTML = gameListHTML + "<input type=\"hidden\" name=\"id\" value=\"" + output[i].id + "\" />";
-        gameListHTML = gameListHTML + "<input type=\"submit\" value=\"Join Game\"/></fieldset></form></li>";
+        gameListHTML = gameListHTML + "</ul>";
+        
+        document.getElementById("runningGamesList").innerHTML = gameListHTML;
+        document.getElementById("runningGames").style.display = "";
+    } else {
+        document.getElementById("runningGamesList").innerHTML = "";
+        document.getElementById("runningGames").style.display = "none";
     }
-    document.getElementById("gameList").innerHTML = gameListHTML;
+        
+    if (output.newGames) {
+        listLength = output.newGames.length;
+        
+        gameListHTML = "<ul>";
+        for (i = 0; i < listLength; i++) {
+            gameListHTML = gameListHTML + "<li>Game (" + output.newGames[i].creationDate + "):";
+            for (player in output.newGames[i].players) {
+                gameListHTML = gameListHTML + output.newGames[i].players[player] + " ";
+            }
+
+            gameListHTML = gameListHTML + "Round: ";
+            if (output.newGames[i].roundNum == 0) {
+                gameListHTML = gameListHTML + "Game Not Started";
+            } else {
+                gameListHTML = gameListHTML + output.newGames[i].roundNum;
+            }
+            
+            gameListHTML = gameListHTML + "<form method=\"POST\" action=\"join-game\">";
+            gameListHTML = gameListHTML + "<input type=\"hidden\" name=\"id\" value=\"" + output.newGames[i].id + "\" />";
+            gameListHTML = gameListHTML + "<input type=\"submit\" value=\"Join Game\"/></form></li>";
+        }
+        gameListHTML = gameListHTML + "</ul>";
+
+        document.getElementById("newGamesList").innerHTML = gameListHTML;
+        document.getElementById("newGames").style.display = "";
+    } else {
+        document.getElementById("newGamesList").innerHTML = "";
+        document.getElementById("newGames").style.display = "none";
+    }
     
     setTimeout("xmlHttp['gameList'].call()", 2000);
 }
