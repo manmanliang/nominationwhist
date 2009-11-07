@@ -377,32 +377,6 @@ function writeMessage(message) {
     timer.messages = setTimeout("regulariseMessages()", 1500);
 }
 
-function toggleInstructions() {
-    var instructionsLink = document.getElementById("instructionsLink");
-    
-    if (instructionsLink.innerHTML == "Show Instructions") {
-        instructionsLink.innerHTML = "Hide Instructions";
-        document.getElementById("gameArea").style.display = "none";
-        document.getElementById("instructions").style.display = "";
-    } else {
-        instructionsLink.innerHTML = "Show Instructions";
-        document.getElementById("instructions").style.display = "none";
-        document.getElementById("gameArea").style.display = "";
-    }
-}
-
-function showInstructions(selectedPane) {
-    var panesArray = new Array("gameInstructions", "boardInstructions");
-
-    for (pane in panesArray) {
-        if (panesArray[pane] == selectedPane) {
-            document.getElementById(panesArray[pane]).style.display = "";
-        } else {
-            document.getElementById(panesArray[pane]).style.display = "none";
-        }
-    }
-}
-
 function showCurrentTrickCards() {
     game.showPreviousTrickCards = false;
     timer.showPreviousTrickCards = null;
