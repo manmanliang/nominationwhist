@@ -22,6 +22,7 @@
     <script type="text/javascript" src="<c:url value="/js/xmlhttp.js"/>"></script>
     <script type="text/javascript" src="<c:url value="/js/whistInit.js"/>"></script>
     <script type="text/javascript" src="<c:url value="/js/whist.js"/>"></script>
+    <script type="text/javascript" src="<c:url value="/js/instructions.js"/>"></script>
     <script>
     	xmlHttp['gameStart'].init("<c:url value="/gameStart?id=${game.id}" />", "messages");
     	xmlHttp['update'].init("<c:url value="/update?id=${game.id}" />", "messages");
@@ -76,11 +77,13 @@
 		</div>	
  		<div id="hand"></div>
  	</div>
- 	<jsp:include page="/jsp/Instructions.jsp" />
+ 	<jsp:include page="Instructions.jsp">
+	 	<jsp:param name="nonInstructionsDiv" value="gameArea" />
+ 	</jsp:include>
  	<div id="footer">
  		<hr>
 		<p id="footer-right">Version: ${version}</p>
- 		<p><a href="javascript:toggleInstructions()" id="instructionsLink">Show Instructions</a></p>
+ 		<p><a href="javascript:toggleInstructions('gameArea')" id="instructionsLink">Show Instructions</a></p>
  	</div>
   </body>
 </html>

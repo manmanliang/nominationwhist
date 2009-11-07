@@ -2,7 +2,7 @@
  		<p id="instructionsInternalLink">
  			<a href="javascript:showInstructions('gameInstructions')" id="gameInstructionsLink">Rules</a>
  			<a href="javascript:showInstructions('boardInstructions')" id="boardInstructionsLink">Game Screen Help</a>
- 			| <a href="javascript:toggleInstructions()">Hide Instructions</a>
+ 			| <a href="javascript:toggleInstructions('<%= request.getParameter("nonInstructionsDiv") %>')">Hide Instructions</a>
  		</p>
  		<div id="gameInstructions">
 	 		<h2>Game Rules</h2>
