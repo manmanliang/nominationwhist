@@ -83,7 +83,7 @@
  	<div id="footer">
  		<hr>
 		<p id="footer-right">Version: ${version}</p>
- 		<p><a href="javascript:toggleInstructions('gameArea')" id="instructionsLink">Show Instructions</a></p>
+ 		<p><a href="javascript:toggleInstructions('gameArea')" id="instructionsLink">Show Instructions</a>&nbsp;<a href="./">Games List</a></p>
  	</div>
   </body>
 </html>
