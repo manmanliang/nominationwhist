@@ -10,7 +10,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
+import java.util.jar.Attributes;
+import java.util.jar.Manifest;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -521,11 +522,11 @@ public class GameController {
 	}
 	
 	private String getVersion(HttpServletRequest request) throws IOException {
-		InputStream pomProperties = 
-			request.getSession().getServletContext().getResourceAsStream("META-INF/maven/blim/whist/pom.properties");  
-		Properties mavenProperties = new Properties();  
-		mavenProperties.load(pomProperties);
-		String version = (String) mavenProperties.get("version");
+		InputStream manifestFile = request.getSession().getServletContext().getResourceAsStream("META-INF/MANIFEST.MF");
+		Manifest manifest = new Manifest(manifestFile);
+		Attributes attributes = manifest.getMainAttributes();
+
+		String version = attributes.getValue("Implementation-Version") + " Build [" + attributes.getValue("Implementation-Build") + "]";
 		
 		return version;
 	}
