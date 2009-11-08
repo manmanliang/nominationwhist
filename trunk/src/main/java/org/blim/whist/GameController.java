@@ -103,6 +103,30 @@ public class GameController {
 	}
 
 	@Transactional
+	@RequestMapping(value = "/delete-game", method = RequestMethod.POST)
+	public ModelAndView deleteGame(HttpServletResponse response, @RequestParam("id") Long gameId, Principal user) {
+		Map<String, Object> model = new HashMap<String, Object>();
+		Game game = new Game();
+		Session session = sessionFactory.getCurrentSession();
+		boolean playerInGame = false;
+		
+		session.load(game, gameId);
+		
+		for (String player : game.getPlayers()) {
+			if (player.equals(user.getName())) {
+				playerInGame = true;
+			}
+		}
+		
+		if (playerInGame) {
+			session.delete(game);
+			session.flush();
+		}
+		
+		return new ModelAndView("redirect:/", model);
+	}
+
+	@Transactional
 	@RequestMapping(value = "/start-game", method = RequestMethod.POST)
 	public ModelAndView startGame(HttpServletResponse response, @RequestParam("id") Long gameId, Principal user) {
 		Map<String, Object> model = new HashMap<String, Object>();
@@ -308,6 +332,8 @@ public class GameController {
 		
 		// Calculate activePlayer
 		JSONResult.put("activePlayer", game.activePlayer());
+		
+		// and the phase
 		JSONResult.put("phase", currentPhase);
 		
 		response.getWriter().print(JSONResult);

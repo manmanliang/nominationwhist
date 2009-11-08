@@ -134,6 +134,17 @@ body {
     float: right;
 }
 
+/* gameList page */
+
+#gamesList ul form {
+    display: inline;
+    margin-bottom: 0px;
+}
+
+#gamesList li {
+    margin-bottom: 5px;
+}
+
 table {
     background: #fafafa;
     border: 1px solid black;
