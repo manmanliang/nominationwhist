@@ -27,7 +27,7 @@ JSONCallback.prototype.init = function(url, errorElement, timeout) {
 		errorElement = "error";
 	}
 	if (typeof timeout == 'undefined') {
-		timeout = 5000;
+		timeout = 10000;
 	}
 	
 	this.url = url;
