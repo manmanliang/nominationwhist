@@ -54,9 +54,13 @@
  				</p>
  			</div>
 	 		<div id="statsPane">
+	 			<p id="statsKeyLinkPara"><a href="javascript:toggleStatsKey()" id="statsKeyLink">Show Stats Key</a></p>
  				<h3>Player Stats</h3>
 		 		<div id="stats">
-	 				<p>Coming soon...</p>
+	 				<p>Stats Coming soon...</p>
+	 			</div>	
+		 		<div id="statsKey" style="display: none">
+	 				<p>Key Coming soon...</p>
 	 			</div>	
  			</div>
 	 	</div>

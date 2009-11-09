@@ -95,13 +95,19 @@ body {
     height: 100%;
 }
 
-#stats {
+#stats, #statsKey {
     border-top: 1px solid black;
     padding-top: 5px;
 }
 
-#stats p {
-    margin: 0 0 0.5em 0;
+#stats p,
+#statsKey p {
+    margin: 0 0 3px 0;
+}
+
+#statsKeyLinkPara {
+    float: right;
+    margin: 5px 0 0 0;
 }
 
 /* Hand */
