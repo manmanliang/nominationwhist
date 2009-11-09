@@ -383,3 +383,17 @@ function showCurrentTrickCards() {
     updated.trick = true;
     updateUI();
 }
+
+function toggleStatsKey() {
+    var statsKeyLink = document.getElementById("statsKeyLink");
+    
+    if (statsKeyLink.innerHTML == "Show Stats Key") {
+        statsKeyLink.innerHTML = "Hide Stats Key";
+        document.getElementById("stats").style.display = "none";
+        document.getElementById("statsKey").style.display = "";
+    } else {
+        statsKeyLink.innerHTML = "Show Stats Key";
+        document.getElementById("statsKey").style.display = "none";
+        document.getElementById("stats").style.display = "";
+    }
+}
