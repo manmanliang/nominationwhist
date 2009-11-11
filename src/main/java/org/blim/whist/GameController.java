@@ -65,6 +65,22 @@ public class GameController {
 		return new ModelAndView("ListGames", model);
 	}
 
+	@RequestMapping("/login")
+	public ModelAndView login(
+			HttpServletRequest request,
+			Principal user) throws IOException {
+		
+		return new ModelAndView("login");
+	}
+
+	@RequestMapping("/error")
+	public ModelAndView error(
+			HttpServletRequest request,
+			Principal user) throws IOException {
+		
+		return new ModelAndView("error");
+	}
+
 	@Transactional
 	@RequestMapping(value = "/create-game", method = RequestMethod.POST)
 	public ModelAndView createGame(Principal user) {

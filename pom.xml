@@ -40,9 +40,26 @@
 				</configuration>
 			</plugin>
 			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>buildnumber-maven-plugin</artifactId>
+				<version>1.0-beta-3</version>
+				<executions>
+					<execution>
+						<phase>validate</phase>
+						<goals>
+							<goal>create</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+ 			    	<doCheck>false</doCheck>
+        			<doUpdate>false</doUpdate>
+				</configuration>
+			</plugin>
+			<plugin>
 				<groupId>org.codehaus.cargo</groupId>
 				<artifactId>cargo-maven2-plugin</artifactId>
-
+				<version>1.0.1-alpha-1</version>
 				<configuration>
 
 					<!-- Container configuration -->
@@ -55,9 +72,7 @@
 					<configuration>
 						<type>runtime</type>
 						<properties>
-							<cargo.tomcat.manager.url>http://blim.org/manager</cargo.tomcat.manager.url>
-							<cargo.remote.username>hudson</cargo.remote.username>
-							<cargo.remote.password>gfkr435g</cargo.remote.password>
+							<cargo.server.settings>localhost</cargo.server.settings>
 						</properties>
 					</configuration>
 
@@ -76,24 +91,6 @@
 						</deployables>
 					</deployer>
 
-				</configuration>
-
-			</plugin>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>buildnumber-maven-plugin</artifactId>
-				<version>1.0-beta-3</version>
-				<executions>
-					<execution>
-						<phase>validate</phase>
-						<goals>
-							<goal>create</goal>
-						</goals>
-					</execution>
-				</executions>
-				<configuration>
- 			    	<doCheck>false</doCheck>
-        			<doUpdate>false</doUpdate>
 				</configuration>
 			</plugin>
 		</plugins>
