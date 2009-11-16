@@ -132,7 +132,6 @@ public class PlayersStats {
 		float roundCount = 0;
 		
 		for (Game game : games) {
-			roundCount = 0;
 			for (Round round : game.getRounds()) {
 				roundCount++;
 				
@@ -145,7 +144,7 @@ public class PlayersStats {
 					}
 
 					int playerIndex = game.getPlayerIndex(player);
-					if (tricksWon.get(playerIndex) == bids.get(playerIndex)) {
+					if (tricksWon.get(playerIndex).equals(bids.get(playerIndex))) {
 						correctBidCount.put(player, correctBidCount.get(player) + 1);
 					}
 				}
