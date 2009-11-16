@@ -4,6 +4,7 @@
     <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
     <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
     <script type="text/javascript" src="<c:url value="/js/vars.js"/>"></script>
+    <script type="text/javascript" src="<c:url value="/js/xmlhttp.js"/>"></script>
     <script>
     	user = '${user}';
     	userId = ${userIndex};
@@ -17,9 +18,12 @@
 	  </c:if>
       	game.round.count = ${roundCount};
       	game.trick.trickNum = ${trickNum};
+      	
+      	AJAXTimeout = ${AJAXTimeout};
+      	
+      	imagesDir = "<c:url value="/images/"/>";
     </script>   
     <script type="text/javascript" src="<c:url value="/js/json.js"/>"></script>
-    <script type="text/javascript" src="<c:url value="/js/xmlhttp.js"/>"></script>
     <script type="text/javascript" src="<c:url value="/js/whistInit.js"/>"></script>
     <script type="text/javascript" src="<c:url value="/js/whist.js"/>"></script>
     <script type="text/javascript" src="<c:url value="/js/instructions.js"/>"></script>
@@ -56,11 +60,13 @@
 	 		<div id="statsPane">
 	 			<p id="statsKeyLinkPara"><a href="javascript:toggleStatsKey()" id="statsKeyLink">Show Stats Key</a></p>
  				<h3>Player Stats</h3>
-		 		<div id="stats">
-	 				<p>Stats Coming soon...</p>
-	 			</div>	
+		 		<div id="stats"></div>	
 		 		<div id="statsKey" style="display: none">
-	 				<p>Key Coming soon...</p>
+	 				<p><img src="<c:url value="/images/win.png"/>"/> = Percentage of games won</p>
+	 				<p><img src="<c:url value="/images/correctBid.png"/>"/> = Percentage of bids correct</p>
+	 				<p><img src="<c:url value="/images/favBid.png"/>"/> = Most common bid</p>
+	 				<p><img src="<c:url value="/images/favTrumps.png"/>"/> = Most common trumps called</p>
+	 				<p>Note: Stats are only generated for games that have finished and have more than 1 player.</p>
 	 			</div>	
  			</div>
 	 	</div>

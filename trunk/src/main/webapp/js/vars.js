@@ -6,6 +6,7 @@ var userId = null;
 
 game.id = null;
 game.players = new Array();
+game.playersStats = new Array();
 game.rounds = new Array();
 game.round = new Object();
 game.trick = new Object();

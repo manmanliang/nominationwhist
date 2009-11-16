@@ -10,6 +10,7 @@ xmlHttp['gameStart'].callback = function(output) {
 
 	if (output.players) {
 		game.players = output.players;
+        game.playersStats = output.playersStats;
 	}
 
     // Players update
@@ -80,6 +81,30 @@ function updatePlayerUI() {
     finalScoresHTML = finalScoresHTML + "</tr>";
     finalScoresHTML = finalScoresHTML + "</table>";
     document.getElementById("finalScores").innerHTML = finalScoresHTML;
+    
+    // Update Player Stats UI
+    var statTypes = new Array("win", "correctBid", "favBid", "favTrumps");
+
+    var playerStatsHTML = "<table><tr>";
+    var playerStats;
+    for (i in statTypes) {
+        playerStatsHTML = playerStatsHTML + "<td><img src=\"" + imagesDir + statTypes[i] + ".png\"/></td>";
+    }
+    playerStatsHTML = playerStatsHTML + "</tr>";
+    
+    var playerStatsIndex;
+    for (var i = 0; i < game.players.length; i++) {
+        playerStatsHTML = playerStatsHTML + "<tr><td colspan=\"" + statTypes.length + "\">" + game.players[i] + "</td></tr>"
+        playerStatsHTML = playerStatsHTML + "<tr>";
+        playerStats = game.playersStats[i];
+        
+        for (j in statTypes) {
+            playerStatsHTML = playerStatsHTML + "<td id=\"player" + i + statTypes[j] + "Element\">" + playerStats[statTypes[j]].toTitleCase() + "</td>";
+        }
+        playerStatsHTML = playerStatsHTML + "</tr>";
+    }
+    playerStatsHTML = playerStatsHTML + "</table>";
+    document.getElementById("stats").innerHTML = playerStatsHTML;
 }
 
 function getCardElementPositions() {

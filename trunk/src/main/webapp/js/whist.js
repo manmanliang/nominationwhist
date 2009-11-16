@@ -56,7 +56,7 @@ function updateUI() {
 	    for (i = 0; i < game.players.length; i++) {
             document.getElementById("player" + i + "currentBid").innerHTML = (game.rounds[idx].bids[i] != null) ? game.rounds[idx].bids[i] : "";
 	    }
-        document.getElementById("currentTrumps").innerHTML = (game.rounds[idx].trumps) ? prettify(game.rounds[idx].trumps) : "";
+        document.getElementById("currentTrumps").innerHTML = (game.rounds[idx].trumps) ? game.rounds[idx].trumps.toTitleCase() : "";
         document.getElementById("currentCards").innerHTML = game.rounds[idx].numberOfCards;
 
 		updated.round = false;
@@ -71,7 +71,7 @@ function updateUI() {
                 document.getElementById("player" + i + "prevTricks").innerHTML = game.rounds[idx].tricksWon[i];
                 document.getElementById("player" + i + "prevScore").innerHTML = game.rounds[idx].scores[i];
             }
-            document.getElementById("prevTrumps").innerHTML = prettify(game.rounds[idx].trumps);
+            document.getElementById("prevTrumps").innerHTML = game.rounds[idx].trumps.toTitleCase();
             document.getElementById("prevCards").innerHTML = game.rounds[idx].numberOfCards;
         }
 		updated.previousRound = false;
@@ -96,7 +96,7 @@ function updateUI() {
                 trickListToShow = game.trick.cards;
 
                 if (game.trick.previousCards) {
-                    document.getElementById("player" + i + "PreviousTrickCard").src = "images/" + game.trick.previousCards[i] + ".png";
+                    document.getElementById("player" + i + "PreviousTrickCard").src = imagesDir + game.trick.previousCards[i] + ".png";
                     document.getElementById("player" + i + "PreviousTrickElement").style.visibility = "visible";
                 }
             }
@@ -105,7 +105,7 @@ function updateUI() {
 				trickElement.style.visibility = "hidden";
 	        	imgToUpdate.src = "";
 		    } else {
-		    	imgToUpdate.src = "images/" + trickListToShow[i] + ".png";
+		    	imgToUpdate.src = imagesDir + trickListToShow[i] + ".png";
 		        trickElement.style.visibility = "visible";
 		    }
 	    }
@@ -118,7 +118,7 @@ function updateUI() {
 		if (game.phase == 0) {
 			var html = "";
 			for (var num = 0; num <= game.rounds[game.round.current].numberOfCards; num++) {
-				html = html + "<a href=\"javascript:bid(" + num + ");\"><img src=\"images/" + num + ".png\"/></a> ";
+				html = html + "<a href=\"javascript:bid(" + num + ");\"><img src=\"" + imagesDir + num + ".png\"/></a> ";
 			}
 			document.getElementById("bidUI").innerHTML = html;
             document.getElementById("trick").style.display = 'none';
@@ -131,7 +131,7 @@ function updateUI() {
 			var suits = new Array("SPADES", "HEARTS", "DIAMONDS", "CLUBS", "NO-TRUMPS");
 			var html = "";
 			for (suit in suits) {
-				html = 	html + "<a href=\"javascript:setTrumps('" + suits[suit] + "');\"><img src=\"images/" + suits[suit] + ".png\"/></a> ";
+				html = 	html + "<a href=\"javascript:setTrumps('" + suits[suit] + "');\"><img src=\"" + imagesDir + suits[suit] + ".png\"/></a> ";
 			}
 			document.getElementById("trumpsUI").innerHTML = html;
             document.getElementById("trick").style.display = 'none';
@@ -245,7 +245,7 @@ function setTrumps(trumps) {
 	// Clear the UI and record our trumps choice
 	document.getElementById("trumpsUI").style.display = 'none';
 	document.getElementById("trick").style.display = '';
-	document.getElementById("currentTrumps").innerHTML = prettify(trumps);
+	document.getElementById("currentTrumps").innerHTML = trumps.toTitleCase();
 
 	xmlHttp['trumps'].call('{"id":' + game.id + ', "trumps":"' + trumps + '"}');
 }
@@ -274,7 +274,7 @@ function playCard(card) {
     
 	// Remove the card from our hand and add it to the trick
 	document.getElementById(card).style.display = 'none';
-	document.getElementById("player" + userId + "TrickCard").src = "images/" + card + ".png";
+	document.getElementById("player" + userId + "TrickCard").src = imagesDir + card + ".png";
 	document.getElementById("player" + userId + "TrickElement").style.visibility = "visible";
 	
 	// Now remove the onClick handler
@@ -329,7 +329,7 @@ function removeHandOnClickHandler() {
 }
 
 function cardHTML(card, displayState) {
-	var html = "<img id = \"" + card + "\" src = \"images/" + card + ".png\"";
+	var html = "<img id = \"" + card + "\" src = \"" + imagesDir + card + ".png\"";
 
 	if (displayState) {
 		html = html + "style = \"display: " + displayState + ";\"";
@@ -338,23 +338,6 @@ function cardHTML(card, displayState) {
 	html = html + "/>";
 	
 	return html;
-}
-
-function prettify(string) {
-    var pretty = "";
-    
-    if (string) {
-        var stringWordArray = string.split("-");
-        for (word in stringWordArray) {
-            var prettyWord = stringWordArray[word].substr(0,1);
-            var tmp = stringWordArray[word].substr(1);
-            prettyWord = prettyWord.toUpperCase();
-            prettyWord = prettyWord + tmp.toLowerCase();
-            pretty = pretty + " " + prettyWord;
-        }
-    }
-    
-    return pretty;
 }
 
 function regulariseMessages() {
@@ -397,3 +380,16 @@ function toggleStatsKey() {
         document.getElementById("stats").style.display = "";
     }
 }
+
+String.prototype.toTitleCase = function() {
+    return this.replace(/([\w&`'‘’"“.@:\/\{\(\[<>_]+-? *)/g, function(match, p1, index, title) {
+        if (index > 0 && title.charAt(index - 2) !== ":" &&
+        	match.search(/^(a(nd?|s|t)?|b(ut|y)|en|for|i[fn]|o[fnr]|t(he|o)|vs?\.?|via)[ \-]/i) > -1)
+            return match.toLowerCase();
+        if (title.substring(index - 1, index + 1).search(/['"_{(\[]/) > -1)
+            return match.charAt(0) + match.charAt(1).toUpperCase() + match.substr(2);
+        if (title.substring(index - 1, index + 1).search(/[\])}]/) > -1)
+            return match;
+        return match.charAt(0).toUpperCase() + match.substr(1).toLowerCase();
+    });
+};
