@@ -327,7 +327,7 @@ public class GameController {
 				playerStats.getCorrectBid() == 0) {
 				correctBidString = "0";
 			} else {
-				correctBidString = playerStats.getFavBid().toString();
+				correctBidString = playerStats.getCorrectBid().toString();
 			}
 			JSONPlayerStats.put("favBid", favBidString);
 			JSONPlayerStats.put("favTrumps", favTrumpsString);
