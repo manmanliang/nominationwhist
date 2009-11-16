@@ -1,3 +1,5 @@
+var AJAXTimeout = true;
+
 function xmlHttpRestart(data) {
 	this.xmlHttp.abort();
     this.timeoutCount++;
@@ -98,7 +100,9 @@ JSONCallback.prototype.call = function(data) {
         this.xmlHttp.onreadystatechange = function () {classInstanceThis.xmlHttpCallback()};
         this.xmlHttp.open(method, this.url, true);
         this.xmlHttp.send(data);
-        this.timer = setTimeout(function() {xmlHttpRestart.call(classInstanceThis, data);}, this.timeout);
+        if (AJAXTimeout) {
+            this.timer = setTimeout(function() {xmlHttpRestart.call(classInstanceThis, data);}, this.timeout);
+        }
     }
     else
     {

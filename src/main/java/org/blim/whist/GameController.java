@@ -41,7 +41,17 @@ import com.google.common.collect.Lists;
 public class GameController {
 
 	private SessionFactory sessionFactory;
+	private PlayersStats playersStats;
 	
+	public PlayersStats getPlayerStats() {
+		return playersStats;
+	}
+
+	@Autowired
+	public void setPlayerStats(PlayersStats playerStats) {
+		this.playersStats = playerStats;
+	}
+
 	public SessionFactory getSessionFactory() {
 		return sessionFactory;
 	}
@@ -166,12 +176,17 @@ public class GameController {
 	public ModelAndView gameState(
 			HttpServletRequest request,
 			@RequestParam("id") Long gameId,
+			@RequestParam(value = "ajaxtimeout", required = false) Boolean AJAXTimeout,
 			Principal user) throws IOException {
 		Map<String, Object> model = new HashMap<String, Object>();
 		Game game = new Game();
 		List<JSONObject> JSONRounds = Lists.newArrayList();
 		Session session = sessionFactory.getCurrentSession();
 
+		if (AJAXTimeout == null) {
+			AJAXTimeout = true;
+		}
+		
 		session.load(game, gameId);
 
 		for (int idx = 0; idx < game.getRounds().size(); idx++) {
@@ -192,6 +207,7 @@ public class GameController {
 		model.put("userIndex", game.getPlayerIndex(user.getName()));
 		model.put("version", version);
 		model.put("trickNum", trickNum);
+		model.put("AJAXTimeout", AJAXTimeout);
 		
 		return new ModelAndView("GameBoard", model);
 	}
@@ -279,7 +295,50 @@ public class GameController {
 		} else {
 			JSONResult.put("phase", 0);
 		}
+		
+		playersStats.update();
+		JSONArray JSONPlayersStats = new JSONArray();
+		
+		for (String player : game.getPlayers()) {
+			PlayerStats playerStats = playersStats.getPlayerStats(player);
+			JSONObject JSONPlayerStats = new JSONObject();
+
+			String favBidString = new String();
+			if (playerStats.getFavBid() == null) {
+				favBidString = "-";
+			} else {
+				favBidString = playerStats.getFavBid().toString();
+			}
+			String favTrumpsString = new String();
+			if (playerStats.getFavTrumps() == null) {
+				favTrumpsString = "-";
+			} else {
+				favTrumpsString = playerStats.getFavTrumps().toString();
+			}
+			String winString = new String();
+			if (playerStats.getWin() == null ||
+				playerStats.getWin() == 0) {
+				winString = "0";
+			} else {
+				winString = playerStats.getWin().toString();
+			}
+			String correctBidString = new String();
+			if (playerStats.getCorrectBid() == null ||
+				playerStats.getCorrectBid() == 0) {
+				correctBidString = "0";
+			} else {
+				correctBidString = playerStats.getFavBid().toString();
+			}
+			JSONPlayerStats.put("favBid", favBidString);
+			JSONPlayerStats.put("favTrumps", favTrumpsString);
+			JSONPlayerStats.put("win", winString + "%");
+			JSONPlayerStats.put("correctBid", correctBidString + "%");
+			
+			JSONPlayersStats.add(JSONPlayerStats);
+		}
 	
+		JSONResult.put("playersStats", JSONPlayersStats);
+
 		JSONResult.put("players", game.getPlayers());
 		response.getWriter().print(JSONResult);
 	}

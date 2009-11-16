@@ -105,6 +105,14 @@ body {
     margin: 0 0 3px 0;
 }
 
+#stats table {
+    width: 100%;
+}
+
+#statsKey img {
+    vertical-align: middle;
+}
+
 #statsKeyLinkPara {
     float: right;
     margin: 5px 0 0 0;
