@@ -303,36 +303,10 @@ public class GameController {
 			PlayerStats playerStats = playersStats.getPlayerStats(player);
 			JSONObject JSONPlayerStats = new JSONObject();
 
-			String favBidString = new String();
-			if (playerStats.getFavBid() == null) {
-				favBidString = "-";
-			} else {
-				favBidString = playerStats.getFavBid().toString();
-			}
-			String favTrumpsString = new String();
-			if (playerStats.getFavTrumps() == null) {
-				favTrumpsString = "-";
-			} else {
-				favTrumpsString = playerStats.getFavTrumps().toString();
-			}
-			String winString = new String();
-			if (playerStats.getWin() == null ||
-				playerStats.getWin() == 0) {
-				winString = "0";
-			} else {
-				winString = playerStats.getWin().toString();
-			}
-			String correctBidString = new String();
-			if (playerStats.getCorrectBid() == null ||
-				playerStats.getCorrectBid() == 0) {
-				correctBidString = "0";
-			} else {
-				correctBidString = playerStats.getCorrectBid().toString();
-			}
-			JSONPlayerStats.put("favBid", favBidString);
-			JSONPlayerStats.put("favTrumps", favTrumpsString);
-			JSONPlayerStats.put("win", winString + "%");
-			JSONPlayerStats.put("correctBid", correctBidString + "%");
+			JSONPlayerStats.put("favBid", playerStats.getFavBid());
+			JSONPlayerStats.put("favTrumps", playerStats.getFavTrumps());
+			JSONPlayerStats.put("win", playerStats.getWin());
+			JSONPlayerStats.put("correctBid", playerStats.getCorrectBid());
 			
 			JSONPlayersStats.add(JSONPlayerStats);
 		}

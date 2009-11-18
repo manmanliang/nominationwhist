@@ -84,6 +84,7 @@ function updatePlayerUI() {
     
     // Update Player Stats UI
     var statTypes = new Array("win", "correctBid", "favBid", "favTrumps");
+    var percentStatTypes = new Array("win", "correctBid");
 
     var playerStatsHTML = "<table><tr>";
     var playerStats;
@@ -92,14 +93,25 @@ function updatePlayerUI() {
     }
     playerStatsHTML = playerStatsHTML + "</tr>";
     
-    var playerStatsIndex;
+    var playerStatValue;
     for (var i = 0; i < game.players.length; i++) {
         playerStatsHTML = playerStatsHTML + "<tr><td colspan=\"" + statTypes.length + "\">" + game.players[i] + "</td></tr>"
         playerStatsHTML = playerStatsHTML + "<tr>";
         playerStats = game.playersStats[i];
         
         for (j in statTypes) {
-            playerStatsHTML = playerStatsHTML + "<td id=\"player" + i + statTypes[j] + "Element\">" + playerStats[statTypes[j]].toTitleCase() + "</td>";
+            if (playerStats[statTypes[j]] == null) {
+                playerStatValue = "-";
+            } else {
+                playerStatValue = (typeof playerStats[statTypes[j]] == 'string') ? playerStats[statTypes[j]].toTitleCase() : playerStats[statTypes[j]];
+                for (k in percentStatTypes) {
+                    if (statTypes[j] == percentStatTypes[k]) {
+                        playerStatValue = playerStatValue + "%";
+                        break;
+                    }
+                }
+            }
+            playerStatsHTML = playerStatsHTML + "<td id=\"player" + i + statTypes[j] + "Element\">" + playerStatValue + "</td>";
         }
         playerStatsHTML = playerStatsHTML + "</tr>";
     }
