@@ -1,9 +1,9 @@
 <html>
 <head>
-<title>Error Page For Whist</title>
+<title>Login Error</title>
 </head>
 <body bgcolor="white">
 Invalid username and/or password, please try
-<a href='login.jsp'>again</a>.
+<a href='./'>again</a>.
 </body>
 </html>
