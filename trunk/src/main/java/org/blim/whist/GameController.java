@@ -275,10 +275,18 @@ public class GameController {
 			Principal user) throws IOException {
 		Game game = new Game();
 		JSONObject JSONResult = new JSONObject();
-	
-		JSONObject JSONInput = parseInput(request);		
-		if (JSONInput.containsKey("internalError")) {
-			response.getWriter().print(JSONInput);
+		
+		JSONObject JSONInput = null;
+		
+		try {
+		 	JSONInput = parseInput(request);	
+		} catch (RuntimeException e) {
+			response.getWriter().print(e.getMessage());
+			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+			return;
+		}
+		
+		if (JSONInput == null) {
 			return;
 		}
 					
@@ -327,9 +335,17 @@ public class GameController {
 		Game game = new Game();
 		JSONObject JSONResult = new JSONObject();
 	
-		JSONObject JSONInput = parseInput(request);		
-		if (JSONInput.containsKey("internalError")) {
-			response.getWriter().print(JSONInput);
+		JSONObject JSONInput = null;
+		
+		try {
+		 	JSONInput = parseInput(request);	
+		} catch (RuntimeException e) {
+			response.getWriter().print(e.getMessage());
+			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+			return;
+		}
+		
+		if (JSONInput == null) {
 			return;
 		}
 					
@@ -398,9 +414,17 @@ public class GameController {
 		Game game = new Game();
 		JSONObject JSONResult = new JSONObject();
 
-		JSONObject JSONInput = parseInput(request);		
-		if (JSONInput.containsKey("internalError")) {
-			response.getWriter().print(JSONInput);
+		JSONObject JSONInput = null;
+		
+		try {
+		 	JSONInput = parseInput(request);	
+		} catch (RuntimeException e) {
+			response.getWriter().print(e.getMessage());
+			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+			return;
+		}
+		
+		if (JSONInput == null) {
 			return;
 		}
 					
@@ -440,12 +464,20 @@ public class GameController {
 		Game game = new Game();
 		JSONObject JSONResult = new JSONObject();
 
-		JSONObject JSONInput = parseInput(request);		
-		if (JSONInput.containsKey("internalError")) {
-			response.getWriter().print(JSONInput);
+		JSONObject JSONInput = null;
+		
+		try {
+		 	JSONInput = parseInput(request);	
+		} catch (RuntimeException e) {
+			response.getWriter().print(e.getMessage());
+			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return;
 		}
-
+		
+		if (JSONInput == null) {
+			return;
+		}
+					
 		Session session = sessionFactory.getCurrentSession();
 
 		Long gameId = ((Number) JSONInput.get("id")).longValue();
@@ -475,7 +507,7 @@ public class GameController {
 	
 	@Transactional
 	@SuppressWarnings("unchecked")
-	@RequestMapping(value = "/play-card", method = RequestMethod.POST)
+	@RequestMapping(value = "/playCard", method = RequestMethod.POST)
 	public void playCard(
 			HttpServletResponse response,
 			HttpServletRequest request,
@@ -483,12 +515,20 @@ public class GameController {
 		Game game = new Game();
 		JSONObject JSONResult = new JSONObject();
 
-		JSONObject JSONInput = parseInput(request);		
-		if (JSONInput.containsKey("internalError")) {
-			response.getWriter().print(JSONInput);
+		JSONObject JSONInput = null;
+		
+		try {
+		 	JSONInput = parseInput(request);	
+		} catch (RuntimeException e) {
+			response.getWriter().print(e.getMessage());
+			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return;
 		}
-
+		
+		if (JSONInput == null) {
+			return;
+		}
+					
 		Session session = sessionFactory.getCurrentSession();
 
 		Long gameId = ((Number) JSONInput.get("id")).longValue();
@@ -517,22 +557,15 @@ public class GameController {
 		response.getWriter().print(JSONResult);
 	}	
 	
-	@SuppressWarnings("unchecked")
-	private JSONObject parseInput(HttpServletRequest request) {
+	private JSONObject parseInput(HttpServletRequest request) throws IOException, RuntimeException {
 		JSONObject json = new JSONObject();
 		BufferedReader reader = null;
 		
-		try {
-			reader = request.getReader();
-		} catch (IOException error) {
-			json.put("internalError", error.getMessage());
-			return json;
-		}
-
+		reader = request.getReader();
 		Object obj = JSONValue.parse(reader);
 		
 		if (!(obj instanceof JSONObject)) {
-			json.put("internalError", "Received an invalid JSONObject");
+			throw new RuntimeException("Received an invalid JSONObject");
 		} else {
 			json = (JSONObject) obj;			
 		}

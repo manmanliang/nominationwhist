@@ -1,9 +1,8 @@
 function onLoadEventHandler() {
-	xmlHttp['gameStart'].call('{"id":' + game.id + ',\"phase\":-1}');
+	$.post('gameStart', JSON.stringify({id:game.id, phase:-1}), gameStartCallback);
 }
 
-xmlHttp['gameStart'] = new JSONCallback();
-xmlHttp['gameStart'].callback = function(output) {
+function gameStartCallback(output) {
 
 	// Update game state based on JSON output
 	game.phase = output.phase;
@@ -17,10 +16,10 @@ xmlHttp['gameStart'].callback = function(output) {
     updatePlayerUI();
 	
     if (game.phase == -1) {
-		setTimeout("xmlHttp['gameStart'].call('{\"id\":' + game.id + ',\"phase\":-1}')", 2000);
+        setTimeout("$.post('gameStart', JSON.stringify({id:game.id, phase:-1}), gameStartCallback)", 2000);
 	} else {
-        document.getElementById("trick").style.display = '';
-		xmlHttp['update'].call('{\"id\":' + game.id + ', \"phase\":-1}');
+        $("#trick").show();
+		$.post('update', JSON.stringify({id:game.id, phase:-1}), updateCallback);
 	}
 }
 
@@ -48,7 +47,7 @@ function updatePlayerUI() {
         scoresTableHTML = scoresTableHTML + "</tr>";
     }
     scoresTableHTML = scoresTableHTML + "</table>";
-    document.getElementById("scores").innerHTML = scoresTableHTML;    
+    $("#scores").html(scoresTableHTML);
     
     // Update Trick UI
     var trickHTML = "";
@@ -62,14 +61,14 @@ function updatePlayerUI() {
         trickHTML = trickHTML + "<tr><td><img id=\"player" + i + "TrickCard\" src=\"\" height=\"96\" width=\"72\"/></td></tr>";
         trickHTML = trickHTML + "</table>";
     }
-    document.getElementById("trick").innerHTML = trickHTML;    
+    $("#trick").html(trickHTML);
     trickHTML = "";
     for (var i = 0; i < game.players.length; i++) {
         trickHTML = trickHTML + "<table class=\"trickElement\" id=\"player" + i + "PreviousTrickElement\" style=\"visibility: hidden;\">";
         trickHTML = trickHTML + "<tr><td><img id=\"player" + i + "PreviousTrickCard\" src=\"\" height=\"64\" width=\"48\"/></td></tr>";
         trickHTML = trickHTML + "<tr><td>" + game.players[i] + "</td></tr></table>";
     }
-    document.getElementById("previousTrick").innerHTML = trickHTML;    
+    $("#previousTrick").html(trickHTML);
 
     // Update Final Scores UI
     var fsColumnCount = game.players.length * 2;
@@ -80,7 +79,7 @@ function updatePlayerUI() {
     }
     finalScoresHTML = finalScoresHTML + "</tr>";
     finalScoresHTML = finalScoresHTML + "</table>";
-    document.getElementById("finalScores").innerHTML = finalScoresHTML;
+    $("#finalScores").html(finalScoresHTML);
     
     // Update Player Stats UI
     var statTypes = new Array("win", "correctBid", "favBid", "favTrumps");
@@ -116,7 +115,7 @@ function updatePlayerUI() {
         playerStatsHTML = playerStatsHTML + "</tr>";
     }
     playerStatsHTML = playerStatsHTML + "</table>";
-    document.getElementById("stats").innerHTML = playerStatsHTML;
+    $("stats").html(playerStatsHTML);
 }
 
 function getCardElementPositions() {

@@ -1,11 +1,8 @@
-var xmlHttp = new Array();
-
 function onLoadEventHandler() {
-	xmlHttp['gameList'].call();
+	$.get('games', gameListCallback);
 }
 
-xmlHttp['gameList'] = new JSONCallback();
-xmlHttp['gameList'].callback = function(output) {
+function gameListCallback(output) {
     
     var gameListHTML;
     var player;
@@ -40,11 +37,11 @@ xmlHttp['gameList'].callback = function(output) {
         }
         gameListHTML = gameListHTML + "</ul>";
         
-        document.getElementById("runningGamesList").innerHTML = gameListHTML;
-        document.getElementById("runningGames").style.display = "";
+        $("#runningGamesList").html(gameListHTML);
+        $("#runningGames").show();
     } else {
-        document.getElementById("runningGamesList").innerHTML = "";
-        document.getElementById("runningGames").style.display = "none";
+        $("#runningGamesList").empty();
+        $("#runningGames").hide();
     }
         
     if (output.newGames) {
@@ -72,12 +69,12 @@ xmlHttp['gameList'].callback = function(output) {
         }
         gameListHTML = gameListHTML + "</ul>";
 
-        document.getElementById("newGamesList").innerHTML = gameListHTML;
-        document.getElementById("newGames").style.display = "";
+        $("#newGamesList").html(gameListHTML);
+        $("#newGames").show();
     } else {
-        document.getElementById("newGamesList").innerHTML = "";
-        document.getElementById("newGames").style.display = "none";
+        $("#newGamesList").empty();
+        $("#newGames").hide();
     }
     
-    setTimeout("xmlHttp['gameList'].call()", 2000);
+    setTimeout("$.get('games', gameListCallback)", 2000);
 }

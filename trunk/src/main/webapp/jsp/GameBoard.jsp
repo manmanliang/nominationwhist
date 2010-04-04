@@ -3,9 +3,11 @@
     <title>Whist Game</title>
     <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
     <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+    <script type="text/javascript" src="<c:url value="/js/json.js"/>"></script>
+    <script type="text/javascript" src="<c:url value="/js/jquery-1.4.2.min.js"/>"></script>
     <script type="text/javascript" src="<c:url value="/js/vars.js"/>"></script>
-    <script type="text/javascript" src="<c:url value="/js/xmlhttp.js"/>"></script>
-    <script>
+    <script type="text/javascript" src="<c:url value="/js/jQueryGlobals.js"/>"></script>
+    <script type="text/javascript">
     	user = '${user}';
     	userId = ${userIndex};
     	
@@ -23,20 +25,17 @@
       	
       	imagesDir = "<c:url value="/images/"/>";
     </script>   
-    <script type="text/javascript" src="<c:url value="/js/json.js"/>"></script>
     <script type="text/javascript" src="<c:url value="/js/whistInit.js"/>"></script>
     <script type="text/javascript" src="<c:url value="/js/whist.js"/>"></script>
     <script type="text/javascript" src="<c:url value="/js/instructions.js"/>"></script>
-    <script>
-    	xmlHttp['gameStart'].init("<c:url value="/gameStart?id=${game.id}" />", "messages");
-    	xmlHttp['update'].init("<c:url value="/update?id=${game.id}" />", "messages");
-    	xmlHttp['bid'].init("<c:url value="/bid?id=${game.id}" />", "messages");
-    	xmlHttp['trumps'].init("<c:url value="/trumps?id=${game.id}" />", "messages");
-    	xmlHttp['playCard'].init("<c:url value="/play-card?id=${game.id}" />", "messages");
+    <script type="text/javascript">
+    	$(function() {
+    		onLoadEventHandler();
+    	});
     </script>
 	<link rel="stylesheet" type="text/css" href="<c:url value="/css/whist.css"/>" />
   </head>
-  <body onload="onLoadEventHandler();">
+  <body>
  	<div id="header">
  		<div id="scores"></div>
     	<h1>Nomination Whist</h1>
