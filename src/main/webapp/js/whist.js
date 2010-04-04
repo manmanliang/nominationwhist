@@ -8,24 +8,24 @@ function gameUpdatedEventHandler() {
 	if (userId != game.activePlayer) {
 		if (userAction == true) {
 			userAction = false;
-			xmlHttp['update'].call('{\"id\":' + game.id + ', \"phase\":' + game.phase + '}');
+			$.post('update', JSON.stringify({id:game.id, phase:game.phase}), updateCallback);
 		} else {
-            setTimeout("xmlHttp['update'].call('{\"id\":' + game.id + ', \"phase\":' + game.phase + '}')", 500);
+            setTimeout("$.post('update', JSON.stringify({id:game.id, phase:game.phase}), updateCallback)", 500);
 		}
 	}
 }
 
 // Inspect the game data 'updated' flags to determine which
-// UI components must be re-rendered.
-function updateUI() {
+// Game Information components must be re-rendered.
+function updateGameState() {
 	// Game finished update
 	if (game.phase == 3) {
 		// Game is finished, print final scores
 	    for (var i = 0; i < game.players.length; i++) {
-			document.getElementById("player" + i + "FinalScore").innerHTML = game.rounds[game.round.current].scores[i];
-            document.getElementById("player" + i + "currentScore").innerHTML = game.rounds[game.round.current].scores[i];
+			$("#player" + i + "FinalScore").text(game.rounds[game.round.current].scores[i]);
+            $("#player" + i + "currentScore").text(game.rounds[game.round.current].scores[i]);
 		}
-        document.getElementById("finalScores").style.display = '';
+        $("#finalScores").show();
 
        	// set active player to be us as we want no more ui polls from other players events
        	game.activePlayer = userId;
@@ -34,18 +34,22 @@ function updateUI() {
     // Active Player Update
     if (game.activePlayer != null) {
         for (var i = 0; i < game.players.length; i++) {
-            document.getElementById("player" + i + "ScoreColumn").className = "";            
+            $("#player" + i + "ScoreColumn").removeClass();            
         }
-        document.getElementById("player" + game.activePlayer + "ScoreColumn").className = "active";
+        $("#player" + game.activePlayer + "ScoreColumn").addClass('active');
     }
 
     // Hand update
     if (updated.hand) {
         var imgHTML = "";
         for (card in game.hand) {
-        	imgHTML = imgHTML + " " + cardHTML(game.hand[card]);
+            // Use title attr to store the unique name of this card for passing to the server
+        	imgHTML = imgHTML + " " + 
+                      "<img id = \"" + game.hand[card] + 
+                      "\" title = \"" + game.hand[card] + 
+                      "\" src = \"" + imagesDir + game.hand[card] + ".png\"/>";
         }
-        document.getElementById("hand").innerHTML = imgHTML;
+        $("#hand").html(imgHTML);
        	updated.hand = false;
 	}
 	        
@@ -54,10 +58,10 @@ function updateUI() {
 		var idx = game.round.current;
 		
 	    for (i = 0; i < game.players.length; i++) {
-            document.getElementById("player" + i + "currentBid").innerHTML = (game.rounds[idx].bids[i] != null) ? game.rounds[idx].bids[i] : "";
+            $("#player" + i + "currentBid").text((game.rounds[idx].bids[i] != null) ? game.rounds[idx].bids[i] : "");
 	    }
-        document.getElementById("currentTrumps").innerHTML = (game.rounds[idx].trumps) ? game.rounds[idx].trumps.toTitleCase() : "";
-        document.getElementById("currentCards").innerHTML = game.rounds[idx].numberOfCards;
+        $("#currentTrumps").text((game.rounds[idx].trumps) ? game.rounds[idx].trumps.toTitleCase() : "");
+        $("#currentCards").text(game.rounds[idx].numberOfCards);
 
 		updated.round = false;
 	}
@@ -67,12 +71,12 @@ function updateUI() {
             var idx = game.round.current - 1;
             
             for (i = 0; i < game.players.length; i++) {
-                document.getElementById("player" + i + "prevBid").innerHTML = game.rounds[idx].bids[i];
-                document.getElementById("player" + i + "prevTricks").innerHTML = game.rounds[idx].tricksWon[i];
-                document.getElementById("player" + i + "prevScore").innerHTML = game.rounds[idx].scores[i];
+                $("#player" + i + "prevBid").text(game.rounds[idx].bids[i]);
+                $("#player" + i + "prevTricks").text(game.rounds[idx].tricksWon[i]);
+                $("#player" + i + "prevScore").text(game.rounds[idx].scores[i]);
             }
-            document.getElementById("prevTrumps").innerHTML = game.rounds[idx].trumps.toTitleCase();
-            document.getElementById("prevCards").innerHTML = game.rounds[idx].numberOfCards;
+            $("#prevTrumps").text(game.rounds[idx].trumps.toTitleCase());
+            $("#prevCards").text(game.rounds[idx].numberOfCards);
         }
 		updated.previousRound = false;
     }
@@ -81,13 +85,11 @@ function updateUI() {
     if (updated.trick) {
 	    for (var i = 0; i < game.players.length; i++) {
 		   	if (!game.trick.tricksWon[i]) {
-		    	document.getElementById("player" + i + "currentTricks").innerHTML = "";
+		    	$("#player" + i + "currentTricks").text("");
 		    } else {
-				document.getElementById("player" + i + "currentTricks").innerHTML = game.trick.tricksWon[i];
+				$("#player" + i + "currentTricks").text(game.trick.tricksWon[i]);
 		    }
 
-	    	var imgToUpdate = document.getElementById("player" + i + "TrickCard");
-	    	var trickElement = document.getElementById("player" + i + "TrickElement");
             var trickListToShow;
             
             if (game.showPreviousTrickCards) {
@@ -96,22 +98,49 @@ function updateUI() {
                 trickListToShow = game.trick.cards;
 
                 if (game.trick.previousCards) {
-                    document.getElementById("player" + i + "PreviousTrickCard").src = imagesDir + game.trick.previousCards[i] + ".png";
-                    document.getElementById("player" + i + "PreviousTrickElement").style.visibility = "visible";
+                    $("#player" + i + "PreviousTrickCard").attr('src', imagesDir + game.trick.previousCards[i] + '.png');
+                    $("#player" + i + "PreviousTrickElement").css('visibility', 'visible');
                 }
             }
             
 	      	if (!trickListToShow[i]) {
-				trickElement.style.visibility = "hidden";
-	        	imgToUpdate.src = "";
+				$("#player" + i + "TrickElement").css('visibility', 'hidden');
+	        	$("#player" + i + "TrickCard").attr('src', '');
 		    } else {
-		    	imgToUpdate.src = imagesDir + trickListToShow[i] + ".png";
-		        trickElement.style.visibility = "visible";
+		    	$("#player" + i + "TrickCard").attr('src', imagesDir + trickListToShow[i] + '.png');
+		        $("#player" + i + "TrickElement").css('visibility', 'visible');
 		    }
 	    }
 	   	updated.trick = false;
 	}
-            
+
+    // Set the message string
+    if (game.players.length > game.rounds[game.round.current].bids.length) {
+        if (game.activePlayer == userId) {
+            $("#message").text("Please select your bid");
+        } else {
+            $("#message").text(game.players[game.activePlayer] + " is bidding");
+        }
+    } else if (game.rounds[game.round.current].trumps == null) {
+        var highestBidder = game.rounds[game.round.current].highestBidder;
+        if (game.activePlayer == userId) {
+            $("#message").text("Please choose trumps");
+        } else {
+            $("#message").text(game.players[game.activePlayer] + " is choosing trumps");
+        }
+    } else {
+        // Must be in a trick
+        if (game.activePlayer == userId) {
+            $("#message").text("Please play a card");
+        } else {
+            $("#message").text(game.players[game.activePlayer] + "'s turn to play a card");
+        }        
+    }
+    $("#message").css('visibility', 'visible');
+
+}
+
+function updateUI() {
 	// Check UIs to update if we are the current player
 	if (userId == game.activePlayer) {	
 		// Bid UI Update
@@ -120,9 +149,9 @@ function updateUI() {
 			for (var num = 0; num <= game.rounds[game.round.current].numberOfCards; num++) {
 				html = html + "<a href=\"javascript:bid(" + num + ");\"><img src=\"" + imagesDir + num + ".png\"/></a> ";
 			}
-			document.getElementById("bidUI").innerHTML = html;
-            document.getElementById("trick").style.display = 'none';
-            document.getElementById("bidUI").style.display = '';
+			$("#bidUI").html(html);
+            $("#trick").hide();
+            $("#bidUI").show();
 		}
 	
 		// Trumps UI Update
@@ -133,47 +162,19 @@ function updateUI() {
 			for (suit in suits) {
 				html = 	html + "<a href=\"javascript:setTrumps('" + suits[suit] + "');\"><img src=\"" + imagesDir + suits[suit] + ".png\"/></a> ";
 			}
-			document.getElementById("trumpsUI").innerHTML = html;
-            document.getElementById("trick").style.display = 'none';
-            document.getElementById("trumpsUI").style.display = '';
+			$("#trumpsUI").html(html);
+            $("#trick").hide();
+            $("#trumpsUI").show();
 		}
 
 		// Play card UI Update
 		if (game.phase == 2) {
-			setHandOnClickHandler();
+			$("#hand img").click(playCard);
 		}
 	}
-
-    // Set the message string
-    var message = document.getElementById("message");
-    if (game.players.length > game.rounds[game.round.current].bids.length) {
-        if (game.activePlayer == userId) {
-            message.innerHTML = "Please select your bid";
-        } else {
-            message.innerHTML = game.players[game.activePlayer] + " is bidding";
-        }
-    } else if (game.rounds[game.round.current].trumps == null) {
-        var highestBidder = game.rounds[game.round.current].highestBidder;
-        if (game.activePlayer == userId) {
-            message.innerHTML = "Please choose trumps";
-        } else {
-            message.innerHTML = game.players[game.activePlayer] + " is choosing trumps";
-        }
-    } else {
-        // Must be in a trick
-        if (game.activePlayer == userId) {
-            message.innerHTML = "Please play a card";
-        } else {
-            message.innerHTML = game.players[game.activePlayer] + "'s turn to play a card";
-        }        
-    }
-    message.style.visibility = 'visible';
-
 }
 
-xmlHttp['update'] = new JSONCallback();
-xmlHttp['update'].callback = function(output) {
-
+function updateCallback(output) {
 	// Update game state based on JSON output
 	game.phase = output.phase;
 
@@ -209,63 +210,65 @@ xmlHttp['update'].callback = function(output) {
 	// Update the currently active player    
 	game.activePlayer = output.activePlayer;
 	    		    
+    updateGameState();
     updateUI();
     if (userId != game.activePlayer) {
-        setTimeout("xmlHttp['update'].call('{\"id\":' + game.id + ', \"phase\":' + game.phase + '}')", 500);
+        setTimeout("$.post('update', JSON.stringify({id:game.id, phase:game.phase}), updateCallback)", 500);
 	}
 
 }
 
 function bid(bid) {
 	// Clear the UI and record our bid
-	document.getElementById("bidUI").style.display = 'none';
-	document.getElementById("trick").style.display = '';
-	document.getElementById("player" + userId + "currentBid").innerHTML = bid;
-	document.getElementById("message").style.visibility = 'hidden';
+	$("#bidUI").hide();
+	$("#trick").show();
+	$("#player" + userId + "currentBid").text(bid);
+	$("#message").css('visibility', 'hidden');
 	
-	xmlHttp['bid'].call('{"id":' + game.id + ', "bid":' + bid + '}');
+	$.post('bid', JSON.stringify({id:game.id, bid:bid}), bidCallback);
 }
-xmlHttp['bid'] = new JSONCallback();
-xmlHttp['bid'].callback = function(output) {
+function bidCallback(output) {
 	if (output.result == 0) {
-		document.getElementById("bidUI").innerHTML = "";
+		$("#bidUI").text("");
 		
-		xmlHttp['update'].call('{\"id\":' + game.id + ', \"phase\":' + game.phase + '}');
+		$.post('update', JSON.stringify({id:game.id, phase:game.phase}), updateCallback);
 	} else {
 		// Show the ui again along with an error and clear our unacceptable bid
-		document.getElementById("player" + userId + "currentBid").innerHTML = "";
-        document.getElementById("trick").style.display = 'none';
-		document.getElementById("bidUI").style.display = '';
-		document.getElementById("message").style.visibility = 'visible';
+		$("#player" + userId + "currentBid").text("");
+        $("#trick").hide();
+		$("#bidUI").show();
+		$("#message").css('visibility', 'visible');
 		writeMessage(output.errorMessage);
 	}
 }
 
 function setTrumps(trumps) {
 	// Clear the UI and record our trumps choice
-	document.getElementById("trumpsUI").style.display = 'none';
-	document.getElementById("trick").style.display = '';
-	document.getElementById("currentTrumps").innerHTML = trumps.toTitleCase();
-
-	xmlHttp['trumps'].call('{"id":' + game.id + ', "trumps":"' + trumps + '"}');
+	$("#trumpsUI").hide();
+	$("#trick").show();
+	$("#currentTrumps").text(trumps.toTitleCase());
+    
+    $.post('trumps', JSON.stringify({id:game.id, trumps:trumps}), setTrumpsCallback);
 }
-xmlHttp['trumps'] = new JSONCallback();
-xmlHttp['trumps'].callback = function(output) {
+function setTrumpsCallback(output) {
 	if (output.result == 0) {
-		document.getElementById("trumpsUI").innerHTML = "";
+		$("#trumpsUI").text("");
 		
-		xmlHttp['update'].call('{\"id\":' + game.id + ', \"phase\":' + game.phase + '}');
+		$.post('update', JSON.stringify({id:game.id, phase:game.phase}), updateCallback);
 	} else {
 		// Show the ui again along with an error and clear our unacceptable trumps choice
-		document.getElementById("currentTrumps").innerHTML = "";
-        document.getElementById("trick").style.display = 'none';
-		document.getElementById("trumpsUI").style.display = '';
-		document.getElementById("message").innerHTML = "Please choose trumps";
+		$("#currentTrumps").text("");
+        $("#trick").hide();
+		$("#trumpsUI").show();
+		$("#message").text("Please choose trumps");
 		writeMessage(output.errorMessage);
 	}
 }
 
-function playCard(card) {
+function playCard() {
+	// Now remove the onClick handler
+	$("#hand img").unbind('click', playCard);
+
     // If we are showing previous cards, stop
     if (timer.showPreviousTrickCards) {
         clearTimeout(timer.showPreviousTrickCards);
@@ -273,86 +276,40 @@ function playCard(card) {
     }
     
 	// Remove the card from our hand and add it to the trick
-	document.getElementById(card).style.display = 'none';
-	document.getElementById("player" + userId + "TrickCard").src = imagesDir + card + ".png";
-	document.getElementById("player" + userId + "TrickElement").style.visibility = "visible";
+	$(this).hide();
+	$("#player" + userId + "TrickCard").attr('src', $(this).attr('src'));
+	$("#player" + userId + "TrickElement").css('visibility', 'visible');
 	
-	// Now remove the onClick handler
-	removeHandOnClickHandler();
-
-	xmlHttp['playCard'].call('{"id":' + game.id + ', "card":"' + card + '"}');
+	$.post('playCard', JSON.stringify({id:game.id, card:$(this).attr("title")}), playCardCallback);
 }
-xmlHttp['playCard'] = new JSONCallback();
-xmlHttp['playCard'].callback = function(output) {
+function playCardCallback(output) {
 	if (output.result == 0) {
-		document.getElementById("hand").removeChild(document.getElementById(output.card));
+        $("#" + output.card).remove();
 		
-		xmlHttp['update'].call('{\"id\":' + game.id + ', \"phase\":' + game.phase + '}');
+		$.post('update', JSON.stringify({id:game.id, phase:game.phase}), updateCallback);
 	} else {
 		// Show the ui again along with an error and clear our unacceptable trumps choice
-		document.getElementById("player" + userId + "TrickElement").style.visibility = "hidden";
-		document.getElementById("player" + userId + "TrickCard").src = "";
-		document.getElementById(output.card).style.display = '';
+		$("#player" + userId + "TrickElement").css('visibility', 'hidden');
+		$("#player" + userId + "TrickCard").attr('src', '');
+		$("#" + output.card).show();
 		writeMessage(output.errorMessage);
 		
 		// Re-instate onclick handler
-		setHandOnClickHandler();		
+		$("#hand img").click(playCard);
 	}
-}
-
-function setHandOnClickHandler() {
-	var handDiv = document.getElementById("hand");
-	var cards = handDiv.getElementsByTagName("img");
-	var cardsLength = cards.length;
-	var handHTML = "";
-
-	for (var i = 0; i < cardsLength; i++) {
-		handHTML = handHTML + " <a href = \"javascript:playCard('" + cards[i].id + "');\">";
-		handHTML = handHTML + cardHTML(cards[i].id, cards[i].style.display);
-		handHTML = handHTML + "</a>";
-	}		
-	
-	handDiv.innerHTML = handHTML;
-}
-
-function removeHandOnClickHandler() {
-	var handDiv = document.getElementById("hand");
-	var cards = handDiv.getElementsByTagName("img");
-	var cardsLength = cards.length;
-	var handHTML = "";
-
-	for (var i = 0; i < cardsLength; i++) {
-		handHTML = handHTML + " " + cardHTML(cards[i].id, cards[i].style.display);
-	}		
-	
-	handDiv.innerHTML = handHTML;
-}
-
-function cardHTML(card, displayState) {
-	var html = "<img id = \"" + card + "\" src = \"" + imagesDir + card + ".png\"";
-
-	if (displayState) {
-		html = html + "style = \"display: " + displayState + ";\"";
-	}
-	
-	html = html + "/>";
-	
-	return html;
 }
 
 function regulariseMessages() {
-	var messages = document.getElementById("message").style.color = "black";
+	var messages = $("#message").css('color', 'black');
     
     timer.messages = null;
 }
 
 function writeMessage(message) {
-    var messageId = document.getElementById("message");
-    
-    messageId.visibility = "hidden";
-    messageId.style.color="#b91114";
-    messageId.innerHTML = message;
-    messageId.visibility = "visible";
+    $("#message").css('visibility', 'hidden');
+    $("#message").css('color', '#b91114');
+    $("#message").text(message);
+    $("#message").css('visibility', 'visible');
         
     if (timer.messages != null) {
         clearTimeout(timer.messages);
@@ -364,20 +321,18 @@ function showCurrentTrickCards() {
     game.showPreviousTrickCards = false;
     timer.showPreviousTrickCards = null;
     updated.trick = true;
-    updateUI();
+    updateGameState();
 }
 
 function toggleStatsKey() {
-    var statsKeyLink = document.getElementById("statsKeyLink");
-    
-    if (statsKeyLink.innerHTML == "Show Stats Key") {
-        statsKeyLink.innerHTML = "Hide Stats Key";
-        document.getElementById("stats").style.display = "none";
-        document.getElementById("statsKey").style.display = "";
+    if ($("#statsKeyLink").text() == "Show Stats Key") {
+        $("#statsKeyLink").text("Hide Stats Key");
+        $("#stats").hide();
+        $("#statsKey").show();
     } else {
-        statsKeyLink.innerHTML = "Show Stats Key";
-        document.getElementById("statsKey").style.display = "none";
-        document.getElementById("stats").style.display = "";
+        $("#statsKeyLink").text("Show Stats Key");
+        $("#statsKey").hide();
+        $("#stats").show();
     }
 }
 

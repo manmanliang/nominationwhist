@@ -3,15 +3,18 @@
     <title>Whist Game</title>
     <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
     <script type="text/javascript" src="<c:url value="/js/json.js"/>"></script>
-    <script type="text/javascript" src="<c:url value="/js/xmlhttp.js"/>"></script>
+    <script type="text/javascript" src="<c:url value="/js/jquery-1.4.2.min.js"/>"></script>
+    <script type="text/javascript" src="<c:url value="/js/jQueryGlobals.js"/>"></script>
     <script type="text/javascript" src="<c:url value="/js/gameList.js"/>"></script>
     <script type="text/javascript" src="<c:url value="/js/instructions.js"/>"></script>
-    <script>
-    	xmlHttp['gameList'].init("<c:url value="/games" />");
-    </script>
 	<link rel="stylesheet" type="text/css" href="<c:url value="/css/whist.css"/>" />
+	<script type="text/javascript">
+    	$(function() {
+    		onLoadEventHandler();
+    	});
+    </script>
   </head>
-  <body onload="onLoadEventHandler();">
+  <body>
 	<div id="gamesList">
 		<h1>List of Games</h1>
 		<p>User: ${user}</p>

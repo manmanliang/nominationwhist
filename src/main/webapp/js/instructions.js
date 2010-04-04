@@ -1,14 +1,12 @@
 function toggleInstructions(currentDiv) {
-    var instructionsLink = document.getElementById("instructionsLink");
-    
-    if (instructionsLink.innerHTML == "Show Instructions") {
-        instructionsLink.innerHTML = "Hide Instructions";
-        document.getElementById(currentDiv).style.display = "none";
-        document.getElementById("instructions").style.display = "";
+    if ($("#instructionsLink").text() == "Show Instructions") {
+        $("#instructionsLink").text("Hide Instructions");
+        $("#" + currentDiv).hide();
+        $("#instructions").show();
     } else {
-        instructionsLink.innerHTML = "Show Instructions";
-        document.getElementById("instructions").style.display = "none";
-        document.getElementById(currentDiv).style.display = "";
+        $("#instructionsLink").text("Show Instructions");
+        $("#instructions").hide();
+        $("#" + currentDiv).show();
     }
 }
 
@@ -17,9 +15,9 @@ function showInstructions(selectedPane) {
 
     for (pane in panesArray) {
         if (panesArray[pane] == selectedPane) {
-            document.getElementById(panesArray[pane]).style.display = "";
+            $("#" + panesArray[pane]).show();
         } else {
-            document.getElementById(panesArray[pane]).style.display = "none";
+            $("#" + panesArray[pane]).hide();
         }
     }
 }

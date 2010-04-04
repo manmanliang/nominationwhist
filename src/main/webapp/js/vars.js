@@ -1,5 +1,4 @@
 var game = new Object();
-var xmlHttp = new Array();
 var user = null;
 var userAction = false;
 var userId = null;
