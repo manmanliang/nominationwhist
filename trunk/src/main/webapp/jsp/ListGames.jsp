@@ -37,10 +37,6 @@
  	<jsp:include page="Instructions.jsp">
 	 	<jsp:param name="nonInstructionsDiv" value="gamesList" />
  	</jsp:include>
-   	<div id="footer">
- 		<hr>
-		<p id="footer-right">Version: ${version}</p>
- 		<p><a href="javascript:toggleInstructions('gamesList')" id="instructionsLink">Show Instructions</a></p>
- 	</div>
+ 	<jsp:include page="footer.jsp"/>
   </body>
 </html>
