@@ -140,12 +140,40 @@ body {
 
 /* Footer */
 
+#footer {
+    text-align: center;
+}
+
+#footerLeft {
+    float: left;
+}
+
+#footerRight {
+    float: right;
+}
+
 #footer p {
     margin: 0;
 }
 
-#footer-right {
-    float: right;
+#ajaxProgress {
+    display: none;
+    background-color: white;
+    border: 1px solid black;
+}
+
+#ajaxProgress p {
+    padding: 0 2px;
+    display: inline;
+    border-right: 1px solid black;
+}
+
+#ajaxProgress #ajaxProgressAction {
+    border-right: 0px;
+}
+
+#ajaxProgressSpinner {
+    vertical-align: -2px;
 }
 
 /* gameList page */
