@@ -1,5 +1,5 @@
 function onLoadEventHandler() {
-	$.get('games', gameListCallback);
+	gameListCall();
 }
 
 function gameListCallback(output) {
@@ -76,5 +76,5 @@ function gameListCallback(output) {
         $("#newGames").hide();
     }
     
-    setTimeout("$.get('games', gameListCallback)", 2000);
+    setTimeout("gameListCall()", 2000);
 }

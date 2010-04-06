@@ -1,5 +1,5 @@
 function onLoadEventHandler() {
-	$.post('gameStart', JSON.stringify({id:game.id, phase:-1}), gameStartCallback);
+    gameStartCall();
 }
 
 function gameStartCallback(output) {
@@ -16,10 +16,10 @@ function gameStartCallback(output) {
     updatePlayerUI();
 	
     if (game.phase == -1) {
-        setTimeout("$.post('gameStart', JSON.stringify({id:game.id, phase:-1}), gameStartCallback)", 2000);
+        setTimeout("gameStartCall()", 2000);
 	} else {
         $("#trick").show();
-		$.post('update', JSON.stringify({id:game.id, phase:-1}), updateCallback);
+        updateCall(-1);
 	}
 }
 
@@ -115,7 +115,7 @@ function updatePlayerUI() {
         playerStatsHTML = playerStatsHTML + "</tr>";
     }
     playerStatsHTML = playerStatsHTML + "</table>";
-    $("stats").html(playerStatsHTML);
+    $("#stats").html(playerStatsHTML);
 }
 
 function getCardElementPositions() {

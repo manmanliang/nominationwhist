@@ -8,9 +8,9 @@ function gameUpdatedEventHandler() {
 	if (userId != game.activePlayer) {
 		if (userAction == true) {
 			userAction = false;
-			$.post('update', JSON.stringify({id:game.id, phase:game.phase}), updateCallback);
+			updateCall(game.phase);
 		} else {
-            setTimeout("$.post('update', JSON.stringify({id:game.id, phase:game.phase}), updateCallback)", 500);
+            setTimeout("updateCall(game.phase)", 500);
 		}
 	}
 }
@@ -213,7 +213,7 @@ function updateCallback(output) {
     updateGameState();
     updateUI();
     if (userId != game.activePlayer) {
-        setTimeout("$.post('update', JSON.stringify({id:game.id, phase:game.phase}), updateCallback)", 500);
+        setTimeout("updateCall(game.phase)", 500);
 	}
 
 }
@@ -225,13 +225,14 @@ function bid(bid) {
 	$("#player" + userId + "currentBid").text(bid);
 	$("#message").css('visibility', 'hidden');
 	
-	$.post('bid', JSON.stringify({id:game.id, bid:bid}), bidCallback);
+	$.ajax({url: 'bid', data: JSON.stringify({id:game.id, bid:bid}), 
+            success: bidCallback, progressAction: "Sending bid"});
 }
 function bidCallback(output) {
 	if (output.result == 0) {
 		$("#bidUI").text("");
 		
-		$.post('update', JSON.stringify({id:game.id, phase:game.phase}), updateCallback);
+		updateCall(game.phase);
 	} else {
 		// Show the ui again along with an error and clear our unacceptable bid
 		$("#player" + userId + "currentBid").text("");
@@ -248,13 +249,14 @@ function setTrumps(trumps) {
 	$("#trick").show();
 	$("#currentTrumps").text(trumps.toTitleCase());
     
-    $.post('trumps', JSON.stringify({id:game.id, trumps:trumps}), setTrumpsCallback);
+    $.ajax({url: 'trumps', data: JSON.stringify({id:game.id, trumps:trumps}),
+            success: setTrumpsCallback, progressAction: "Sending trumps"});
 }
 function setTrumpsCallback(output) {
 	if (output.result == 0) {
 		$("#trumpsUI").text("");
 		
-		$.post('update', JSON.stringify({id:game.id, phase:game.phase}), updateCallback);
+		updateCall(game.phase);
 	} else {
 		// Show the ui again along with an error and clear our unacceptable trumps choice
 		$("#currentTrumps").text("");
@@ -280,13 +282,14 @@ function playCard() {
 	$("#player" + userId + "TrickCard").attr('src', $(this).attr('src'));
 	$("#player" + userId + "TrickElement").css('visibility', 'visible');
 	
-	$.post('playCard', JSON.stringify({id:game.id, card:$(this).attr("title")}), playCardCallback);
+	$.ajax({url: 'playCard', data: JSON.stringify({id:game.id, card:$(this).attr("title")}),
+            success: playCardCallback, progressAction: "Playing Card"});
 }
 function playCardCallback(output) {
 	if (output.result == 0) {
         $("#" + output.card).remove();
 		
-		$.post('update', JSON.stringify({id:game.id, phase:game.phase}), updateCallback);
+		updateCall(game.phase);
 	} else {
 		// Show the ui again along with an error and clear our unacceptable trumps choice
 		$("#player" + userId + "TrickElement").css('visibility', 'hidden');
