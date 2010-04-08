@@ -169,7 +169,7 @@ function updateUI() {
 
 		// Play card UI Update
 		if (game.phase == 2) {
-			$("#hand img").click(playCard);
+			$("#hand img").click(playCard).css('cursor', 'pointer');
 		}
 	}
 }
@@ -269,7 +269,7 @@ function setTrumpsCallback(output) {
 
 function playCard() {
 	// Now remove the onClick handler
-	$("#hand img").unbind('click', playCard);
+	$("#hand img").unbind('click', playCard).css('cursor', 'default');
 
     // If we are showing previous cards, stop
     if (timer.showPreviousTrickCards) {
@@ -298,7 +298,7 @@ function playCardCallback(output) {
 		writeMessage(output.errorMessage);
 		
 		// Re-instate onclick handler
-		$("#hand img").click(playCard);
+		$("#hand img").click(playCard).css('cursor', 'pointer');
 	}
 }
 
