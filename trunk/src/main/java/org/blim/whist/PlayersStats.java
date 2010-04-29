@@ -8,6 +8,7 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.google.common.collect.Lists;
 
@@ -40,6 +41,7 @@ public class PlayersStats {
 		return playerStats;
 	}
 	
+	@Transactional
 	@SuppressWarnings("unchecked")
 	public void update() {
 		Session session = sessionFactory.getCurrentSession();

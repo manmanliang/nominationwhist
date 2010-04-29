@@ -172,6 +172,7 @@ public class GameController {
 		return new ModelAndView("redirect:/game", model);
 	}
 
+	@Transactional
 	@RequestMapping("/game")
 	public ModelAndView gameState(
 			HttpServletRequest request,
@@ -212,6 +213,7 @@ public class GameController {
 		return new ModelAndView("GameBoard", model);
 	}
 	
+	@Transactional
 	@SuppressWarnings("unchecked")
 	@RequestMapping("/games")
 	public void games(
