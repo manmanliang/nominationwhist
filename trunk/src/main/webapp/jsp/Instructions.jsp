@@ -57,10 +57,21 @@
  			<h3>Hand</h3>
  			<p>At the bottom of the screen are your current cards</p>
  			<h3>Footer</h3>
- 			<p>The footer contains links on the left to:</p>
+ 			<p>The footer contains useful links and information about the game.</p>
+ 			<p>On the left there are links for:</p>
  			<ol>
  				<li>These instructions</li>
  				<li>The main games list page</li>
+ 			</ol>
+ 			<p>On the right:</p>
+ 			<ol>
+ 				<li>A link to logout of the game</li>
+ 				<li>The software version of the Whist game</li>
+ 			</ol>
+ 			<p>The centre provides feedback about communication with the server. Each time a request is made it shows:</p>
+ 			<ol>
+ 				<li>The number of attempts made at this communication</li>
+ 				<li>An explanation of what the communication is trying to do</li>
  			</ol>
 		</div>
 	</div>
