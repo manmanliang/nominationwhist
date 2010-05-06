@@ -102,7 +102,6 @@ public class GameController {
 		game.setRoundSequence(Game.ROUND_SEQUENCE_DFLT);
 		game.getPlayers().add(user.getName());
 		session.save(game);
-		session.flush();
 	
 		model.put("id", game.getId());
 	
@@ -146,7 +145,6 @@ public class GameController {
 		
 		if (playerInGame) {
 			session.delete(game);
-			session.flush();
 		}
 		
 		return new ModelAndView("redirect:/", model);
