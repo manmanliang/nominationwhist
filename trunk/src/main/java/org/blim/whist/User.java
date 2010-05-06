@@ -10,6 +10,8 @@ import javax.persistence.JoinTable;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.CollectionOfElements;
+import org.springframework.util.StringUtils;
+import org.springframework.validation.Errors;
 
 import com.google.common.collect.Lists;
 
@@ -52,6 +54,15 @@ public class User {
 	}
 	public void setAuthorities(List<String> authorities) {
 		this.authorities = authorities;
+	}
+	
+	public void validate(Errors errors) {
+		if (!StringUtils.hasLength(username)) {
+			errors.rejectValue("username", "required", "required");
+		}
+		if (!StringUtils.hasLength(password)) {
+			errors.rejectValue("password", "required", "required");
+		}
 	}
 	
 }
