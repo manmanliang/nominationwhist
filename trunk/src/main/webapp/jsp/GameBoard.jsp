@@ -33,7 +33,8 @@
     		onLoadEventHandler();
     	});
     </script>
-	<link rel="stylesheet" type="text/css" href="<c:url value="/css/whist.css"/>" />
+	<link rel="stylesheet" type="text/css" href="<c:url value="/css/common.css"/>" />
+	<link rel="stylesheet" type="text/css" href="<c:url value="/css/game.css"/>" />
   </head>
   <body>
  	<div id="header">

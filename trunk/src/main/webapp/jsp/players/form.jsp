@@ -3,7 +3,7 @@
     <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 	<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 	<title>Whist Game - New Player</title>
-	<link rel="stylesheet" type="text/css" href="<c:url value="/css/whist.css"/>" />
+	<link rel="stylesheet" type="text/css" href="<c:url value="/css/common.css"/>" />
   </head>
   <body>
 	<h2>New Player:</h2>
