@@ -1,0 +1,38 @@
+body {
+    background: #008000;
+    font-family: arial, sans-serif;
+}
+
+*|*:-moz-any-link img, img[usemap], object[usemap] {
+    border: 0px;
+}
+
+/* Instructions */
+
+#instructions {
+    background: #fafafa;
+    border: 1px solid black;
+    padding: 0 10px;
+}
+
+#instructionsInternalLink {
+    float: right;
+}
+
+/* Footer */
+
+#footer {
+    text-align: center;
+}
+
+#footerLeft {
+    float: left;
+}
+
+#footerRight {
+    float: right;
+}
+
+#footer p {
+    margin: 0;
+}

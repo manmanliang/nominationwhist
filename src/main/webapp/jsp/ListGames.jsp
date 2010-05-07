@@ -7,7 +7,8 @@
     <script type="text/javascript" src="<c:url value="/js/jQueryGlobals.js"/>"></script>
     <script type="text/javascript" src="<c:url value="/js/gameList.js"/>"></script>
     <script type="text/javascript" src="<c:url value="/js/instructions.js"/>"></script>
-	<link rel="stylesheet" type="text/css" href="<c:url value="/css/whist.css"/>" />
+	<link rel="stylesheet" type="text/css" href="<c:url value="/css/common.css"/>" />
+	<link rel="stylesheet" type="text/css" href="<c:url value="/css/game.css"/>" />
 	<script type="text/javascript">
     	$(function() {
     		onLoadEventHandler();
