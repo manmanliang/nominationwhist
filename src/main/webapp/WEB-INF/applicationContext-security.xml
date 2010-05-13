@@ -8,14 +8,16 @@
     <global-method-security pre-post-annotations="enabled">
     </global-method-security>
 
-    <http auto-config="true">
-		<intercept-url pattern="/login" access="IS_AUTHENTICATED_ANONYMOUSLY" />
+    <http auto-config="true" use-expressions="true">
+		<intercept-url pattern="/login" access="permitAll" />
 		
         <intercept-url pattern="/css/**" filters="none" />
         <intercept-url pattern="/images/**" filters="none" />
         <intercept-url pattern="/js/**" filters="none" />
         
-        <intercept-url pattern="/**" access="ROLE_USER" requires-channel="https" />
+        <intercept-url pattern="/players/**" access="hasRole('ROLE_ADMIN')" requires-channel="https" />
+
+        <intercept-url pattern="/**" access="hasRole('ROLE_USER')" requires-channel="https" />
         
         <form-login login-page="/login"/>
         <logout />
