@@ -79,16 +79,24 @@ public class GameController {
 	public ModelAndView login(
 			HttpServletRequest request,
 			Principal user) throws IOException {
+		Map<String, Object> model = new HashMap<String, Object>();
 		
-		return new ModelAndView("login");
+		String version = getVersion(request);
+		model.put("version", version);
+		
+		return new ModelAndView("login", model);
 	}
 
 	@RequestMapping("/error")
 	public ModelAndView error(
 			HttpServletRequest request,
 			Principal user) throws IOException {
+		Map<String, Object> model = new HashMap<String, Object>();
 		
-		return new ModelAndView("error");
+		String version = getVersion(request);
+		model.put("version", version);
+
+		return new ModelAndView("error", model);
 	}
 
 	@Transactional
@@ -170,7 +178,7 @@ public class GameController {
 		return new ModelAndView("redirect:/game", model);
 	}
 
-	@Transactional
+	@Transactional(readOnly = true)
 	@RequestMapping("/game")
 	public ModelAndView gameState(
 			HttpServletRequest request,
@@ -211,7 +219,7 @@ public class GameController {
 		return new ModelAndView("GameBoard", model);
 	}
 	
-	@Transactional
+	@Transactional(readOnly = true)
 	@SuppressWarnings("unchecked")
 	@RequestMapping("/games")
 	public void games(
@@ -325,7 +333,7 @@ public class GameController {
 		response.getWriter().print(JSONResult);
 	}
 
-	@Transactional
+	@Transactional(readOnly = true)
 	@RequestMapping(value = "/update", method = RequestMethod.POST)
 	@SuppressWarnings("unchecked")
 	public void update(

@@ -41,7 +41,7 @@ public class PlayersStats {
 		return playerStats;
 	}
 	
-	@Transactional
+	@Transactional(readOnly = true)
 	@SuppressWarnings("unchecked")
 	public void update() {
 		Session session = sessionFactory.getCurrentSession();
