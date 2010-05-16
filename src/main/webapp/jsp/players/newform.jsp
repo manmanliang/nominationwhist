@@ -1,6 +1,7 @@
 <html>
   <head>
     <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+	<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 	<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 	<title>Whist Game - New Player</title>
     <script type="text/javascript" src="<c:url value="/js/jquery-1.4.2.min.js"/>"></script>
@@ -10,7 +11,9 @@
   <body>
   	<div id="userAddForm">
 		<h2>New Player</h2>
-		<p>Go back to <a href="<c:url value="/players"/>">user list</a></p>
+		<sec:authorize access="hasRole('ROLE_ADMIN')">		
+			<p>Go back to <a href="<c:url value="/players"/>">user list</a></p>
+		</sec:authorize>		
 		<form:form modelAttribute="user" method="post">
   			<table>
    	 			<tr>
