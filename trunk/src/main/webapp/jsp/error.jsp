@@ -9,7 +9,7 @@
 
 <body>
 	<div id="errorContent">
-		<p>Invalid username and/or password, please try <a href='./'>again</a>.</p>
+		<p>Invalid username and/or password, please try <a href="<c:url value="/"/>">again</a>.</p>
 	</div>
 	
 	<jsp:include page="Instructions.jsp">

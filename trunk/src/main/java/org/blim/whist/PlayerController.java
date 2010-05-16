@@ -1,6 +1,7 @@
 package org.blim.whist;
 
 import java.io.IOException;
+import java.security.Principal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -8,6 +9,7 @@ import java.util.Map;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BindingResult;
@@ -68,7 +70,7 @@ public class PlayerController {
     	if (result.hasErrors()) {
     		return new ModelAndView("players/newform");
     	} else {
-    		user.setEnabled(false);
+    		user.setEnabled(true);
     		List<String> authorities = Lists.newArrayList();
     		authorities.add("ROLE_USER");
     		user.setAuthorities(authorities);
@@ -83,6 +85,7 @@ public class PlayerController {
     }
 
     @Transactional(readOnly = true)
+    @PreAuthorize("hasRole('ROLE_ADMIN') or #username == principal.username")
     @RequestMapping(value = "/players/{username}")
     public ModelAndView showPlayer(@PathVariable String username) {
 		Map<String, Object> model = new HashMap<String, Object>();    	
@@ -97,31 +100,37 @@ public class PlayerController {
     }
     
     @Transactional(readOnly = true)
+    @PreAuthorize("hasRole('ROLE_ADMIN') or #username == principal.username")
     @RequestMapping(value = "/players/{username}/edit", method = RequestMethod.GET)
-	public ModelAndView setupEditPlayerForm(@PathVariable String username) throws IOException {
+	public ModelAndView setupEditPlayerForm(@PathVariable String username, Principal principal) throws IOException {
 		Map<String, Object> model = new HashMap<String, Object>();
 		
-		String newPassword = new String();
-		model.put("newPassword", newPassword);
-		
-		User user = new User();
+		User editingUser = new User();
 		
 		Session session = sessionFactory.getCurrentSession();
-		session.load(user, username);
+		session.load(editingUser, username);
 		
-		model.put("user", user);
-		
+		model.put("player", editingUser);
+				
 		return new ModelAndView("players/editform", model);
 	}
 
     @Transactional
+    @PreAuthorize("hasRole('ROLE_ADMIN') or #user.username == principal.username")
     @RequestMapping(value = "/players/{username}/edit", method = RequestMethod.PUT)
-    public ModelAndView processEditPlayerSubmit(@ModelAttribute User user, @ModelAttribute String newPassword, BindingResult result, SessionStatus status) {
-    	if (!newPassword.isEmpty()) {
-    		user.setPassword(newPassword);
-    	}
-    	
+    public ModelAndView processEditPlayerSubmit(@ModelAttribute User user, BindingResult result, 
+    											SessionStatus status, Principal principal) {
     	Session session = sessionFactory.getCurrentSession();
+
+    	// TODO: Maybe have password change as separate form but
+    	// for now I'll just copy across the old one
+    	if (user.getPassword().isEmpty()) {
+    		User oldUser = new User();
+    		session.load(oldUser, user.getUsername());
+    		session.evict(oldUser);
+    		user.setPassword(oldUser.getPassword());
+       	}
+    	
     	session.update(user);
 
     	status.setComplete();

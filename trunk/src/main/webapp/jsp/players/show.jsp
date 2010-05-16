@@ -1,6 +1,7 @@
 <html>
   <head>
     <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+	<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
     <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 	<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 	<title>Players</title>
@@ -11,15 +12,19 @@
   <body>
   	<div id="user">
 		<h2>Player ${player.username}</h2>
-		<p>Go back to <a href="<c:url value="/players"/>">user list</a></p>
+  		<sec:authorize access="hasRole('ROLE_ADMIN')">
+			<p>Go back to <a href="<c:url value="/players"/>">user list</a></p>
+  		</sec:authorize>
   		<p>Username: ${player.username}</p>
-  		<p>Roles are:
-  			<c:forEach var="authorities" items="${player.authorities}">
-    			${authorities}
-	    	</c:forEach>
-  		</p>
+  		<sec:authorize access="hasRole('ROLE_ADMIN')">
+	   		<p>Roles are:
+  				<c:forEach var="authorities" items="${player.authorities}">
+    				${authorities}
+	    		</c:forEach>
+  			</p>
+  		</sec:authorize>
   		<p>Enabled: ${player.enabled}</p>
-  		<p><a href="${player.username}/edit">Edit User</a>
+  		<p><a href="<c:url value="/players/${player.username}/edit"/>">Edit</a>
   	</div>
   	
   	<jsp:include page="../Instructions.jsp">
