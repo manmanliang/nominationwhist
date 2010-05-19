@@ -10,6 +10,8 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.authentication.dao.SaltSource;
+import org.springframework.security.authentication.encoding.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BindingResult;
@@ -27,7 +29,9 @@ import com.google.common.collect.Lists;
 @SessionAttributes(types = User.class)
 public class PlayerController {
 	private SessionFactory sessionFactory;
-
+	private PasswordEncoder passwordEncoder;
+	private SaltSource saltSource;
+	
 	public SessionFactory getSessionFactory() {
 		return sessionFactory;
 	}
@@ -35,6 +39,24 @@ public class PlayerController {
 	@Autowired
 	public void setSessionFactory(SessionFactory sessionFactory) {
 		this.sessionFactory = sessionFactory;
+	}
+
+	public PasswordEncoder getPasswordEncoder() {
+		return passwordEncoder;
+	}
+
+	@Autowired
+	public void setPasswordEncoder(PasswordEncoder passwordEncoder) {
+		this.passwordEncoder = passwordEncoder;
+	}
+
+	public SaltSource getSaltSource() {
+		return saltSource;
+	}
+
+	@Autowired
+	public void setSaltSource(SaltSource saltSource) {
+		this.saltSource = saltSource;
 	}
 
     @Transactional(readOnly = true)
@@ -73,10 +95,12 @@ public class PlayerController {
     		user.setEnabled(true);
     		List<String> authorities = Lists.newArrayList();
     		authorities.add("ROLE_USER");
-    		user.setAuthorities(authorities);
+    		user.setRoles(authorities);
     		
-    		Session session = sessionFactory.getCurrentSession();
-    		session.save(user);
+    	    Object salt = saltSource.getSalt(user);  
+    	    user.setPassword(passwordEncoder.encodePassword(user.getPassword(), salt));
+
+    	    sessionFactory.getCurrentSession().save(user);
 
     		status.setComplete();
     		
@@ -91,8 +115,7 @@ public class PlayerController {
 		Map<String, Object> model = new HashMap<String, Object>();    	
     	User user = new User();
     	
-		Session session = sessionFactory.getCurrentSession();
-		session.load(user, username);
+		sessionFactory.getCurrentSession().load(user, username);
 		
 		model.put("player", user);
 		
@@ -107,8 +130,7 @@ public class PlayerController {
 		
 		User editingUser = new User();
 		
-		Session session = sessionFactory.getCurrentSession();
-		session.load(editingUser, username);
+		sessionFactory.getCurrentSession().load(editingUser, username);
 		
 		model.put("player", editingUser);
 				

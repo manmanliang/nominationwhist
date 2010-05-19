@@ -1,15 +1,17 @@
 package org.blim.whist;
 
+import java.util.Collection;
 import java.util.List;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import org.hibernate.annotations.CollectionOfElements;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.GrantedAuthorityImpl;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.Errors;
 
@@ -17,13 +19,13 @@ import com.google.common.collect.Lists;
 
 @Entity
 @Table(name="users")
-public class User {
+public class User implements UserDetails {
 
 	private String username;
 	private String password;
 	private Boolean enabled;
-	private List<String> authorities = Lists.newArrayList();
-	
+	private List<String> roles = Lists.newArrayList();
+
 	@Id
 	public String getUsername() {
 		return username;
@@ -47,13 +49,11 @@ public class User {
 	}
 
 	@CollectionOfElements
-	@JoinTable(name="authorities", joinColumns = @JoinColumn(name="username"))
-	@Column(name="authority")
-	public List<String> getAuthorities() {
-		return authorities;
+	public List<String> getRoles() {
+		return roles;
 	}
-	public void setAuthorities(List<String> authorities) {
-		this.authorities = authorities;
+	public void setRoles(List<String> roles) {
+		this.roles = roles;
 	}
 	
 	public void validate(Errors errors) {
@@ -63,6 +63,37 @@ public class User {
 		if (!StringUtils.hasLength(password)) {
 			errors.rejectValue("password", "required", "required");
 		}
+	}
+
+	@Transient
+	public boolean isAccountNonExpired() {
+		return true;
+	}
+
+	@Transient
+	public boolean isAccountNonLocked() {
+		return true;
+	}
+	
+	@Transient
+	public boolean isCredentialsNonExpired() {
+		return true;
+	}
+	
+	@Transient
+	public boolean isEnabled() {
+		return enabled;
+	}
+	
+	@Transient
+	public Collection<GrantedAuthority> getAuthorities() {
+		List<GrantedAuthority> authorities = Lists.newArrayList();
+		
+		for (String role : roles) {
+			authorities.add(new GrantedAuthorityImpl(role));
+		}
+		
+		return authorities;
 	}
 	
 }
