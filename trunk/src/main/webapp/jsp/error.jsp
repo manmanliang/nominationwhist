@@ -12,7 +12,7 @@
 		<p>Invalid username and/or password, please try <a href="<c:url value="/"/>">again</a>.</p>
 	</div>
 	
-	<jsp:include page="Instructions.jsp">
+	<jsp:include page="instructions.jsp">
 	 	<jsp:param name="nonInstructionsDiv" value="errorContent" />
  	</jsp:include>
  	<jsp:include page="/footer">

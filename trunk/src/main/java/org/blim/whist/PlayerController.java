@@ -80,7 +80,7 @@ public class PlayerController {
 		
 		model.put("player", newUser);
 		
-		return new ModelAndView("players/newform", model);
+		return new ModelAndView("players/newForm", model);
 	}
 
     @Transactional
@@ -89,7 +89,7 @@ public class PlayerController {
     	player.validate(result);
     	
     	if (result.hasErrors()) {
-    		return new ModelAndView("players/newform");
+    		return new ModelAndView("players/newForm");
     	} else {
     		Map<String, Object> model = new HashMap<String, Object>();
 
@@ -118,7 +118,7 @@ public class PlayerController {
 		
 		model.put("player", newUser);
 		
-		return new ModelAndView("players/newform", model);
+		return new ModelAndView("players/newForm", model);
 	}
 
     @Transactional
@@ -127,7 +127,7 @@ public class PlayerController {
     	player.validate(result);
     	
     	if (result.hasErrors()) {
-    		return new ModelAndView("players/newform");
+    		return new ModelAndView("players/newForm");
     	} else {
     		List<String> authorities = Lists.newArrayList();
     		authorities.add("ROLE_USER");
@@ -169,7 +169,7 @@ public class PlayerController {
 		
 		model.put("player", editingUser);
 				
-		return new ModelAndView("players/editform", model);
+		return new ModelAndView("players/editForm", model);
 	}
 
     @Transactional
@@ -192,7 +192,7 @@ public class PlayerController {
 
     	status.setComplete();
 
-    	return new ModelAndView("redirect:/players/" + player.getUsername());
+    	return new ModelAndView("redirect:/players" + player.getUsername());
     }
 
     @Transactional
