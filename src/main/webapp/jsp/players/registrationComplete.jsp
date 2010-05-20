@@ -12,7 +12,7 @@
   		<p>Thankyou ${user.username} for registering. Your account has now been created but it needs to be approved before you can login. You may or not get an email or something if and when you can log in.</p>
   	</div>
   	
-  	<jsp:include page="../Instructions.jsp">
+  	<jsp:include page="../instructions.jsp">
 	 	<jsp:param name="nonInstructionsDiv" value="registrationMessage" />
  	</jsp:include>
  	<jsp:include page="/footer">

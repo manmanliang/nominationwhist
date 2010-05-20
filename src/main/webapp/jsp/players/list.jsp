@@ -13,7 +13,7 @@
     	</c:forEach>
   	</div>
   	
-  	<jsp:include page="../Instructions.jsp">
+  	<jsp:include page="../instructions.jsp">
 	 	<jsp:param name="nonInstructionsDiv" value="userList" />
  	</jsp:include>
  	<jsp:include page="/footer">

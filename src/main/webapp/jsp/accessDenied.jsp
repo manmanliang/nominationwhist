@@ -12,7 +12,7 @@
 		<p>Sorry this page is only accessible by users who are more important than you (probably a lot more)</p>
 	</div>
 	
-	<jsp:include page="Instructions.jsp">
+	<jsp:include page="instructions.jsp">
 	 	<jsp:param name="nonInstructionsDiv" value="errorContent" />
  	</jsp:include>
  	<jsp:include page="/footer">

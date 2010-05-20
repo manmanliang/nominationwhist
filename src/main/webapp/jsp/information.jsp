@@ -12,7 +12,7 @@
 		<p>Version: ${version}</p>
 	</div>
 	
-	<jsp:include page="Instructions.jsp">
+	<jsp:include page="instructions.jsp">
 	 	<jsp:param name="nonInstructionsDiv" value="errorContent" />
  	</jsp:include>
  	<jsp:include page="/footer">

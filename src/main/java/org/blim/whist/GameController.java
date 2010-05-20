@@ -66,7 +66,7 @@ public class GameController {
 		
 		model.put("user", user.getName());
 		
-		return new ModelAndView("ListGames", model);
+		return new ModelAndView("listGames", model);
 	}
 
 	@Transactional
@@ -160,7 +160,7 @@ public class GameController {
 		model.put("trickNum", trickNum);
 		model.put("AJAXTimeout", AJAXTimeout);
 		
-		return new ModelAndView("GameBoard", model);
+		return new ModelAndView("gameBoard", model);
 	}
 	
 	@Transactional(readOnly = true)

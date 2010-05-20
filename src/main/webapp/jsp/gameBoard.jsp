@@ -87,7 +87,7 @@
 		</div>	
  		<div id="hand"></div>
  	</div>
- 	<jsp:include page="Instructions.jsp">
+ 	<jsp:include page="instructions.jsp">
 	 	<jsp:param name="nonInstructionsDiv" value="gameArea" />
  	</jsp:include>
  	<jsp:include page="/footer">
