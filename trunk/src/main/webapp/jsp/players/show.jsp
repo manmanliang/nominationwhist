@@ -30,7 +30,7 @@
   	<jsp:include page="../Instructions.jsp">
 	 	<jsp:param name="nonInstructionsDiv" value="user" />
  	</jsp:include>
- 	<jsp:include page="../footer.jsp">
+ 	<jsp:include page="/footer">
 	 	<jsp:param name="nonInstructionsDiv" value="user" />
  	</jsp:include>
   	

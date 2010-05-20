@@ -1,7 +1,6 @@
 package org.blim.whist;
 
 import java.io.IOException;
-import java.security.Principal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -73,34 +72,70 @@ public class PlayerController {
 		return new ModelAndView("players/list", model);
     }
     
+    @RequestMapping(value = "/players/register", method = RequestMethod.GET)
+	public ModelAndView setupRegisterPlayerForm() throws IOException {
+		Map<String, Object> model = new HashMap<String, Object>();
+		
+		User newUser = new User();
+		
+		model.put("player", newUser);
+		
+		return new ModelAndView("players/newform", model);
+	}
+
+    @Transactional
+    @RequestMapping(value = "/players/register", method = RequestMethod.POST)
+    public ModelAndView processRegisterPlayerSubmit(@ModelAttribute("player") User player, BindingResult result, SessionStatus status) {
+    	player.validate(result);
+    	
+    	if (result.hasErrors()) {
+    		return new ModelAndView("players/newform");
+    	} else {
+    		Map<String, Object> model = new HashMap<String, Object>();
+
+    		player.setActive(false);
+    		List<String> authorities = Lists.newArrayList();
+    		authorities.add("ROLE_USER");
+    		player.setRoles(authorities);
+    		
+    		player.setPassword(encryptPassword(player));
+    		
+    	    sessionFactory.getCurrentSession().save(player);
+
+    		status.setComplete();
+    		
+    		model.put("user", player);
+    		
+    		return new ModelAndView("players/registrationComplete", model);
+    	}
+    }
+
     @RequestMapping(value = "/players/new", method = RequestMethod.GET)
 	public ModelAndView setupNewPlayerForm() throws IOException {
 		Map<String, Object> model = new HashMap<String, Object>();
 		
 		User newUser = new User();
 		
-		model.put("user", newUser);
+		model.put("player", newUser);
 		
 		return new ModelAndView("players/newform", model);
 	}
 
     @Transactional
     @RequestMapping(value = "/players/new", method = RequestMethod.POST)
-    public ModelAndView processNewPlayerSubmit(@ModelAttribute User user, BindingResult result, SessionStatus status) {
-    	user.validate(result);
+    public ModelAndView processNewPlayerSubmit(@ModelAttribute("player") User player, BindingResult result, SessionStatus status) {
+    	player.validate(result);
     	
     	if (result.hasErrors()) {
     		return new ModelAndView("players/newform");
     	} else {
-    		user.setEnabled(true);
     		List<String> authorities = Lists.newArrayList();
     		authorities.add("ROLE_USER");
-    		user.setRoles(authorities);
+    		player.setRoles(authorities);
     		
-    	    Object salt = saltSource.getSalt(user);  
-    	    user.setPassword(passwordEncoder.encodePassword(user.getPassword(), salt));
-
-    	    sessionFactory.getCurrentSession().save(user);
+    		player.setPassword(encryptPassword(player));
+    		
+    	    sessionFactory.getCurrentSession().save(player);
 
     		status.setComplete();
     		
@@ -125,7 +160,7 @@ public class PlayerController {
     @Transactional(readOnly = true)
     @PreAuthorize("hasRole('ROLE_ADMIN') or #username == principal.username")
     @RequestMapping(value = "/players/{username}/edit", method = RequestMethod.GET)
-	public ModelAndView setupEditPlayerForm(@PathVariable String username, Principal principal) throws IOException {
+	public ModelAndView setupEditPlayerForm(@PathVariable String username) throws IOException {
 		Map<String, Object> model = new HashMap<String, Object>();
 		
 		User editingUser = new User();
@@ -138,26 +173,26 @@ public class PlayerController {
 	}
 
     @Transactional
-    @PreAuthorize("hasRole('ROLE_ADMIN') or #user.username == principal.username")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or #player.username == principal.username")
     @RequestMapping(value = "/players/{username}/edit", method = RequestMethod.PUT)
-    public ModelAndView processEditPlayerSubmit(@ModelAttribute User user, BindingResult result, 
-    											SessionStatus status, Principal principal) {
+    public ModelAndView processEditPlayerSubmit(@ModelAttribute("player") User player, BindingResult result, 
+    											SessionStatus status) {
     	Session session = sessionFactory.getCurrentSession();
 
-    	// TODO: Maybe have password change as separate form but
-    	// for now I'll just copy across the old one
-    	if (user.getPassword().isEmpty()) {
+    	if (player.getPassword().isEmpty()) {
     		User oldUser = new User();
-    		session.load(oldUser, user.getUsername());
+    		session.load(oldUser, player.getUsername());
     		session.evict(oldUser);
-    		user.setPassword(oldUser.getPassword());
+    		player.setPassword(oldUser.getPassword());
+       	} else {
+       		player.setPassword(encryptPassword(player));
        	}
     	
-    	session.update(user);
+    	session.update(player);
 
     	status.setComplete();
 
-    	return new ModelAndView("redirect:/players/" + user.getUsername());
+    	return new ModelAndView("redirect:/players/" + player.getUsername());
     }
 
     @Transactional
@@ -171,4 +206,11 @@ public class PlayerController {
 		
 		return new ModelAndView("redirect:/players");
     }
+
+    private String encryptPassword(User user) {
+	    Object salt = saltSource.getSalt(user);  
+	    
+	    return passwordEncoder.encodePassword(user.getPassword(), salt);
+    }
+
 }

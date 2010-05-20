@@ -4,9 +4,10 @@
  		<hr>
 		<p id="footerRight">
 			<sec:authorize access="isAuthenticated()">
-				<a href="<c:url value="/j_spring_security_logout" />">Logout</a>
+				<a href="<c:url value="/players/${playerName}"/>">${playerName}</a>
+				&nbsp;(<a href="<c:url value="/j_spring_security_logout" />">logout</a>)
 			</sec:authorize>
-			Version: ${version}
+			<a href="<c:url value="/information" />">Info</a>
 		</p>
 		<p id="footerLeft"><a href="javascript:toggleInstructions('<%= request.getParameter("nonInstructionsDiv") %>')" id="instructionsLink">Show Instructions</a>
 			<sec:authorize access="isAuthenticated()">

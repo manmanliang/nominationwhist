@@ -10,6 +10,9 @@
 <body>
 	<div id="loginForm">
 		<form method="POST" action="j_spring_security_check" >
+			<c:if test="${error}">
+				<p class="formErrors">Incorrect username or password, please try again</p>
+			</c:if>
   			<table border="0" cellspacing="5">
     			<tr>
       				<th align="right">Username:</th>
@@ -25,12 +28,13 @@
     			</tr>
   			</table>
 		</form>
+		<p>Don't have a login? Use our <a href="<c:url value="/players/register"/>">registration page</a> to create an account</p>
 	</div>
 	
 	<jsp:include page="Instructions.jsp">
 	 	<jsp:param name="nonInstructionsDiv" value="loginForm" />
  	</jsp:include>
- 	<jsp:include page="footer.jsp">
+ 	<jsp:include page="/footer">
 	 	<jsp:param name="nonInstructionsDiv" value="loginForm" />
  	</jsp:include>
 </body>

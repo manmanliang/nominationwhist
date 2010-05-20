@@ -18,12 +18,12 @@ import org.springframework.validation.Errors;
 import com.google.common.collect.Lists;
 
 @Entity
-@Table(name="users")
+@Table(name = "users")
 public class User implements UserDetails {
 
 	private String username;
 	private String password;
-	private Boolean enabled;
+	private Boolean active;
 	private List<String> roles = Lists.newArrayList();
 
 	@Id
@@ -41,11 +41,11 @@ public class User implements UserDetails {
 		this.password = password;
 	}
 	
-	public Boolean getEnabled() {
-		return enabled;
+	public Boolean getActive() {
+		return active;
 	}
-	public void setEnabled(Boolean enabled) {
-		this.enabled = enabled;
+	public void setActive(Boolean active) {
+		this.active = active;
 	}
 
 	@CollectionOfElements
@@ -82,7 +82,11 @@ public class User implements UserDetails {
 	
 	@Transient
 	public boolean isEnabled() {
-		return enabled;
+		if (active != null) {
+			return active;
+		} else {
+			return false;
+		}
 	}
 	
 	@Transient
