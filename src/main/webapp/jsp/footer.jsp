@@ -1,6 +1,10 @@
     <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 	<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 	<div id="footer">
+	  	<jsp:include page="/jsp/instructions.jsp">
+	 		<jsp:param name="nonInstructionsDiv" value="<%= request.getParameter(\"nonInstructionsDiv\") %>" />
+ 		</jsp:include>
+	
  		<hr>
 		<p id="footerRight">
 			<sec:authorize access="isAuthenticated()">

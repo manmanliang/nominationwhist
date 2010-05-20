@@ -35,9 +35,7 @@
     		<div id="newGamesList"></div>
     	</div>
   	</div>
- 	<jsp:include page="instructions.jsp">
-	 	<jsp:param name="nonInstructionsDiv" value="gamesList" />
- 	</jsp:include>
+  	
  	<jsp:include page="/footer">
 	 	<jsp:param name="nonInstructionsDiv" value="gamesList" />
  	</jsp:include>

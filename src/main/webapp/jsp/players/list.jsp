@@ -11,11 +11,9 @@
   		<c:forEach var="player" items="${players}">
     		<p><a href="<c:url value="/players/${player.username}"/>">${player.username}</a> - <a href="<c:url value="/players/${player.username}/delete"/>">Delete</a></p>
     	</c:forEach>
+    	<p>Click on a user to view and edit their account, or <a href="<c:url value="/players/new"/>">create a new account</a></p>
   	</div>
   	
-  	<jsp:include page="../instructions.jsp">
-	 	<jsp:param name="nonInstructionsDiv" value="userList" />
- 	</jsp:include>
  	<jsp:include page="/footer">
 	 	<jsp:param name="nonInstructionsDiv" value="userList" />
  	</jsp:include>
