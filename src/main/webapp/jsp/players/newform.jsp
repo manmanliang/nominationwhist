@@ -14,7 +14,7 @@
 		<sec:authorize access="hasRole('ROLE_ADMIN')">		
 			<p>Go back to <a href="<c:url value="/players"/>">user list</a></p>
 		</sec:authorize>		
-		<form:form modelAttribute="user" method="post">
+		<form:form modelAttribute="player" method="post">
   			<table>
    	 			<tr>
    	   				<th>
@@ -30,6 +30,15 @@
         				<form:input path="password" size="30" maxlength="80"/>
       				</th>
     			</tr>
+				<sec:authorize access="hasRole('ROLE_ADMIN')">
+	    			<tr>
+      					<th>
+        					Enabled: <form:errors path="active" cssClass="errors"/>
+        					<br/>
+        					<form:checkbox path="active"/>
+      					</th>
+    				</tr>
+				</sec:authorize>
 	    		<tr>
      		 		<td>
         				<p class="submit"><input type="submit" value="Add user"/></p>
@@ -42,7 +51,7 @@
   	<jsp:include page="../Instructions.jsp">
 	 	<jsp:param name="nonInstructionsDiv" value="userAddForm" />
  	</jsp:include>
- 	<jsp:include page="../footer.jsp">
+ 	<jsp:include page="/footer">
 	 	<jsp:param name="nonInstructionsDiv" value="userAddForm" />
  	</jsp:include>
   	

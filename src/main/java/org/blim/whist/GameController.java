@@ -18,6 +18,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Projections;
+import org.hibernate.criterion.Restrictions;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
@@ -32,11 +34,6 @@ import org.springframework.web.servlet.ModelAndView;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 
-/**
- * TODO: Does not protect against unauthenticated users.
- * 
- * @author Lee Denison (lee@longlost.info)
- */
 @Controller
 public class GameController {
 
@@ -67,36 +64,9 @@ public class GameController {
 			Principal user) throws IOException {
 		Map<String, Object> model = new HashMap<String, Object>();
 		
-		String version = getVersion(request);
-
 		model.put("user", user.getName());
-		model.put("version", version);
 		
 		return new ModelAndView("ListGames", model);
-	}
-
-	@RequestMapping("/login")
-	public ModelAndView login(
-			HttpServletRequest request,
-			Principal user) throws IOException {
-		Map<String, Object> model = new HashMap<String, Object>();
-		
-		String version = getVersion(request);
-		model.put("version", version);
-		
-		return new ModelAndView("login", model);
-	}
-
-	@RequestMapping("/error")
-	public ModelAndView error(
-			HttpServletRequest request,
-			Principal user) throws IOException {
-		Map<String, Object> model = new HashMap<String, Object>();
-		
-		String version = getVersion(request);
-		model.put("version", version);
-
-		return new ModelAndView("error", model);
 	}
 
 	@Transactional
@@ -133,29 +103,6 @@ public class GameController {
 		model.put("id", gameId);
 		
 		return new ModelAndView("redirect:/game", model);
-	}
-
-	@Transactional
-	@RequestMapping(value = "/delete-game", method = RequestMethod.POST)
-	public ModelAndView deleteGame(HttpServletResponse response, @RequestParam("id") Long gameId, Principal user) {
-		Map<String, Object> model = new HashMap<String, Object>();
-		Game game = new Game();
-		Session session = sessionFactory.getCurrentSession();
-		boolean playerInGame = false;
-		
-		session.load(game, gameId);
-		
-		for (String player : game.getPlayers()) {
-			if (player.equals(user.getName())) {
-				playerInGame = true;
-			}
-		}
-		
-		if (playerInGame) {
-			session.delete(game);
-		}
-		
-		return new ModelAndView("redirect:/", model);
 	}
 
 	@Transactional
@@ -199,9 +146,7 @@ public class GameController {
 		for (int idx = 0; idx < game.getRounds().size(); idx++) {
 			JSONRounds.add(roundAsJSON(game, idx));
 		}
-		
-		String version = getVersion(request);
-		
+				
 		int trickNum = 0;
 		if (game.getCurrentRound() != null) {
 			trickNum = game.getCurrentRound().getTricks().size() - 1;
@@ -212,7 +157,6 @@ public class GameController {
 		model.put("roundCount", game.getRoundSequence().length);
 		model.put("user", user.getName());
 		model.put("userIndex", game.getPlayerIndex(user.getName()));
-		model.put("version", version);
 		model.put("trickNum", trickNum);
 		model.put("AJAXTimeout", AJAXTimeout);
 		
@@ -412,6 +356,30 @@ public class GameController {
 		response.getWriter().print(JSONResult);
 	}
 
+
+	@Transactional
+	@RequestMapping(value = "/delete-game", method = RequestMethod.POST)
+	public ModelAndView deleteGame(HttpServletResponse response, @RequestParam("id") Long gameId, Principal user) {
+		Map<String, Object> model = new HashMap<String, Object>();
+		Game game = new Game();
+		Session session = sessionFactory.getCurrentSession();
+		boolean playerInGame = false;
+		
+		session.load(game, gameId);
+		
+		for (String player : game.getPlayers()) {
+			if (player.equals(user.getName())) {
+				playerInGame = true;
+			}
+		}
+		
+		if (playerInGame) {
+			session.delete(game);
+		}
+		
+		return new ModelAndView("redirect:/", model);
+	}
+
 	@Transactional
 	@SuppressWarnings("unchecked")
 	@RequestMapping(value = "/bid", method = RequestMethod.POST)
@@ -565,6 +533,65 @@ public class GameController {
 		response.getWriter().print(JSONResult);
 	}	
 	
+	@RequestMapping("/login")
+	public ModelAndView login(
+			@RequestParam(value = "error", required = false) Boolean error,
+			HttpServletRequest request,
+			Principal user) throws IOException {
+		Map<String, Object> model = new HashMap<String, Object>();
+		
+		if (error == null) {
+			error = false;
+		}
+		
+		model.put("error", error);
+		
+		return new ModelAndView("login", model);
+	}
+
+	@RequestMapping("/error")
+	public ModelAndView error(
+			HttpServletRequest request) throws IOException {
+		return new ModelAndView("error");
+	}
+
+	@RequestMapping("/access-denied")
+	public ModelAndView accessDenied(
+			HttpServletRequest request) throws IOException {
+		return new ModelAndView("accessDenied");
+	}
+
+	@RequestMapping("/information")
+	public ModelAndView gameInformation(
+			HttpServletRequest request) throws IOException {
+		Map<String, Object> model = new HashMap<String, Object>();
+		
+		String version = getVersion(request);
+
+		model.put("version", version);
+		
+		return new ModelAndView("information", model);
+	}
+
+	@RequestMapping("/footer")
+	public ModelAndView footer(
+			HttpServletRequest request,
+			Principal principal) throws IOException {
+		Map<String, Object> model = new HashMap<String, Object>();
+		
+		if (principal != null) {
+			Session session = sessionFactory.getCurrentSession();
+			String username = (String) session.createCriteria(User.class)
+							.add(Restrictions.idEq(principal.getName()))
+							.setProjection(Projections.property("username"))
+							.uniqueResult();
+		
+			model.put("playerName", username);
+		}
+
+		return new ModelAndView("footer", model);
+	}
+
 	private JSONObject parseInput(HttpServletRequest request) throws IOException, RuntimeException {
 		JSONObject json = new JSONObject();
 		BufferedReader reader = null;

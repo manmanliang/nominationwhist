@@ -35,9 +35,9 @@
 				<sec:authorize access="hasRole('ROLE_ADMIN')">
 	    			<tr>
       					<th>
-        					Enabled: <form:errors path="enabled" cssClass="errors"/>
+        					Enabled: <form:errors path="active" cssClass="errors"/>
         					<br/>
-        					<form:checkbox path="enabled"/>
+        					<form:checkbox path="active"/>
       					</th>
     				</tr>
 				</sec:authorize>
@@ -53,7 +53,7 @@
   	<jsp:include page="../Instructions.jsp">
 	 	<jsp:param name="nonInstructionsDiv" value="user" />
  	</jsp:include>
- 	<jsp:include page="../footer.jsp">
+ 	<jsp:include page="/footer">
 	 	<jsp:param name="nonInstructionsDiv" value="user" />
  	</jsp:include>
   	

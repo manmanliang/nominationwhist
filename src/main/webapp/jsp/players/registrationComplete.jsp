@@ -7,17 +7,16 @@
 	<link rel="stylesheet" type="text/css" href="<c:url value="/css/common.css"/>" />
   </head>
   <body>
-  	<div id="userList">
-  		<c:forEach var="player" items="${players}">
-    		<p><a href="<c:url value="/players/${player.username}"/>">${player.username}</a> - <a href="<c:url value="/players/${player.username}/delete"/>">Delete</a></p>
-    	</c:forEach>
+  	<div id="registrationMessage">
+  		<h1>Registration Complete for ${user.username}</h1>
+  		<p>Thankyou ${user.username} for registering. Your account has now been created but it needs to be approved before you can login. You may or not get an email or something if and when you can log in.</p>
   	</div>
   	
   	<jsp:include page="../Instructions.jsp">
-	 	<jsp:param name="nonInstructionsDiv" value="userList" />
+	 	<jsp:param name="nonInstructionsDiv" value="registrationMessage" />
  	</jsp:include>
  	<jsp:include page="/footer">
-	 	<jsp:param name="nonInstructionsDiv" value="userList" />
+	 	<jsp:param name="nonInstructionsDiv" value="registrationMessage" />
  	</jsp:include>
   	
   </body>

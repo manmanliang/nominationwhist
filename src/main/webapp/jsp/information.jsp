@@ -1,6 +1,6 @@
 <html>
 <head>
-	<title>Login Error</title>
+	<title>Game Information</title>
 	<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
     <script type="text/javascript" src="<c:url value="/js/jquery-1.4.2.min.js"/>"></script>
 	<script type="text/javascript" src="<c:url value="/js/instructions.js"/>"></script>
@@ -8,8 +8,8 @@
 </head>
 
 <body>
-	<div id="errorContent">
-		<p>Invalid username and/or password, please try <a href="<c:url value="/"/>">again</a>.</p>
+	<div id="information">
+		<p>Version: ${version}</p>
 	</div>
 	
 	<jsp:include page="Instructions.jsp">
