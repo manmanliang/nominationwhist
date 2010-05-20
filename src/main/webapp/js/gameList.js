@@ -76,5 +76,5 @@ function gameListCallback(output) {
         $("#newGames").hide();
     }
     
-    setTimeout("gameListCall()", 2000);
+    setTimeout("gameListCall()", 4000);
 }
