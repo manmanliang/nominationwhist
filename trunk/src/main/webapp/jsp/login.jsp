@@ -31,9 +31,6 @@
 		<p>Don't have a login? Use our <a href="<c:url value="/players/register"/>">registration page</a> to create an account</p>
 	</div>
 	
-	<jsp:include page="instructions.jsp">
-	 	<jsp:param name="nonInstructionsDiv" value="loginForm" />
- 	</jsp:include>
  	<jsp:include page="/footer">
 	 	<jsp:param name="nonInstructionsDiv" value="loginForm" />
  	</jsp:include>

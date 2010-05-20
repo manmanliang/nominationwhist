@@ -27,9 +27,6 @@
   		<p><a href="<c:url value="/players/${player.username}/edit"/>">Edit</a>
   	</div>
   	
-  	<jsp:include page="../instructions.jsp">
-	 	<jsp:param name="nonInstructionsDiv" value="user" />
- 	</jsp:include>
  	<jsp:include page="/footer">
 	 	<jsp:param name="nonInstructionsDiv" value="user" />
  	</jsp:include>
