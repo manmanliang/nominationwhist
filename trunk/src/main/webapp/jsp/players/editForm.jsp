@@ -16,34 +16,28 @@
 			<p>Go back to <a href="<c:url value="/players"/>">user list</a></p>
 		</sec:authorize>
   		<p>Username: ${player.username}</p>
-		<sec:authorize access="hasRole('ROLE_ADMIN')">
-	  		<p>Roles are:
-  				<c:forEach var="authorities" items="${player.authorities}">
-    				${authorities}
-	    		</c:forEach>
-  			</p>
-		</sec:authorize>
 		<form:form modelAttribute="player" method="put">
   			<table>
 	    		<tr>
-      				<th>
-        				New Password: <form:errors path="password" cssClass="errors"/>
-        				<br/>
-        				<form:password path="password" size="30" maxlength="80"/>
-      				</th>
+      				<td class="label">New Password: <form:errors path="password" cssClass="formErrors"/></td>
+        			<td><form:password path="password" size="30" maxlength="80"/></td>
     			</tr>
 				<sec:authorize access="hasRole('ROLE_ADMIN')">
-	    			<tr>
-      					<th>
-        					Enabled: <form:errors path="active" cssClass="errors"/>
-        					<br/>
-        					<form:checkbox path="active"/>
-      					</th>
+		         	<tr>
+    		          	<td class="label">Permissions: <form:errors path="password" cssClass="formErrors"/></td>
+        		      	<td>
+            	    	  	Player: <form:checkbox path="roles" value="ROLE_USER"/>
+                		  	Admin: <form:checkbox path="roles" value="ROLE_ADMIN"/>
+						</td>
+	          		</tr>
+    	      		<tr>
+      					<td class="label">Enabled: <form:errors path="active" cssClass="formErrors"/></td>
+        				<td><form:checkbox path="active"/></td>
     				</tr>
 				</sec:authorize>
 	    		<tr>
      		 		<td>
-        				<p class="submit"><input type="submit" value="Edit user"/></p>
+        				<p class="submit"><input type="submit" value="Edit"/></p>
       				</td>
     			</tr>
   			</table>
