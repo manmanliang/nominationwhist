@@ -36,3 +36,11 @@ body {
 #footer p {
     margin: 0;
 }
+
+.formErrors {
+    color: red;
+}
+
+form #label {
+    text-align: right;
+}

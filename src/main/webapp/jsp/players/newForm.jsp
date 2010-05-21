@@ -17,26 +17,17 @@
 		<form:form modelAttribute="player" method="post">
   			<table>
    	 			<tr>
-   	   				<th>
-   	     				Username: <form:errors path="username" cssClass="errors"/>
-   	     				<br/>
-   	     				<form:input path="username" size="30" maxlength="80"/>
-   	   				</th>
+   	   				<td class="label">Username: <form:errors path="username" cssClass="formErrors"/></td>
+   	     			<td><form:input path="username" size="30" maxlength="80"/></td>
    	 			</tr>
 	    		<tr>
-      				<th>
-        				Password: <form:errors path="password" cssClass="errors"/>
-        				<br/>
-        				<form:input path="password" size="30" maxlength="80"/>
-      				</th>
+      				<td class="label">Password: <form:errors path="password" cssClass="formErrors"/></td>
+        			<td><form:input path="password" size="30" maxlength="80"/></td>
     			</tr>
 				<sec:authorize access="hasRole('ROLE_ADMIN')">
 	    			<tr>
-      					<th>
-        					Enabled: <form:errors path="active" cssClass="errors"/>
-        					<br/>
-        					<form:checkbox path="active"/>
-      					</th>
+      					<td class="label">Enabled: <form:errors path="active" cssClass="formErrors"/></td>
+        				<td><form:checkbox path="active"/></td>
     				</tr>
 				</sec:authorize>
 	    		<tr>
