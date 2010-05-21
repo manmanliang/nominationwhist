@@ -192,7 +192,7 @@ public class PlayerController {
 
     	status.setComplete();
 
-    	return new ModelAndView("redirect:/players" + player.getUsername());
+    	return new ModelAndView("redirect:/players/" + player.getUsername());
     }
 
     @Transactional
