@@ -54,5 +54,6 @@ $.ajaxSetup({
     error: whistAjaxErrorHandler,
     timeout: 10000,
     dataType: 'json',
+    contentType: 'application/json',
     type: 'POST'
 });
