@@ -11,11 +11,13 @@
   </head>
   <body>
   	<div id="user">
-		<h2>Player ${player.username}</h2>
+		<h2>Player ${player.prettyName}</h2>
   		<sec:authorize access="hasRole('ROLE_ADMIN')">
-			<p>Go back to <a href="<c:url value="/players"/>">user list</a></p>
+			<p>Go back to <a href="<c:url value="/admin/players"/>">user list</a></p>
   		</sec:authorize>
   		<p>Username: ${player.username}</p>
+  		<p>Name: ${player.prettyName}</p>
+  		<p>Short Name: ${player.shortName}</p>
   		<sec:authorize access="hasRole('ROLE_ADMIN')">
 	   		<p>Roles are:
   				<c:forEach var="authorities" items="${player.authorities}">
@@ -24,7 +26,7 @@
   			</p>
   		</sec:authorize>
   		<p>Enabled: ${player.enabled}</p>
-  		<p><a href="<c:url value="/players/${player.username}/edit"/>">Edit</a>
+  		<p><a href="${player.username}/edit">Edit</a>
   	</div>
   	
  	<jsp:include page="/footer">
