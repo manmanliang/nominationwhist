@@ -25,7 +25,7 @@ import org.springframework.web.servlet.ModelAndView;
 import com.google.common.collect.Lists;
 
 @Controller
-@SessionAttributes(types = User.class)
+@SessionAttributes("player")
 public class PlayerController {
 	private SessionFactory sessionFactory;
 	private PasswordEncoder passwordEncoder;
@@ -58,132 +58,96 @@ public class PlayerController {
 		this.saltSource = saltSource;
 	}
 
-    @Transactional(readOnly = true)
-	@SuppressWarnings("unchecked")
-    @RequestMapping(value = "/players")
-    public ModelAndView listPlayers() {
-		Map<String, Object> model = new HashMap<String, Object>();
-
-		Session session = sessionFactory.getCurrentSession();
-		
-		List<User> players = session.createQuery("from User").list();
-		model.put("players", players);
-		
-		return new ModelAndView("players/list", model);
-    }
-    
     @RequestMapping(value = "/players/register", method = RequestMethod.GET)
 	public ModelAndView setupRegisterPlayerForm() throws IOException {
 		Map<String, Object> model = new HashMap<String, Object>();
 		
-		User newUser = new User();
+		Player player = new Player();
 		
-		model.put("player", newUser);
+		model.put("player", player);
 		
-		return new ModelAndView("players/newForm", model);
+		return new ModelAndView("players/form", model);
 	}
 
     @Transactional
-    @RequestMapping(value = "/players/register", method = RequestMethod.POST)
-    public ModelAndView processRegisterPlayerSubmit(@ModelAttribute("player") User player, BindingResult result, SessionStatus status) {
+    @RequestMapping(value = "/players/register", method = RequestMethod.PUT)
+    public ModelAndView processRegisterPlayerSubmit(@ModelAttribute("player") Player player, BindingResult result, SessionStatus status) {
     	player.validate(result);
     	
     	if (result.hasErrors()) {
-    		return new ModelAndView("players/newForm");
-    	} else {
-    		Map<String, Object> model = new HashMap<String, Object>();
-
-    		player.setActive(false);
-    		List<String> authorities = Lists.newArrayList();
-    		authorities.add("ROLE_USER");
-    		player.setRoles(authorities);
-    		
-    		player.setPassword(encryptPassword(player));
-    		
-    	    sessionFactory.getCurrentSession().save(player);
-
-    		status.setComplete();
-    		
-    		model.put("user", player);
-    		
-    		return new ModelAndView("players/registrationComplete", model);
+    		return new ModelAndView("players/form");
     	}
-    }
 
-    @RequestMapping(value = "/players/new", method = RequestMethod.GET)
-	public ModelAndView setupNewPlayerForm() throws IOException {
-		Map<String, Object> model = new HashMap<String, Object>();
-		
-		User newUser = new User();
-		
-		model.put("player", newUser);
-		
-		return new ModelAndView("players/newForm", model);
-	}
+    	if (player.getRoles().size() != 0 ||
+        	player.getActive() != null) {
+    		return new ModelAndView("redirect:/access-denied");
+        }
+        	
+    	Map<String, Object> model = new HashMap<String, Object>();
 
-    @Transactional
-    @RequestMapping(value = "/players/new", method = RequestMethod.POST)
-    public ModelAndView processNewPlayerSubmit(@ModelAttribute("player") User player, BindingResult result, SessionStatus status) {
-    	player.validate(result);
-    	
-    	if (result.hasErrors()) {
-    		return new ModelAndView("players/newForm");
-    	} else {
-    		List<String> authorities = Lists.newArrayList();
-    		authorities.add("ROLE_USER");
-    		player.setRoles(authorities);
-    		
-    		player.setPassword(encryptPassword(player));
-    		
-    	    sessionFactory.getCurrentSession().save(player);
+    	player = setupBasePlayer(player);
 
-    		status.setComplete();
-    		
-    		return new ModelAndView("redirect:/players");
-    	}
+    	List<String> authorities = Lists.newArrayList();
+    	authorities.add("ROLE_USER");
+    	player.setRoles(authorities);
+
+    	player.setActive(false);
+
+    	sessionFactory.getCurrentSession().save(player);
+
+    	status.setComplete();
+
+    	model.put("player", player);
+
+    	return new ModelAndView("players/registrationComplete", model);
     }
 
     @Transactional(readOnly = true)
-    @PreAuthorize("hasRole('ROLE_ADMIN') or #username == principal.username")
+    @PreAuthorize("#username == principal.username")
     @RequestMapping(value = "/players/{username}")
     public ModelAndView showPlayer(@PathVariable String username) {
 		Map<String, Object> model = new HashMap<String, Object>();    	
-    	User user = new User();
+    	Player player = new Player();
     	
-		sessionFactory.getCurrentSession().load(user, username);
+		sessionFactory.getCurrentSession().load(player, username);
 		
-		model.put("player", user);
+		model.put("player", player);
 		
 		return new ModelAndView("players/show", model);
     }
-    
+
     @Transactional(readOnly = true)
-    @PreAuthorize("hasRole('ROLE_ADMIN') or #username == principal.username")
+    @PreAuthorize("#username == principal.username")
     @RequestMapping(value = "/players/{username}/edit", method = RequestMethod.GET)
 	public ModelAndView setupEditPlayerForm(@PathVariable String username) throws IOException {
-		Map<String, Object> model = new HashMap<String, Object>();
-		
-		User editingUser = new User();
-		
-		sessionFactory.getCurrentSession().load(editingUser, username);
-		
-		model.put("player", editingUser);
-				
-		return new ModelAndView("players/editForm", model);
+    	Map<String, Object> model = new HashMap<String, Object>();
+
+    	Player player = new Player();
+
+    	sessionFactory.getCurrentSession().load(player, username);
+
+    	model.put("player", player);
+
+    	return new ModelAndView("players/form", model);
 	}
 
     @Transactional
-    @PreAuthorize("hasRole('ROLE_ADMIN') or #player.username == principal.username")
+    @PreAuthorize("#player.username == principal.username")
     @RequestMapping(value = "/players/{username}/edit", method = RequestMethod.PUT)
-    public ModelAndView processEditPlayerSubmit(@ModelAttribute("player") User player, BindingResult result, 
+    public ModelAndView processEditPlayerSubmit(@ModelAttribute("player") Player player, BindingResult result, 
     											SessionStatus status) {
     	Session session = sessionFactory.getCurrentSession();
 
+    	if (player.getRoles().size() != 0 ||
+    		player.getActive() != null) {
+        	return new ModelAndView("redirect:/access-denied");
+    	}
+
     	if (player.getPassword().isEmpty()) {
-    		User oldUser = new User();
-    		session.load(oldUser, player.getUsername());
-    		session.evict(oldUser);
-    		player.setPassword(oldUser.getPassword());
+    		Player prevPlayer = new Player();
+    		session.load(prevPlayer, player.getUsername());
+    		session.evict(prevPlayer);
+    		player.setPassword(prevPlayer.getPassword());
        	} else {
        		player.setPassword(encryptPassword(player));
        	}
@@ -195,22 +159,132 @@ public class PlayerController {
     	return new ModelAndView("redirect:/players/" + player.getUsername());
     }
 
+    @Transactional(readOnly = true)
+	@SuppressWarnings("unchecked")
+    @RequestMapping(value = "/admin/players")
+    public ModelAndView listPlayers() {
+		Map<String, Object> model = new HashMap<String, Object>();
+
+		Session session = sessionFactory.getCurrentSession();
+		
+		List<Player> players = session.createQuery("from Player").list();
+		model.put("players", players);
+		
+		return new ModelAndView("players/list", model);
+    }
+    
+    @RequestMapping(value = "/admin/players/new", method = RequestMethod.GET)
+	public ModelAndView setupNewPlayerForm() throws IOException {
+		Map<String, Object> model = new HashMap<String, Object>();
+		
+		Player player = new Player();
+		
+		model.put("player", player);
+		
+		return new ModelAndView("players/adminForm", model);
+	}
+
     @Transactional
-    @RequestMapping(value = "/players/{username}/delete")
+    @RequestMapping(value = "/admin/players/new", method = RequestMethod.PUT)
+    public ModelAndView processNewPlayerSubmit(@ModelAttribute("player") Player player, BindingResult result, SessionStatus status) {
+    	player.validate(result);
+    	
+    	if (result.hasErrors()) {
+    		return new ModelAndView("/admin/players/adminForm");
+    	} else {
+    		player = setupBasePlayer(player);
+    		
+    	    sessionFactory.getCurrentSession().save(player);
+
+    		status.setComplete();
+    		
+    		return new ModelAndView("redirect:/admin/players");
+    	}
+    }
+
+    @Transactional(readOnly = true)
+    @RequestMapping(value = "/admin/players/{username}")
+    public ModelAndView showPlayerAdmin(@PathVariable String username) {
+		Map<String, Object> model = new HashMap<String, Object>();    	
+    	Player player = new Player();
+    	
+		sessionFactory.getCurrentSession().load(player, username);
+		
+		model.put("player", player);
+		
+		return new ModelAndView("players/show", model);
+    }
+
+    @Transactional(readOnly = true)
+    @RequestMapping(value = "/admin/players/{username}/edit", method = RequestMethod.GET)
+	public ModelAndView setupAdminEditPlayerForm(@PathVariable String username) throws IOException {
+		Map<String, Object> model = new HashMap<String, Object>();
+		
+		Player player = new Player();
+		
+		sessionFactory.getCurrentSession().load(player, username);
+		
+		model.put("player", player);
+				
+		return new ModelAndView("players/adminForm", model);
+	}
+
+    @Transactional
+    @RequestMapping(value = "/admin/players/{username}/edit", method = RequestMethod.PUT)
+    public ModelAndView processAdminEditPlayerSubmit(@ModelAttribute("player") Player player, BindingResult result, 
+    											SessionStatus status) {
+    	Session session = sessionFactory.getCurrentSession();
+
+    	if (player.getPassword().isEmpty()) {
+    		Player prevPlayer = new Player();
+    		session.load(prevPlayer, player.getUsername());
+    		session.evict(prevPlayer);
+    		player.setPassword(prevPlayer.getPassword());
+       	} else {
+       		player.setPassword(encryptPassword(player));
+       	}
+    	
+    	session.update(player);
+
+    	status.setComplete();
+
+    	return new ModelAndView("redirect:/admin/players/" + player.getUsername());
+    }
+
+    @Transactional
+    @RequestMapping(value = "/admin/players/{username}/delete")
     public ModelAndView deletePlayer(@PathVariable String username) {
-    	User user = new User();
+    	Player player = new Player();
     	
 		Session session = sessionFactory.getCurrentSession();
-		session.load(user, username);
-		session.delete(user);
+		session.load(player, username);
+		session.delete(player);
 		
-		return new ModelAndView("redirect:/players");
+		return new ModelAndView("redirect:/admin/players");
     }
 
     private String encryptPassword(User user) {
 	    Object salt = saltSource.getSalt(user);  
 	    
 	    return passwordEncoder.encodePassword(user.getPassword(), salt);
+    }
+
+    private Player setupBasePlayer(Player player) {
+		if (player.getPrettyName().isEmpty()) {
+			player.setPrettyName(player.getUsername());
+		}
+		
+		if (player.getShortName().isEmpty()) {
+			if (player.getPrettyName().length() > 6) {
+				player.setShortName(player.getPrettyName().substring(0, 7));
+			} else {
+				player.setShortName(player.getPrettyName());
+			}
+		}
+		
+		player.setPassword(encryptPassword(player));
+		
+		return player;
     }
 
 }
