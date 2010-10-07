@@ -8,8 +8,8 @@
   </head>
   <body>
   	<div id="registrationMessage">
-  		<h1>Registration Complete for ${user.username}</h1>
-  		<p>Thankyou ${user.username} for registering. Your account has now been created but it needs to be approved before you can login. You may or not get an email or something if and when you can log in.</p>
+  		<h1>Registration Complete for ${player.prettyName}</h1>
+  		<p>Thankyou ${player.prettyName} for registering. Your account has now been created but it needs to be approved before you can login. You may or not get an email or something if and when you can log in.</p>
   	</div>
   	
  	<jsp:include page="/footer">
