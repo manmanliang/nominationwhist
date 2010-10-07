@@ -41,6 +41,6 @@ body {
     color: red;
 }
 
-form #label {
+form .label {
     text-align: right;
 }
