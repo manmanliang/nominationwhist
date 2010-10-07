@@ -594,9 +594,8 @@ public class GameController {
 
 	private JSONObject parseInput(HttpServletRequest request) throws IOException, RuntimeException {
 		JSONObject json = new JSONObject();
-		BufferedReader reader = null;
 		
-		reader = request.getReader();
+		BufferedReader reader = request.getReader();
 		Object obj = JSONValue.parse(reader);
 		
 		if (!(obj instanceof JSONObject)) {
