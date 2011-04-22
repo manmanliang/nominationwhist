@@ -9,8 +9,7 @@
     					http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
                         http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd">
     
-	<tx:annotation-driven/>
-	<context:component-scan base-package="org.blim.whist"/>
+  <global-method-security pre-post-annotations="enabled"/>
 
     <http auto-config="true" use-expressions="true">
 		<intercept-url pattern="/login" access="permitAll" />

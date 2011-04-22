@@ -17,13 +17,19 @@
     - Persistence configuration for whist.
    -->
   
+  <!--
+    - I don't know why but these 2 annotation statements seemingly must be together and in the last file mentioned
+    - in the contextConfigLocation in web.xml - they can't be in applicationContext or whist-servlet.xml
+  -->
+  <tx:annotation-driven/>
+  <context:component-scan base-package="org.blim.whist"/>
       
   <!-- JNDI resource - can't work out how to close this properly
   <bean id="dataSource" class="org.springframework.jndi.JndiObjectFactoryBean">
     <property name="jndiName" value="java:comp/env/jdbc/whist"/>
   </bean>
   -->
-
+  
   <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
 	<property name="driverClassName" value="org.postgresql.Driver" />
 	<property name="url" value="jdbc:postgresql://127.0.0.1:5432/whist" />
