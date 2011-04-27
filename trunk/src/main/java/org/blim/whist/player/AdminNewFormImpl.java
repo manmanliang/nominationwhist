@@ -38,6 +38,9 @@ public class AdminNewFormImpl implements AdminNewForm {
     	Player player = new Player();
     	
        	model.put("player", player);
+       	// TODO: This var is really sucky but we need to know if this is a new
+       	// user and what's the alternative? Have redundant ID column to see
+       	// if it's already been registered?
 		model.put("new", 1);
 
     	return new ModelAndView("players/adminForm", model);
@@ -51,6 +54,7 @@ public class AdminNewFormImpl implements AdminNewForm {
     	new PlayerValidator().validate(player, result);
 
         // Check username is free
+    	// TODO: This should be in validate but it doesn't have a database session
         if (playerDAO.get(player.getUsername()) != null) {
             result.rejectValue("username", "duplicate");        	
         }
