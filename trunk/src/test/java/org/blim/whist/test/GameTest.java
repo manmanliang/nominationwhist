@@ -6,12 +6,12 @@ import java.util.List;
 
 import junit.framework.TestCase;
 
-import org.blim.whist.Card;
-import org.blim.whist.Game;
-import org.blim.whist.Hand;
-import org.blim.whist.Round;
-import org.blim.whist.Trick;
 import org.blim.whist.WhistException;
+import org.blim.whist.game.Card;
+import org.blim.whist.game.Game;
+import org.blim.whist.game.Hand;
+import org.blim.whist.game.Round;
+import org.blim.whist.game.Trick;
 
 import com.google.common.collect.Iterables;
 

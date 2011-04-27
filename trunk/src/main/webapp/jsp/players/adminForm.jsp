@@ -10,13 +10,13 @@
   </head>
   <body>
   	<div id="playerForm">
-		<h2><c:if test="${empty player.username}">New </c:if>Player</h2>
+		<h2><c:if test="${not empty new}">New </c:if>Player</h2>
 		<sec:authorize access="hasRole('ROLE_ADMIN')">		
 			<p>Go back to <a href="<c:url value="/admin/players"/>">user list</a></p>
 		</sec:authorize>		
 		<form:form modelAttribute="player" method="put">
   			<table>
-   	 			<c:if test="${empty player.username}">
+   	 			<c:if test="${not empty new}">
    	 				<tr>
    	   					<td class="label">Username: <form:errors path="username" cssClass="formErrors"/></td>
    	     				<td><form:input path="username" size="30" maxlength="80"/></td>
@@ -35,7 +35,7 @@
    	     			<td><form:input path="shortName" size="30" maxlength="80"/></td>
    	 			</tr>
 		       	<tr>
-    		       	<td class="label">Permissions: <form:errors path="password" cssClass="formErrors"/></td>
+    		       	<td class="label">Permissions: <form:errors path="roles" cssClass="formErrors"/></td>
         		   	<td>
             	      	Player: <form:checkbox path="roles" value="ROLE_USER"/>
                 	  	Admin: <form:checkbox path="roles" value="ROLE_ADMIN"/>
@@ -48,7 +48,7 @@
 	    		<tr>
      		 		<td>
 				        <c:choose>
-          					<c:when test="${empty player.username}">
+          					<c:when test="${not empty new}">
             					<p class="submit"><input type="submit" value="Create"/></p>
           					</c:when>
           					<c:otherwise>

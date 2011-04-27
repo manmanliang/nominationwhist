@@ -1,9 +1,12 @@
-package org.blim.whist;
+package org.blim.whist.player;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.blim.whist.game.Card;
+import org.blim.whist.game.Game;
+import org.blim.whist.game.Round;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;

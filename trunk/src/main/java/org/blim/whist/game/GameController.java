@@ -1,4 +1,4 @@
-package org.blim.whist;
+package org.blim.whist.game;
 
 import java.io.IOException;
 import java.security.Principal;
@@ -6,6 +6,7 @@ import java.security.Principal;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.blim.whist.player.PlayersStats;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
