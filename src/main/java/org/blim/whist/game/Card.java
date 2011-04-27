@@ -1,4 +1,4 @@
-package org.blim.whist;
+package org.blim.whist.game;
 
 import org.json.simple.JSONAware;
 

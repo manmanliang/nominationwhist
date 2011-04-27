@@ -1,4 +1,4 @@
-package org.blim.whist;
+package org.blim.whist.player;
 
 import java.util.Collection;
 import java.util.List;
@@ -22,12 +22,21 @@ import com.google.common.collect.Lists;
 @Entity
 @Inheritance(strategy=InheritanceType.JOINED)
 @Table(name = "users")
-public class User implements UserDetails {
+public class User implements UserDetails, Cloneable {
 
 	private String username;
 	private String password;
 	private Boolean active;
 	private List<String> roles = Lists.newArrayList();
+
+	public User() {}
+	
+	protected User(User another) {
+		username = another.username;
+		password = another.password;
+		active = another.active;
+		roles.addAll(another.roles);
+	}
 
 	@Id
 	public String getUsername() {
@@ -59,15 +68,6 @@ public class User implements UserDetails {
 		this.roles = roles;
 	}
 	
-	public void validate(Errors errors) {
-		if (!StringUtils.hasLength(username)) {
-			errors.rejectValue("username", "required", "required");
-		}
-		if (!StringUtils.hasLength(password)) {
-			errors.rejectValue("password", "required", "required");
-		}
-	}
-
 	@Transient
 	public boolean isAccountNonExpired() {
 		return true;
@@ -103,4 +103,9 @@ public class User implements UserDetails {
 		return authorities;
 	}
 	
+	@Override
+	public Object clone() {
+		return new User(this);
+	}
+
 }

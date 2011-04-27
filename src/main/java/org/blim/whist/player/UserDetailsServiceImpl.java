@@ -1,4 +1,4 @@
-package org.blim.whist;
+package org.blim.whist.player;
 
 import org.hibernate.FetchMode;
 import org.hibernate.Session;

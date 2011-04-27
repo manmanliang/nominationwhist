@@ -1,4 +1,6 @@
-package org.blim.whist;
+package org.blim.whist.player;
+
+import org.blim.whist.game.Card;
 
 public class PlayerStats {
 	private Float win = null;

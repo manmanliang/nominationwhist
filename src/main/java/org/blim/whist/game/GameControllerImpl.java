@@ -1,4 +1,4 @@
-package org.blim.whist;
+package org.blim.whist.game;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -16,6 +16,10 @@ import java.util.jar.Manifest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.blim.whist.WhistException;
+import org.blim.whist.player.PlayerStats;
+import org.blim.whist.player.PlayersStats;
+import org.blim.whist.player.User;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Projections;

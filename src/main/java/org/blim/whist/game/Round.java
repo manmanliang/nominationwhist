@@ -1,4 +1,4 @@
-package org.blim.whist;
+package org.blim.whist.game;
 
 import java.util.List;
 
@@ -9,7 +9,8 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Transient;
 
-import org.blim.whist.Card.Suit;
+import org.blim.whist.WhistException;
+import org.blim.whist.game.Card.Suit;
 import org.hibernate.annotations.CollectionOfElements;
 import org.hibernate.annotations.IndexColumn;
 

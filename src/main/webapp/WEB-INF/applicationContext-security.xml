@@ -37,7 +37,7 @@
         <authentication-provider ref="authenticationProvider" />
     </authentication-manager>
 
-    <beans:bean id="userDetailsService" class="org.blim.whist.UserDetailsServiceImpl" />
+    <beans:bean id="userDetailsService" class="org.blim.whist.player.UserDetailsServiceImpl" />
   
     <beans:bean id="passwordEncoder" class="org.springframework.security.authentication.encoding.ShaPasswordEncoder" />
 
