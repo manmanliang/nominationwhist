@@ -24,6 +24,11 @@ function gameListCall() {
     });
 }
 
+// What to do if the initial timeout fires
+function whistAjaxInitTimeoutHandler() {
+    $("#ajaxProgress").css('display', 'inline');
+}
+
 function whistAjaxErrorHandler(xhr, textStatus, exception) {
     if (textStatus == 'timeout') {
         this.tryCount++;
@@ -41,10 +46,11 @@ function whistAjaxErrorHandler(xhr, textStatus, exception) {
 $(document).ajaxSend(function(e, xhr, settings) {
 	$("#ajaxProgressCount").text(settings.tryCount);
 	$("#ajaxProgressAction").text(settings.progressAction);
-    $("#ajaxProgress").css('display', 'inline');
+    this.initTimeoutRef = setTimeout("whistAjaxInitTimeoutHandler()", 500);
 });
 
 $(document).ajaxStop(function() {
+    clearTimeout(this.initTimeoutRef);
 	$("#ajaxProgress").css('display', 'none');
 });
 
