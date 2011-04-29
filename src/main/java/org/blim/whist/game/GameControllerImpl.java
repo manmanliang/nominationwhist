@@ -177,27 +177,23 @@ public class GameControllerImpl implements GameController {
 		
 		for (Game game : games) {
 			int roundSize = game.getRounds().size();
+			
+			JSONObject JSONGame = new JSONObject();
+			JSONGame.put("creationDate",game.getCreationDate().toString());
+			JSONGame.put("players",game.getPlayers());
+			JSONGame.put("id",game.getId());
+			JSONGame.put("roundNum", roundSize);
 
 			if (!game.isFinished()) {
 				gameAdded = false;
 				for (String player : game.getPlayers()) {
 					if (player.equals(user.getName())) {
-						JSONObject JSONGame = new JSONObject();
-						JSONGame.put("creationDate",game.getCreationDate().toString());
-						JSONGame.put("players",game.getPlayers());
-						JSONGame.put("id",game.getId());
-						JSONGame.put("roundNum", roundSize);
 						JSONRunningGames.add(JSONGame);
 						gameAdded = true;
 						break;
 					}
 				}
 				if (!gameAdded && roundSize == 0) {
-					JSONObject JSONGame = new JSONObject();
-					JSONGame.put("creationDate",game.getCreationDate().toString());
-					JSONGame.put("players",game.getPlayers());
-					JSONGame.put("id",game.getId());
-					JSONGame.put("roundNum", roundSize);
 					JSONNewGames.add(JSONGame);
 				}
 			}
