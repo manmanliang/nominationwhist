@@ -87,10 +87,6 @@ public class Round {
 	@Transient
 	public void bid(int player, int bid) throws WhistException {
 		
-		if ((getNumberOfBids() + firstPlayer) % hands.size() != player) {
-			throw new WhistException("Sorry, it isn't your turn");
-		}
-		
 		if (bid < 0 || bid > numberOfCards) {
 			throw new WhistException("Sorry, this round doesn't have " + bid + " cards");
 		}
@@ -141,10 +137,6 @@ public class Round {
 		// Check to see if it was legal to play that card
 		if (!hands.get(player).getCards().contains(card)) {
 			throw new WhistException("Sorry, it is not in your hand");			
-		}
-		
-		if ((trick.getNumberOfCards() + trick.getFirstPlayer()) % hands.size() != player) {
-			throw new WhistException("Sorry, it isn't your turn");
 		}
 		
 		if (trick.getNumberOfCards() > 0) {
