@@ -16,7 +16,7 @@ function gameStartCallback(output) {
     updatePlayerUI();
 	
     if (game.phase == -1) {
-        setTimeout("gameStartCall()", 2000);
+        setTimeout("gameStartCall()", gameStartUpdateDelay);
 	} else {
         $("#trick").show();
         updateCall(-1);
