@@ -46,19 +46,22 @@ function whistAjaxErrorHandler(xhr, textStatus, exception) {
 $(document).ajaxSend(function(e, xhr, settings) {
 	$("#ajaxProgressCount").text(settings.tryCount);
 	$("#ajaxProgressAction").text(settings.progressAction);
-    this.initTimeoutRef = setTimeout("whistAjaxInitTimeoutHandler()", 500);
+    settings.initTimeoutRef = setTimeout("whistAjaxInitTimeoutHandler()", ajaxInitTimeout);
 });
 
 $(document).ajaxStop(function() {
-    clearTimeout(this.initTimeoutRef);
 	$("#ajaxProgress").css('display', 'none');
+});
+
+$(document).ajaxComplete(function(e, xhr, settings) {
+    clearTimeout(settings.initTimeoutRef);
 });
 
 $.ajaxSetup({
     tryCount: 1,
     retryLimit: 4,
     error: whistAjaxErrorHandler,
-    timeout: 10000,
+    timeout: ajaxTimeout,
     dataType: 'json',
     contentType: 'application/json',
     type: 'POST'

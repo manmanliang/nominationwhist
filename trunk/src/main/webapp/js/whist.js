@@ -6,12 +6,7 @@ function gameUpdatedEventHandler() {
 	updateUI();
 	
 	if (userId != game.activePlayer) {
-		if (userAction == true) {
-			userAction = false;
-			updateCall(game.phase);
-		} else {
-            setTimeout("updateCall(game.phase)", 500);
-		}
+        setTimeout("updateCall(game.phase)", gameStateUpdateDelay);
 	}
 }
 
@@ -193,7 +188,7 @@ function updateCallback(output) {
         if (output.trick.trickNum != game.trick.trickNum) {
             // Changed tricks, show previous trick briefly
             game.showPreviousTrickCards = true;
-            timer.showPreviousTrickCards = setTimeout("showCurrentTrickCards()", 1000);
+            timer.showPreviousTrickCards = setTimeout("showCurrentTrickCards()", showCurrentTrickCardsDelay);
         }
         
 	    game.trick = output.trick;
@@ -211,11 +206,7 @@ function updateCallback(output) {
 	game.activePlayer = output.activePlayer;
 	    		    
     updateGameState();
-    updateUI();
-    if (userId != game.activePlayer) {
-        setTimeout("updateCall(game.phase)", 500);
-	}
-
+    gameUpdatedEventHandler();
 }
 
 function bid(bid) {
@@ -231,7 +222,7 @@ function bid(bid) {
 function bidCallback(output) {
 	if (output.result == 0) {
 		$("#bidUI").text("");
-		
+
 		updateCall(game.phase);
 	} else {
 		// Show the ui again along with an error and clear our unacceptable bid
@@ -317,7 +308,7 @@ function writeMessage(message) {
     if (timer.messages != null) {
         clearTimeout(timer.messages);
     }
-    timer.messages = setTimeout("regulariseMessages()", 1500);
+    timer.messages = setTimeout("regulariseMessages()", regulariseMessagesDelay);
 }
 
 function showCurrentTrickCards() {
