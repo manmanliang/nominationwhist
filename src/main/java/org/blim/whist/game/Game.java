@@ -16,6 +16,7 @@ import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
 import org.blim.whist.WhistException;
+import org.blim.whist.game.Card.Suit;
 import org.hibernate.annotations.CollectionOfElements;
 import org.hibernate.annotations.IndexColumn;
 
@@ -66,14 +67,14 @@ public class Game {
 		this.rounds = rounds;
 	}
 	
-	public void setRoundSequence(int[] roundSequence) {
-		this.roundSequence = roundSequence;
-	}
-	
 	@CollectionOfElements
 	@IndexColumn(name = "sortkey")
 	public int[] getRoundSequence() {
 		return roundSequence;
+	}
+	
+	public void setRoundSequence(int[] roundSequence) {
+		this.roundSequence = roundSequence;
 	}
 	
 	@Transient
@@ -127,19 +128,6 @@ public class Game {
 		while (round < roundSequence.length && roundsPlayed > 0) {
 			round = getNextPlayableRound(++round);
 			roundsPlayed--;
-		}
-		
-		return round;
-	}
-	
-	@Transient
-	private int getNextPlayableRound(int idx) {
-		int round = idx;
-		
-		for (; round < roundSequence.length; round++) {
-			if (Game.MAX_CARDS / roundSequence[round] >= players.size()) {
-				return round;
-			}
 		}
 		
 		return round;
@@ -240,10 +228,51 @@ public class Game {
 	}
 
 	@Transient
-	public void playCard (int player, Card card) throws WhistException {
+	public void bid(String player, int bid) throws WhistException {
+		int playerIndex = getPlayerIndex(player);
+		if (playerIndex != activePlayer()) {
+			throw new WhistException("Sorry, it isn't your turn");
+		}
+
+		Round currentRound = getCurrentRound();
+		int maxZeroCount = 3;
+		
+		// Make sure this doesn't exceed max num of 0 bids
+		if (bid == 0) {
+			if (rounds.size() > maxZeroCount) {
+				int currentRoundIdx = rounds.indexOf(currentRound);
+				int i = currentRoundIdx - maxZeroCount;
+				int zeroCount = 0;
+				
+				while (i != currentRoundIdx &&
+					   rounds.get(i).getBids().get(playerIndex) == 0) {
+					zeroCount++;
+					i++;
+				}
+				
+				if (zeroCount == maxZeroCount) {
+					throw new WhistException("Sorry, you can't bid 0 more than " + maxZeroCount + " times");
+				}
+			}
+		}
+		
+		currentRound.bid(playerIndex, bid);
+	}
+	
+	@Transient
+	public void selectTrumps (String player, Suit trumps) throws WhistException {
+		int playerIndex = getPlayerIndex(player);
+		if (playerIndex != activePlayer()) {
+			throw new WhistException("Sorry, it isn't your turn");
+		}
+
 		Round currentRound = getCurrentRound();
 
-		currentRound.playCard(player, card);
+		if (currentRound.highestBidder() != playerIndex) {
+			throw new WhistException("Sorry, you didn't bid highest");
+		}
+		
+		currentRound.selectTrumps(playerIndex, trumps);
 		
 		if (Iterables.getLast(currentRound.getTricks()).getNumberOfCards() == players.size()) {
 			if (addTrick() == null) {
@@ -255,30 +284,23 @@ public class Game {
 	}
 	
 	@Transient
-	public void bid(int player, int bid) throws WhistException {
+	public void playCard (String player, Card card) throws WhistException {
+		int playerIndex = getPlayerIndex(player);
+		if (playerIndex != activePlayer()) {
+			throw new WhistException("Sorry, it isn't your turn");
+		}
+
 		Round currentRound = getCurrentRound();
-		int maxZeroCount = 3;
+
+		currentRound.playCard(playerIndex, card);
 		
-		// Make sure this isn't a fourth bid of 0
-		if (bid == 0) {
-			if (rounds.size() > maxZeroCount) {
-				int currentRoundIdx = rounds.indexOf(currentRound);
-				int i = currentRoundIdx - maxZeroCount;
-				int zeroCount = 0;
-				
-				while (i != currentRoundIdx &&
-					   rounds.get(i).getBids().get(player) == 0) {
-					zeroCount++;
-					i++;
-				}
-				
-				if (zeroCount == maxZeroCount) {
-					throw new WhistException("Sorry, you can't bid 0 more than " + maxZeroCount + " times");
+		if (Iterables.getLast(currentRound.getTricks()).getNumberOfCards() == players.size()) {
+			if (addTrick() == null) {
+				if (addRound() != null) {
+					addTrick();
 				}
 			}
 		}
-		
-		currentRound.bid(player, bid);
 	}
 	
 	@Transient
@@ -302,6 +324,19 @@ public class Game {
 			return "trick";
 		}
 	    
+	}
+	
+	@Transient
+	private int getNextPlayableRound(int idx) {
+		int round = idx;
+		
+		for (; round < roundSequence.length; round++) {
+			if (Game.MAX_CARDS / roundSequence[round] >= players.size()) {
+				return round;
+			}
+		}
+		
+		return round;
 	}
 	
 }

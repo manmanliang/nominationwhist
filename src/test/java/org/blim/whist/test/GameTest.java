@@ -51,7 +51,7 @@ public class GameTest extends TestCase {
 		game.addRound();
 
 		try {
-			game.bid(1, 2);
+			game.bid("Grelp", 2);
 		} catch (WhistException whistException) {
 			exceptionThrown = 1;
 		}
@@ -59,7 +59,7 @@ public class GameTest extends TestCase {
 		exceptionThrown = 0;
 
 		try {
-			game.bid(0, 14);
+			game.bid("Wibble", 14);
 		} catch (WhistException whistException) {
 			exceptionThrown = 1;
 		}
@@ -67,7 +67,7 @@ public class GameTest extends TestCase {
 		exceptionThrown = 0;
 
 		try {
-			game.bid(0, 0);
+			game.bid("Wibble", 0);
 		} catch (WhistException whistException) {
 			exceptionThrown = 1;
 		}
@@ -75,7 +75,7 @@ public class GameTest extends TestCase {
 		exceptionThrown = 0;
 
 		try {
-			game.bid(1, 5);
+			game.bid("Grelp", 5);
 		} catch (WhistException whistException) {
 			exceptionThrown = 1;
 		}
@@ -83,7 +83,7 @@ public class GameTest extends TestCase {
 		exceptionThrown = 0;
 
 		try {
-			game.bid(2, 8);
+			game.bid("Flurp", 8);
 		} catch (WhistException whistException) {
 			exceptionThrown = 1;
 		}
@@ -91,7 +91,7 @@ public class GameTest extends TestCase {
 		exceptionThrown = 0;
 
 		try {
-			game.bid(2, 5);
+			game.bid("Flurp", 5);
 		} catch (WhistException whistException) {
 			exceptionThrown = 1;
 		}
@@ -99,18 +99,18 @@ public class GameTest extends TestCase {
 		exceptionThrown = 0;
 
 		game.addRound();
-		game.bid(1, 2);
-		game.bid(2, 2);
-		game.bid(0, 0);
+		game.bid("Grelp", 2);
+		game.bid("Flurp", 2);
+		game.bid("Wibble", 0);
 
 		game.addRound();
-		game.bid(2, 2);
-		game.bid(0, 0);
-		game.bid(1, 2);
+		game.bid("Flurp", 2);
+		game.bid("Wibble", 0);
+		game.bid("Grelp", 2);
 
 		game.addRound();
 		try {
-			game.bid(0, 0);
+			game.bid("Wibble", 0);
 		} catch (WhistException whistException) {
 			exceptionThrown = 1;
 		}
@@ -128,9 +128,9 @@ public class GameTest extends TestCase {
 		game.setRoundSequence(new int[] {13});
 
 		Round round = game.addRound();
-		game.bid(0, 2);
-		game.bid(1, 1);
-		game.bid(2, 6);
+		game.bid("Wibble", 2);
+		game.bid("Grelp", 1);
+		game.bid("Flurp", 6);
 
 		try {
 			round.selectTrumps(1, Card.Suit.CLUBS);
@@ -160,7 +160,7 @@ public class GameTest extends TestCase {
 		Hand hand = round.getHands().get(0);
 		Card card = hand.getCards().get(3);
 		
-		game.playCard(0, card);
+		game.playCard("Wibble", card);
 
 		assertFalse("Card was not removed from players hand", hand.getCards().contains(card));
 		assertTrue("Card was not added to the trick", trick.getCards().contains(card));
@@ -177,9 +177,9 @@ public class GameTest extends TestCase {
 		game.setRoundSequence(new int[] {13});
 
 		Round round = game.addRound();
-		game.bid(0, 2);
-		game.bid(1, 1);
-		game.bid(2, 6);
+		game.bid("Wibble", 2);
+		game.bid("Grelp", 1);
+		game.bid("Flurp", 6);
 		round.selectTrumps(2, Card.Suit.CLUBS);
 
 		List<Card> deck = new ArrayList<Card>(EnumSet.allOf(Card.class));
@@ -196,7 +196,7 @@ public class GameTest extends TestCase {
 		
 		Card card = round.getHands().get(1).getCards().get(3);		
 		try {
-			game.playCard(1, card);
+			game.playCard("Grelp", card);
 		} catch (WhistException whistException) {
 			exceptionThrown = 1;
 		}
@@ -204,7 +204,7 @@ public class GameTest extends TestCase {
 		exceptionThrown = 0;
 
 		try {
-			game.playCard(0, card);
+			game.playCard("Wibble", card);
 		} catch (WhistException whistException) {
 			exceptionThrown = 1;
 		}
@@ -213,7 +213,7 @@ public class GameTest extends TestCase {
 
 		card = round.getHands().get(0).getCards().get(12);		
 		try {
-			game.playCard(0, card);
+			game.playCard("Wibble", card);
 		} catch (WhistException whistException) {
 			exceptionThrown = 1;
 		}
@@ -224,7 +224,7 @@ public class GameTest extends TestCase {
 
 		card = round.getHands().get(1).getCards().get(12);
 		try {
-			game.playCard(1, card);
+			game.playCard("Grelp", card);
 		} catch (WhistException whistException) {
 			exceptionThrown = 1;
 		}
@@ -233,7 +233,7 @@ public class GameTest extends TestCase {
 
 		card = round.getHands().get(1).getCards().get(3);
 		try {
-			game.playCard(1, card);
+			game.playCard("Grelp", card);
 		} catch (WhistException whistException) {
 			exceptionThrown = 1;
 		}
@@ -250,8 +250,8 @@ public class GameTest extends TestCase {
 		game.setRoundSequence(new int[] {2, 2});
 		Round round = game.addRound();
 		
-		game.bid(0, 2);
-		game.bid(1, 1);
+		game.bid("Wibble", 2);
+		game.bid("Grelp", 1);
 		round.selectTrumps(0, Card.Suit.CLUBS);
 
 		List<Card> deck = new ArrayList<Card>(EnumSet.allOf(Card.class));
@@ -265,25 +265,25 @@ public class GameTest extends TestCase {
 		// First Round
 		Hand hand = round.getHands().get(0);
 		Card card = hand.getCards().get(1);
-		game.playCard(0, card);
+		game.playCard("Wibble", card);
 		hand = round.getHands().get(1);
 		card = hand.getCards().get(0);
-		game.playCard(1, card);
+		game.playCard("Grelp", card);
 
 		hand = round.getHands().get(1);
 		card = hand.getCards().get(0);
-		game.playCard(1, card);
+		game.playCard("Grelp", card);
 		hand = round.getHands().get(0);
 		card = hand.getCards().get(0);
-		game.playCard(0, card);
+		game.playCard("Wibble", card);
 
 		assertFalse("Game should not be finished", game.isFinished());
 
 		// Second Round
 		
 		round = game.getCurrentRound();
-		game.bid(1, 2);
-		game.bid(0, 1);
+		game.bid("Grelp", 2);
+		game.bid("Wibble", 1);
 		round.selectTrumps(1, Card.Suit.CLUBS);
 	
 		deck = new ArrayList<Card>(EnumSet.allOf(Card.class));
@@ -294,17 +294,17 @@ public class GameTest extends TestCase {
 
 		hand = round.getHands().get(1);
 		card = hand.getCards().get(1);
-		game.playCard(1, card);
+		game.playCard("Grelp", card);
 		hand = round.getHands().get(0);
 		card = hand.getCards().get(0);
-		game.playCard(0, card);
+		game.playCard("Wibble", card);
 		
 		hand = round.getHands().get(1);
 		card = hand.getCards().get(0);
-		game.playCard(1, card);
+		game.playCard("Grelp", card);
 		hand = round.getHands().get(0);
 		card = hand.getCards().get(0);
-		game.playCard(0, card);
+		game.playCard("Wibble", card);
 
 		assertTrue("Game should be finished", game.isFinished());
 
@@ -317,8 +317,8 @@ public class GameTest extends TestCase {
 		game.setRoundSequence(new int[] {2, 2});
 		Round round = game.addRound();
 		
-		game.bid(0, 2);
-		game.bid(1, 1);
+		game.bid("Wibble", 2);
+		game.bid("Grelp", 1);
 		round.selectTrumps(0, Card.Suit.CLUBS);
 
 		List<Card> deck = new ArrayList<Card>(EnumSet.allOf(Card.class));
@@ -332,17 +332,17 @@ public class GameTest extends TestCase {
 		// First Round
 		Hand hand = round.getHands().get(0);
 		Card card = hand.getCards().get(1);
-		game.playCard(0, card);
+		game.playCard("Wibble", card);
 		hand = round.getHands().get(1);
 		card = hand.getCards().get(0);
-		game.playCard(1, card);
+		game.playCard("Grelp", card);
 
 		hand = round.getHands().get(0);
 		card = hand.getCards().get(0);
-		game.playCard(0, card);
+		game.playCard("Wibble", card);
 		hand = round.getHands().get(1);
 		card = hand.getCards().get(0);
-		game.playCard(1, card);
+		game.playCard("Grelp", card);
 
 		assertTrue("Scores are wrong should be 12 and 0 but got " + game.scores(0,0).get(0) + " and " + game.scores(0,0).get(1),
 				game.scores(0,0).get(0) == 12 && game.scores(0,0).get(1) == 0);
@@ -350,8 +350,8 @@ public class GameTest extends TestCase {
 		// Second Round
 		
 		round = game.getCurrentRound();
-		game.bid(1, 1);
-		game.bid(0, 2);
+		game.bid("Grelp", 1);
+		game.bid("Wibble", 2);
 		round.selectTrumps(0, Card.Suit.CLUBS);
 	
 		deck = new ArrayList<Card>(EnumSet.allOf(Card.class));
@@ -363,17 +363,17 @@ public class GameTest extends TestCase {
 
 		hand = round.getHands().get(1);
 		card = hand.getCards().get(1);
-		game.playCard(1, card);
+		game.playCard("Grelp", card);
 		hand = round.getHands().get(0);
 		card = hand.getCards().get(0);
-		game.playCard(0, card);
+		game.playCard("Wibble", card);
 		
 		hand = round.getHands().get(0);
 		card = hand.getCards().get(0);
-		game.playCard(0, card);
+		game.playCard("Wibble", card);
 		hand = round.getHands().get(1);
 		card = hand.getCards().get(0);
-		game.playCard(1, card);
+		game.playCard("Grelp", card);
 
 		assertTrue("Scores are wrong should be 13 and 11 but got " + game.scores(0,1).get(0) + " and " + game.scores(0,1).get(1),
 				game.scores(0,1).get(0) == 13 && game.scores(0,1).get(1) == 11);

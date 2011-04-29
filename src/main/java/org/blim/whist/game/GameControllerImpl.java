@@ -379,9 +379,8 @@ public class GameControllerImpl implements GameController {
 			HttpServletResponse response,
 			HttpServletRequest request,
 			Principal user) throws IOException {
-		Game game = new Game();
-		JSONObject JSONResult = new JSONObject();
 
+		JSONObject JSONResult = new JSONObject();
 		JSONObject JSONInput = null;
 		
 		try {
@@ -396,17 +395,15 @@ public class GameControllerImpl implements GameController {
 			return;
 		}
 					
-		Session session = sessionFactory.getCurrentSession();
-
 		Long gameId = ((Number) JSONInput.get("id")).longValue();
 		Integer bid = ((Number) JSONInput.get("bid")).intValue();
 
+		Game game = new Game();
+		Session session = sessionFactory.getCurrentSession();
 		session.load(game, gameId);
 
-		int player = game.getPlayerIndex(user.getName());
-
 		try {
-			game.bid(player, bid);
+			game.bid(user.getName(), bid);
 		} catch (WhistException whistException) {
 			JSONResult.put("errorMessage", whistException.getMessage());
 			JSONResult.put("result", "-1");
@@ -428,9 +425,8 @@ public class GameControllerImpl implements GameController {
 			HttpServletResponse response,
 			HttpServletRequest request,
 			Principal user) throws IOException {
-		Game game = new Game();
-		JSONObject JSONResult = new JSONObject();
 
+		JSONObject JSONResult = new JSONObject();
 		JSONObject JSONInput = null;
 		
 		try {
@@ -444,19 +440,16 @@ public class GameControllerImpl implements GameController {
 		if (JSONInput == null) {
 			return;
 		}
-					
-		Session session = sessionFactory.getCurrentSession();
 
 		Long gameId = ((Number) JSONInput.get("id")).longValue();
 		Card.Suit trumps = Enum.valueOf(Card.Suit.class, JSONInput.get("trumps").toString().replace("-", "_"));
 
+		Game game = new Game();
+		Session session = sessionFactory.getCurrentSession();
 		session.load(game, gameId);
 			
-		Round currentRound = game.getCurrentRound();
-		int player = game.getPlayerIndex(user.getName());
-
 		try {
-			currentRound.selectTrumps(player, trumps);
+			game.selectTrumps(user.getName(), trumps);
 		} catch (WhistException whistException) {
 			JSONResult.put("errorMessage", whistException.getMessage());
 			JSONResult.put("result", "-1");
@@ -478,9 +471,8 @@ public class GameControllerImpl implements GameController {
 			HttpServletResponse response,
 			HttpServletRequest request,
 			Principal user) throws IOException {
-		Game game = new Game();
+		
 		JSONObject JSONResult = new JSONObject();
-
 		JSONObject JSONInput = null;
 		
 		try {
@@ -495,19 +487,16 @@ public class GameControllerImpl implements GameController {
 			return;
 		}
 					
-		Session session = sessionFactory.getCurrentSession();
-
 		Long gameId = ((Number) JSONInput.get("id")).longValue();
-		JSONResult.put("card", JSONInput.get("card").toString());
 		String enumConstant = JSONInput.get("card").toString().replace("-", "_");
 		Card card = Enum.valueOf(Card.class, enumConstant);
 
+		Game game = new Game();
+		Session session = sessionFactory.getCurrentSession();
 		session.load(game, gameId);
 
-		int player = game.getPlayerIndex(user.getName());
-		
 		try {
-			game.playCard(player, card);
+			game.playCard(user.getName(), card);
 		} catch (WhistException whistException) {
 			JSONResult.put("errorMessage", whistException.getMessage());
 			JSONResult.put("result", "1");
