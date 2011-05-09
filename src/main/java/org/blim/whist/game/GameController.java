@@ -6,25 +6,12 @@ import java.security.Principal;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.blim.whist.player.PlayersStats;
-import org.hibernate.SessionFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 public interface GameController {
-
-	public abstract PlayersStats getPlayerStats();
-
-	@Autowired
-	public abstract void setPlayerStats(PlayersStats playerStats);
-
-	public abstract SessionFactory getSessionFactory();
-
-	@Autowired
-	public abstract void setSessionFactory(SessionFactory sessionFactory);
 
 	@RequestMapping("/")
 	public abstract ModelAndView gameList(HttpServletRequest request,

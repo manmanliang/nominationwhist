@@ -13,19 +13,6 @@ function gameUpdatedEventHandler() {
 // Inspect the game data 'updated' flags to determine which
 // Game Information components must be re-rendered.
 function updateGameState() {
-	// Game finished update
-	if (game.phase == 3) {
-		// Game is finished, print final scores
-	    for (var i = 0; i < game.players.length; i++) {
-			$("#player" + i + "FinalScore").text(game.rounds[game.round.current].scores[i]);
-            $("#player" + i + "currentScore").text(game.rounds[game.round.current].scores[i]);
-		}
-        $("#finalScores").show();
-
-       	// set active player to be us as we want no more ui polls from other players events
-       	game.activePlayer = userId;
-	}
-	
     // Active Player Update
     if (game.activePlayer != null) {
         for (var i = 0; i < game.players.length; i++) {
@@ -76,7 +63,7 @@ function updateGameState() {
 		updated.previousRound = false;
     }
 
-    // Trick update
+    // Trick update before game end check
     if (updated.trick) {
 	    for (var i = 0; i < game.players.length; i++) {
 		   	if (!game.trick.tricksWon[i]) {
@@ -84,7 +71,29 @@ function updateGameState() {
 		    } else {
 				$("#player" + i + "currentTricks").text(game.trick.tricksWon[i]);
 		    }
+        }
+    }
 
+	// Game finished update
+	if (game.phase == 3) {
+		// Game is finished, clear board and print final scores
+        $("#trick").hide();
+        $("#message").text("Game finished");
+
+	    for (var i = 0; i < game.players.length; i++) {
+			$("#player" + i + "FinalScore").text(game.rounds[game.round.current].scores[i]);
+            $("#player" + i + "currentScore").text(game.rounds[game.round.current].scores[i]);
+		}
+        $("#finalScores").show();
+
+       	// we're done set current player to us so we don't do any more polling and return
+       	game.activePlayer = userId;
+        return
+    }
+	
+    // Trick update after game end check
+    if (updated.trick) {
+	    for (var i = 0; i < game.players.length; i++) {
             var trickListToShow;
             
             if (game.showPreviousTrickCards) {
@@ -110,7 +119,15 @@ function updateGameState() {
 	}
 
     // Set the message string
-    if (game.players.length > game.rounds[game.round.current].bids.length) {
+    var bidsToBeMade = false;
+    for (var i = 0; i < game.players.length; i++) {
+        if (game.rounds[game.round.current].bids[i] == null) {
+            bidsToBeMade = true;
+            break;
+        }
+    }
+
+    if (bidsToBeMade) {
         if (game.activePlayer == userId) {
             $("#message").text("Please select your bid");
         } else {
@@ -272,6 +289,8 @@ function playCard() {
 	$(this).hide();
 	$("#player" + userId + "TrickCard").attr('src', $(this).attr('src'));
 	$("#player" + userId + "TrickElement").css('visibility', 'visible');
+    
+    game.playCardAttempt = $(this).attr("title");
 	
 	$.ajax({url: 'playCard', data: JSON.stringify({id:game.id, card:$(this).attr("title")}),
             success: playCardCallback, progressAction: "Playing Card"});
@@ -282,10 +301,10 @@ function playCardCallback(output) {
 		
 		updateCall(game.phase);
 	} else {
-		// Show the ui again along with an error and clear our unacceptable trumps choice
+		// Show the ui again with error and put the card back into our hand from the trick
 		$("#player" + userId + "TrickElement").css('visibility', 'hidden');
 		$("#player" + userId + "TrickCard").attr('src', '');
-		$("#" + output.card).show();
+		$("#" + game.playCardAttempt).show();
 		writeMessage(output.errorMessage);
 		
 		// Re-instate onclick handler

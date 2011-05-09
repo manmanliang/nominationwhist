@@ -19,7 +19,7 @@
   <body>
 	<div id="gamesList">
 		<h1>List of Games</h1>
-		<p>User: ${user}</p>
+		<p>User: ${player}</p>
 	
 		<p>You can create a new game:</p>
 		<form method="POST" action="create-game">

@@ -20,6 +20,7 @@ game.hand = null;
 game.phase = null;
 game.activePlayer = null;
 game.showPreviousTrickCards = false;
+game.playCardAttempt = null;
 
 timer = new Object();
 timer.messages = null;

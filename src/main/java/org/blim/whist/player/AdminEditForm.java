@@ -15,7 +15,7 @@ import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.servlet.ModelAndView;
 
 @RequestMapping("/admin/players/{username}/edit")
-@SessionAttributes(types = Player.class)
+@SessionAttributes(types = HumanPlayer.class)
 public interface AdminEditForm {
 
 	public abstract void setAllowedFields(WebDataBinder dataBinder);
@@ -26,7 +26,7 @@ public interface AdminEditForm {
 
 	@RequestMapping(method = RequestMethod.PUT)
 	public abstract ModelAndView processSubmit(
-			@ModelAttribute("player") Player player, BindingResult result,
+			@ModelAttribute("person") HumanPlayer humanPlayer, BindingResult result,
 			SessionStatus status, @PathVariable("username") String username,
 			HttpSession session);
 

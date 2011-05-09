@@ -5,30 +5,39 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.blim.whist.dao.HumanPlayerDAO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.google.common.collect.Lists;
 
 @Controller
-@SessionAttributes(types = Player.class)
 public class NewFormImpl implements NewForm {
 
-	private PlayerDAO playerDAO;
+	private HumanPlayerDAO humanPlayerDAO;
+	private PasswordEncryptor passwordEncryptor;
 
-	public PlayerDAO getPlayerDAO() {
-		return playerDAO;
+	public PasswordEncryptor getPasswordEncryptor() {
+		return passwordEncryptor;
 	}
 
 	@Autowired
-	public void setPlayerDAO(PlayerDAO playerDAO) {
-		this.playerDAO = playerDAO;
+	public void setPasswordEncryptor(PasswordEncryptor passwordEncryptor) {
+		this.passwordEncryptor = passwordEncryptor;
+	}
+
+	public HumanPlayerDAO getHumanPlayerDAO() {
+		return humanPlayerDAO;
+	}
+
+	@Autowired
+	public void setHumanPlayerDAO(HumanPlayerDAO humanPlayerDAO) {
+		this.humanPlayerDAO = humanPlayerDAO;
 	}
 
 	public void setAllowedFields(WebDataBinder dataBinder) {
@@ -38,52 +47,52 @@ public class NewFormImpl implements NewForm {
 	public ModelAndView setupForm() throws IOException {
     	Map<String, Object> model = new HashMap<String, Object>();
 
-    	Player player = new Player();
+    	HumanPlayer humanPlayer = new HumanPlayer();
     	
-       	model.put("player", player);
-		model.put("new", 1);
+       	model.put("player", humanPlayer);
 
     	return new ModelAndView("players/form", model);
 	}
 
-    public ModelAndView processSubmit(@ModelAttribute("player") Player player, BindingResult result, 
+    public ModelAndView processSubmit(@ModelAttribute("player") HumanPlayer humanPlayer, BindingResult result, 
     								  SessionStatus status) {
     	Map<String, Object> model = new HashMap<String, Object>();
 
-    	new PlayerValidator().validate(player, result);
+    	User user = humanPlayer.getUser();
+    	
+		new UserValidator().validate(user, result);
     	
         // Check username is free
-        if (playerDAO.get(player.getUsername()) != null) {
-            result.rejectValue("username", "duplicate");        	
+        if (humanPlayerDAO.get(user.getUsername()) != null) {
+            result.rejectValue("user.username", "duplicate");        	
         }
 
     	if (result.hasErrors()) {
-    		model.put("new", 1);
     		return new ModelAndView("players/form", model);
     	}
 
     	// Default some stuff
-		if (player.getShortName().isEmpty()) {
-			player.setShortName(player.getUsername());
+		if (user.getShortName().isEmpty()) {
+			user.setShortName(user.getUsername());
 		}
     	
-		if (player.getPrettyName().isEmpty()) {
-			player.setPrettyName(player.getShortName());
+		if (user.getPrettyName().isEmpty()) {
+			user.setPrettyName(user.getShortName());
 		}
 		
-		player.setPassword(playerDAO.encryptPassword(player));
+		user.setPassword(passwordEncryptor.encryptPassword(user));
 
 		List<String> authorities = Lists.newArrayList();
     	authorities.add("ROLE_USER");
-    	player.setRoles(authorities);
+    	user.setRoles(authorities);
 
-    	player.setActive(false);
+    	user.setActive(false);
 
-    	playerDAO.save(player);
+    	humanPlayerDAO.save(humanPlayer);
 
     	status.setComplete();
 
-    	model.put("player", player);
+    	model.put("player", humanPlayer);
 
     	return new ModelAndView("players/registrationComplete", model);
     }
