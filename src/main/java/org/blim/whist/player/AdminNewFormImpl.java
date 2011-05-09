@@ -71,15 +71,15 @@ public class AdminNewFormImpl implements AdminNewForm {
     		return new ModelAndView("/players/form", model);
     	}
 
-		if (user.getPrettyName().isEmpty()) {
-			user.setPrettyName(user.getUsername());
+		if (humanPlayer.getPrettyName().isEmpty()) {
+			humanPlayer.setPrettyName(user.getUsername());
 		}
 		
-		if (user.getShortName().isEmpty()) {
-			if (user.getPrettyName().length() > 6) {
-				user.setShortName(user.getPrettyName().substring(0, 7));
+		if (humanPlayer.getShortName().isEmpty()) {
+			if (humanPlayer.getPrettyName().length() > 6) {
+				humanPlayer.setShortName(humanPlayer.getPrettyName().substring(0, 7));
 			} else {
-				user.setShortName(user.getPrettyName());
+				humanPlayer.setShortName(humanPlayer.getPrettyName());
 			}
 		}
 		

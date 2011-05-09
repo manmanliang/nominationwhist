@@ -23,8 +23,6 @@ public class User extends BaseEntity implements UserDetails, Cloneable {
 	private String password;
 	private Boolean active;
 	private List<String> roles = Lists.newArrayList();
-	private String prettyName;
-	private String shortName;
 
 	public User() {}
 	
@@ -35,8 +33,6 @@ public class User extends BaseEntity implements UserDetails, Cloneable {
 		password = another.password;
 		active = another.active;
 		roles.addAll(another.roles);
-		prettyName = another.prettyName;
-		shortName = another.shortName;
 	}
 
 	public String getUsername() {
@@ -51,22 +47,6 @@ public class User extends BaseEntity implements UserDetails, Cloneable {
 	}
 	public void setPassword(String password) {
 		this.password = password;
-	}
-	
-	public void setPrettyName(String prettyName) {
-		this.prettyName = prettyName;
-	}
-
-	public String getPrettyName() {
-		return prettyName;
-	}
-
-	public void setShortName(String shortName) {
-		this.shortName = shortName;
-	}
-
-	public String getShortName() {
-		return shortName;
 	}
 	
 	public Boolean getActive() {
