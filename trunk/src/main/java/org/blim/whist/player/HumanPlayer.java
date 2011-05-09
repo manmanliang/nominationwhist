@@ -9,12 +9,16 @@ import javax.persistence.Transient;
 public class HumanPlayer extends Player implements Cloneable {
 
 	private User user;
-	
+	private String prettyName;
+	private String shortName;
+
 	public HumanPlayer() {}
 	
 	protected HumanPlayer(HumanPlayer another) {
 		super(another);
 
+		prettyName = another.prettyName;
+		shortName = another.shortName;
 		this.user = (User) another.user.clone();
 	}
 	
@@ -27,16 +31,32 @@ public class HumanPlayer extends Player implements Cloneable {
 		this.user = user;
 	}
 
+	public void setPrettyName(String prettyName) {
+		this.prettyName = prettyName;
+	}
+
+	public String getPrettyName() {
+		return prettyName;
+	}
+
+	public void setShortName(String shortName) {
+		this.shortName = shortName;
+	}
+
+	public String getShortName() {
+		return shortName;
+	}
+	
 	@Override
 	@Transient
-	public String getPrettyName() {
-		return user.getPrettyName();
+	public String getPlayerPrettyName() {
+		return getPrettyName();
 	}
 
 	@Override
 	@Transient
-	public String getShortName() {
-		return user.getShortName();
+	public String getPlayerShortName() {
+		return getShortName();
 	}
 
 	@Override

@@ -72,12 +72,12 @@ public class NewFormImpl implements NewForm {
     	}
 
     	// Default some stuff
-		if (user.getShortName().isEmpty()) {
-			user.setShortName(user.getUsername());
+		if (humanPlayer.getShortName().isEmpty()) {
+			humanPlayer.setShortName(user.getUsername());
 		}
     	
-		if (user.getPrettyName().isEmpty()) {
-			user.setPrettyName(user.getShortName());
+		if (humanPlayer.getPrettyName().isEmpty()) {
+			humanPlayer.setPrettyName(humanPlayer.getShortName());
 		}
 		
 		user.setPassword(passwordEncryptor.encryptPassword(user));

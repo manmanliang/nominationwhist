@@ -75,7 +75,7 @@ public class GameControllerImpl implements GameController {
 		
 		Player player = humanPlayerDAO.get(user.getName());
 
-		model.put("player", player.getPrettyName());
+		model.put("player", player.getPlayerPrettyName());
 		
 		return new ModelAndView("listGames", model);
 	}
@@ -156,8 +156,8 @@ public class GameControllerImpl implements GameController {
 		model.put("game", game);
 		model.put("rounds", JSONRounds.toString());
 		model.put("roundCount", game.getRoundSequence().length);
-		model.put("userPrettyName", player.getPrettyName());
-		model.put("userShortName", player.getShortName());
+		model.put("userPrettyName", player.getPlayerPrettyName());
+		model.put("userShortName", player.getPlayerShortName());
 		model.put("userIndex", game.getPlayerIndex(player));
 		model.put("trickNum", trickNum);
 		model.put("AJAXTimeout", AJAXTimeout);
@@ -184,7 +184,7 @@ public class GameControllerImpl implements GameController {
 			// Get user names
 			JSONArray JSONPlayers = new JSONArray();
 			for (Player player : game.getPlayers()) {
-				JSONPlayers.add(player.getPrettyName());
+				JSONPlayers.add(player.getPlayerPrettyName());
 			}
 			
 			JSONObject JSONGame = new JSONObject();
@@ -261,7 +261,7 @@ public class GameControllerImpl implements GameController {
 		
 		for (Player player : game.getPlayers()) {
 			// Get players names
-			JSONPlayers.add(player.getShortName());
+			JSONPlayers.add(player.getPlayerShortName());
 			
 			// Get players stats
 			PlayerStats playerStats = playersStats.getPlayerStats(player);
@@ -552,7 +552,7 @@ public class GameControllerImpl implements GameController {
 			Player player = humanPlayerDAO.get(principal.getName());
 
 			if (player != null) {
-				model.put("playerName", player.getPrettyName());
+				model.put("playerName", player.getPlayerPrettyName());
 				model.put("username", principal.getName());
 			}
 		}

@@ -32,14 +32,14 @@
     			</tr>
    	 			<tr>
    	   				<td class="label">Short Name: </td>
-   	     			<td><form:input path="user.shortName" size="6" maxlength="6"/> <form:errors path="user.shortName" cssClass="formErrors"/></td>
+   	     			<td><form:input path="shortName" size="6" maxlength="6"/> <form:errors path="shortName" cssClass="formErrors"/></td>
    	 			</tr>
 	    		<tr>
         			<td></td><td><p>A short name to be used in the Game UI.</p></td>
     			</tr>
    	 			<tr>
    	   				<td class="label">Name: </td>
-   	     			<td><form:input path="user.prettyName" size="30" maxlength="80"/> <form:errors path="user.prettyName" cssClass="formErrors"/></td>
+   	     			<td><form:input path="prettyName" size="30" maxlength="80"/> <form:errors path="prettyName" cssClass="formErrors"/></td>
    	 			</tr>
 	    		<tr>
         			<td></td><td><p>A full name to be used in the Game UI.</p></td>
