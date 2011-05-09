@@ -6,6 +6,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpSession;
 
+import org.blim.whist.dao.HumanPlayerDAO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -18,15 +19,25 @@ import org.springframework.web.servlet.ModelAndView;
 @Controller
 public class AdminEditFormImpl implements AdminEditForm {
 
-	private PlayerDAO playerDAO;
-
-	public PlayerDAO getPlayerDAO() {
-		return playerDAO;
+	private HumanPlayerDAO humanPlayerDAO;
+	private PasswordEncryptor passwordEncryptor;
+	
+	public HumanPlayerDAO getHumanPlayerDAO() {
+		return humanPlayerDAO;
 	}
 
 	@Autowired
-	public void setPlayerDAO(PlayerDAO playerDAO) {
-		this.playerDAO = playerDAO;
+	public void setHumanPlayerDAO(HumanPlayerDAO humanPlayerDAO) {
+		this.humanPlayerDAO = humanPlayerDAO;
+	}
+
+	public PasswordEncryptor getPasswordEncryptor() {
+		return passwordEncryptor;
+	}
+
+	@Autowired
+	public void setPasswordEncryptor(PasswordEncryptor passwordEncryptor) {
+		this.passwordEncryptor = passwordEncryptor;
 	}
 
 	public void setAllowedFields(WebDataBinder dataBinder) {
@@ -36,35 +47,38 @@ public class AdminEditFormImpl implements AdminEditForm {
 	public ModelAndView setupForm(@PathVariable("username") String username, HttpSession session) throws IOException {
     	Map<String, Object> model = new HashMap<String, Object>();
 
-    	Player player = playerDAO.load(username);
+    	HumanPlayer humanPlayer = humanPlayerDAO.get(username);
     	
-       	model.put("player", player);
+       	HumanPlayer currPlayer = (HumanPlayer) humanPlayer.clone();
        	
-       	Player currPlayer = (Player) player.clone();
-
+       	model.put("player", humanPlayer);
+       	
     	session.setAttribute("currPlayer", currPlayer);
 
-    	return new ModelAndView("players/adminForm", model);
+    	return new ModelAndView("players/form", model);
 	}
 
-    public ModelAndView processSubmit(@ModelAttribute("player") Player player, BindingResult result, 
+    public ModelAndView processSubmit(@ModelAttribute("player") HumanPlayer humanPlayer, BindingResult result, 
     								  SessionStatus status, @PathVariable("username") String username, 
     								  HttpSession session) {
-    	Player currPlayer = (Player) session.getAttribute("currPlayer");
+    	HumanPlayer currUser = (HumanPlayer) session.getAttribute("currPlayer");
     	session.removeAttribute("currPlayer");
     	
-    	if (player.getPassword().isEmpty()) {
-    		player.setPassword(currPlayer.getPassword());
+    	User user = humanPlayer.getUser();
+    	
+		if (user.getPassword().isEmpty()) {
+    		user.setPassword(currUser.getUser().getPassword());
        	} else {
-       		player.setPassword(playerDAO.encryptPassword(player));
+       		user.setPassword(passwordEncryptor.encryptPassword(user));
        	}
 
-    	player.setUsername(username);
-    	playerDAO.update(player);
+    	user.setUsername(username);
+    	
+    	humanPlayerDAO.update(humanPlayer);
     	
     	status.setComplete();
 
-    	return new ModelAndView("redirect:/admin/players/" + player.getUsername());
+    	return new ModelAndView("redirect:/admin/players/" + user.getUsername());
     }
 
 }

@@ -9,7 +9,7 @@
   <body>
   	<div id="userList">
   		<c:forEach var="player" items="${players}">
-    		<p><a href="<c:url value="/admin/players/${player.username}"/>">${player.prettyName}</a> - <a href="<c:url value="/admin/players/${player.username}/delete"/>">Delete</a></p>
+    		<p><a href="<c:url value="/admin/players/${player.user.username}"/>">${player.prettyName}</a> - <a href="<c:url value="/admin/players/${player.user.username}/delete"/>">Delete</a></p>
     	</c:forEach>
     	<p>Click on a user to view and edit their account, or <a href="<c:url value="/admin/players/new"/>">create a new account</a></p>
   	</div>

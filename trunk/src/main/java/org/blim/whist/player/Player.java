@@ -1,39 +1,23 @@
 package org.blim.whist.player;
 
 import javax.persistence.Entity;
+import javax.persistence.Transient;
 
+import org.blim.whist.BaseEntity;
 
 @Entity
-public class Player extends User {
-	private String prettyName;
-	private String shortName;
-
-	public Player() {}
+public abstract class Player extends BaseEntity {
+		
+	public Player () {}
 	
 	protected Player(Player another) {
 		super(another);
-		prettyName = another.prettyName;
-		shortName = another.shortName;
 	}
 	
-	public void setPrettyName(String prettyName) {
-		this.prettyName = prettyName;
-	}
+    @Transient
+	public abstract String getPrettyName();
 
-	public String getPrettyName() {
-		return prettyName;
-	}
+    @Transient
+	public abstract String getShortName();
 
-	public void setShortName(String shortName) {
-		this.shortName = shortName;
-	}
-
-	public String getShortName() {
-		return shortName;
-	}
-	
-	@Override
-	public Object clone() {
-		return new Player(this);
-	}
 }

@@ -10,52 +10,66 @@
   </head>
   <body>
   	<div id="playerForm">
-		<h2><c:if test="${not empty new}">New </c:if>Player</h2>
+		<h2><c:if test="${player.new}">New </c:if>Player</h2>
 		<p>Bold fields are required</p>
 		<sec:authorize access="hasRole('ROLE_ADMIN')">		
 			<p>Go back to <a href="<c:url value="/admin/players"/>">user list</a></p>
 		</sec:authorize>		
 		<form:form modelAttribute="player" method="put">
   			<table>
-	    		<c:if test="${not empty new}">
+   	 			<c:if test="${player.new}">
+   	 				<tr>
+   	   					<td class="label"><b>Username: </b></td>
+   	     				<td><form:input path="user.username" size="30" maxlength="80"/>  <form:errors path="user.username" cssClass="formErrors"/></td>
+   	 				</tr>
+		    		<tr>
+    	    			<td></td><td><p>A username to be used for login.</p></td>
+    				</tr>
+   	 			</c:if>
 	    		<tr>
-      				<td class="label"><b>Username:</b> <form:errors path="username" cssClass="formErrors"/></td>
-        			<td><form:input path="username" size="30" maxlength="80"/></td>
-    			</tr>
-    			</c:if>
-	    		<tr>
-        			<td></td><td><p>A username to be used for login.</p></td>
-    			</tr>
-	    		<tr>
-      				<td class="label"><b>Password:</b> <form:errors path="password" cssClass="formErrors"/></td>
-        			<td><form:password path="password" size="30" maxlength="80"/></td>
+      				<td class="label"><c:if test="${player.new}"><b></c:if>Password:<c:if test="${player.new}"></b></c:if> </td>
+        			<td><form:password path="user.password" size="30" maxlength="80"/> <form:errors path="user.password" cssClass="formErrors"/></td>
     			</tr>
    	 			<tr>
-   	   				<td class="label">Short Name: <form:errors path="shortName" cssClass="formErrors"/></td>
-   	     			<td><form:input path="shortName" size="6" maxlength="6"/></td>
+   	   				<td class="label">Short Name: </td>
+   	     			<td><form:input path="user.shortName" size="6" maxlength="6"/> <form:errors path="user.shortName" cssClass="formErrors"/></td>
    	 			</tr>
 	    		<tr>
         			<td></td><td><p>A short name to be used in the Game UI.</p></td>
     			</tr>
    	 			<tr>
-   	   				<td class="label">Name: <form:errors path="prettyName" cssClass="formErrors"/></td>
-   	     			<td><form:input path="prettyName" size="30" maxlength="80"/></td>
+   	   				<td class="label">Name: </td>
+   	     			<td><form:input path="user.prettyName" size="30" maxlength="80"/> <form:errors path="user.prettyName" cssClass="formErrors"/></td>
    	 			</tr>
 	    		<tr>
-        			<td></td><td><p>Your full name.</p></td>
+        			<td></td><td><p>A full name to be used in the Game UI.</p></td>
     			</tr>
-	    		<tr>
-     		 		<td>
-				        <c:choose>
-          					<c:when test="${not empty new}">
-            					<p class="submit"><input type="submit" value="Create New Player"/></p>
-          					</c:when>
-          					<c:otherwise>
-            					<p class="submit"><input type="submit" value="Edit Player"/></p>
-          					</c:otherwise>
-        				</c:choose>
-      				</td>
-    			</tr>
+				<sec:authorize access="hasRole('ROLE_ADMIN')">		
+			       	<tr>
+    			       	<td class="label">Permissions: </td>
+        			   	<td>
+            		      	Player: <form:checkbox path="user.roles" value="ROLE_USER"/>
+                		  	Admin: <form:checkbox path="user.roles" value="ROLE_ADMIN"/>
+							<form:errors path="user.roles" cssClass="formErrors"/>
+					</td>
+		         	</tr>
+		   			<tr>
+      					<td class="label">Enabled: </td>
+        				<td><form:checkbox path="user.active"/> <form:errors path="user.active" cssClass="formErrors"/></td>
+    				</tr>
+		 		</sec:authorize>
+		 		<tr>
+		 			<td>
+		 				<c:choose>
+		 					<c:when test="${player.new}">
+		 						<p class="submit"><input type="submit" value="Create New User"/></p>
+			 				</c:when>
+			 				<c:otherwise>
+			 					<p class="submit"><input type="submit" value="Edit"/></p>
+		 					</c:otherwise>
+		 				</c:choose>
+		 			</td>
+		 		</tr>
   			</table>
   		</form:form>
   	</div>

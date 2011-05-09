@@ -4,41 +4,41 @@ import java.util.Collection;
 import java.util.List;
 
 import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.blim.whist.BaseEntity;
 import org.hibernate.annotations.CollectionOfElements;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.GrantedAuthorityImpl;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.util.StringUtils;
-import org.springframework.validation.Errors;
 
 import com.google.common.collect.Lists;
 
 @Entity
-@Inheritance(strategy=InheritanceType.JOINED)
 @Table(name = "users")
-public class User implements UserDetails, Cloneable {
+public class User extends BaseEntity implements UserDetails, Cloneable {
 
 	private String username;
 	private String password;
 	private Boolean active;
 	private List<String> roles = Lists.newArrayList();
+	private String prettyName;
+	private String shortName;
 
 	public User() {}
 	
 	protected User(User another) {
+		super(another);
+		
 		username = another.username;
 		password = another.password;
 		active = another.active;
 		roles.addAll(another.roles);
+		prettyName = another.prettyName;
+		shortName = another.shortName;
 	}
 
-	@Id
 	public String getUsername() {
 		return username;
 	}
@@ -51,6 +51,22 @@ public class User implements UserDetails, Cloneable {
 	}
 	public void setPassword(String password) {
 		this.password = password;
+	}
+	
+	public void setPrettyName(String prettyName) {
+		this.prettyName = prettyName;
+	}
+
+	public String getPrettyName() {
+		return prettyName;
+	}
+
+	public void setShortName(String shortName) {
+		this.shortName = shortName;
+	}
+
+	public String getShortName() {
+		return shortName;
 	}
 	
 	public Boolean getActive() {

@@ -17,19 +17,17 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.blim.whist.WhistException;
+import org.blim.whist.dao.GameDAO;
+import org.blim.whist.dao.HumanPlayerDAO;
+import org.blim.whist.player.HumanPlayer;
+import org.blim.whist.player.Player;
 import org.blim.whist.player.PlayerStats;
 import org.blim.whist.player.PlayersStats;
-import org.blim.whist.player.User;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.criterion.Projections;
-import org.hibernate.criterion.Restrictions;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -39,8 +37,27 @@ import com.google.common.collect.Lists;
 @Controller
 public class GameControllerImpl implements GameController {
 
-	private SessionFactory sessionFactory;
+	private GameDAO gameDAO;
 	private PlayersStats playersStats;
+	private HumanPlayerDAO humanPlayerDAO;
+
+	public GameDAO getGameDAO() {
+		return gameDAO;
+	}
+
+	@Autowired
+	public void setGameDAO(GameDAO gameDAO) {
+		this.gameDAO = gameDAO;
+	}
+
+	public HumanPlayerDAO getHumanPlayerDAO() {
+		return humanPlayerDAO;
+	}
+
+	@Autowired
+	public void setHumanPlayerDAO(HumanPlayerDAO humanPlayerDAO) {
+		this.humanPlayerDAO = humanPlayerDAO;
+	}
 	
 	public PlayersStats getPlayerStats() {
 		return playersStats;
@@ -51,52 +68,44 @@ public class GameControllerImpl implements GameController {
 		this.playersStats = playerStats;
 	}
 
-	public SessionFactory getSessionFactory() {
-		return sessionFactory;
-	}
-
-	@Autowired
-	public void setSessionFactory(SessionFactory sessionFactory) {
-		this.sessionFactory = sessionFactory;
-	}
-
 	public ModelAndView gameList(
 			HttpServletRequest request,
 			Principal user) throws IOException {
 		Map<String, Object> model = new HashMap<String, Object>();
 		
-		model.put("user", user.getName());
+		Player player = humanPlayerDAO.get(user.getName());
+
+		model.put("player", player.getPrettyName());
 		
 		return new ModelAndView("listGames", model);
 	}
 
-	@Transactional
 	public ModelAndView createGame(Principal user) {
 		Map<String, Object> model = new HashMap<String, Object>();
 		Game game = new Game();
-		Session session = sessionFactory.getCurrentSession();
 	
 		game.setCreationDate(new Date());
 		game.setRoundSequence(Game.ROUND_SEQUENCE_DFLT);
-		game.getPlayers().add(user.getName());
-		session.save(game);
+		
+		Player player = humanPlayerDAO.get(user.getName());
+		game.getPlayers().add(player);
+
+		gameDAO.save(game);
 	
 		model.put("id", game.getId());
 	
 		return new ModelAndView("redirect:/game", model);
 	}
 
-	@Transactional
 	public ModelAndView joinGame(HttpServletResponse response, @RequestParam("id") Long gameId, Principal user) {
 		Map<String, Object> model = new HashMap<String, Object>();
-		Game game = new Game();
-		Session session = sessionFactory.getCurrentSession();
-	
-		session.load(game, gameId);
-				
-		if (!game.getPlayers().contains(user.getName())) {
-			game.getPlayers().add(user.getName());
-			session.save(game);
+		
+		Game game = gameDAO.load(gameId);
+		Player player = humanPlayerDAO.get(user.getName());
+		
+		if (!game.getPlayers().contains(player)) {
+			game.getPlayers().add(player);
+			gameDAO.update(game);
 		}
 	
 		model.put("id", gameId);
@@ -104,18 +113,15 @@ public class GameControllerImpl implements GameController {
 		return new ModelAndView("redirect:/game", model);
 	}
 
-	@Transactional
 	public ModelAndView startGame(HttpServletResponse response, @RequestParam("id") Long gameId, Principal user) {
 		Map<String, Object> model = new HashMap<String, Object>();
-		Game game = new Game();
-		Session session = sessionFactory.getCurrentSession();
-	
-		session.load(game, gameId);
-				
-		if (game.getPlayers().get(0).equals(user.getName())) {
-			game.addRound();
-			game.addTrick();
-			session.save(game);
+
+		Game game = gameDAO.load(gameId);
+		Player player = humanPlayerDAO.get(user.getName());
+			
+		if (game.getPlayers().get(0).equals(player)) {
+			game.start();
+			gameDAO.update(game);
 		}
 	
 		model.put("id", gameId);
@@ -123,23 +129,21 @@ public class GameControllerImpl implements GameController {
 		return new ModelAndView("redirect:/game", model);
 	}
 
-	@Transactional(readOnly = true)
 	public ModelAndView gameState(
 			HttpServletRequest request,
 			@RequestParam("id") Long gameId,
 			@RequestParam(value = "ajaxtimeout", required = false) Boolean AJAXTimeout,
 			Principal user) throws IOException {
 		Map<String, Object> model = new HashMap<String, Object>();
-		Game game = new Game();
 		List<JSONObject> JSONRounds = Lists.newArrayList();
-		Session session = sessionFactory.getCurrentSession();
 
 		if (AJAXTimeout == null) {
 			AJAXTimeout = true;
 		}
 		
-		session.load(game, gameId);
-
+		Game game = gameDAO.load(gameId);
+		Player player = humanPlayerDAO.get(user.getName());
+		
 		for (int idx = 0; idx < game.getRounds().size(); idx++) {
 			JSONRounds.add(roundAsJSON(game, idx));
 		}
@@ -152,23 +156,22 @@ public class GameControllerImpl implements GameController {
 		model.put("game", game);
 		model.put("rounds", JSONRounds.toString());
 		model.put("roundCount", game.getRoundSequence().length);
-		model.put("user", user.getName());
-		model.put("userIndex", game.getPlayerIndex(user.getName()));
+		model.put("userPrettyName", player.getPrettyName());
+		model.put("userShortName", player.getShortName());
+		model.put("userIndex", game.getPlayerIndex(player));
 		model.put("trickNum", trickNum);
 		model.put("AJAXTimeout", AJAXTimeout);
 		
 		return new ModelAndView("gameBoard", model);
 	}
 	
-	@Transactional(readOnly = true)
 	@SuppressWarnings("unchecked")
 	public void games(
 			HttpServletResponse response,
 			Principal user) throws IOException {
-		Session session = sessionFactory.getCurrentSession();
 		JSONObject JSONGames = new JSONObject();
 		
-		List<Game> games = session.createQuery("from Game").list();
+		List<Game> games = gameDAO.listGames();
 
 		JSONArray JSONNewGames = new JSONArray();
 		JSONArray JSONRunningGames = new JSONArray();
@@ -178,16 +181,24 @@ public class GameControllerImpl implements GameController {
 		for (Game game : games) {
 			int roundSize = game.getRounds().size();
 			
+			// Get user names
+			JSONArray JSONPlayers = new JSONArray();
+			for (Player player : game.getPlayers()) {
+				JSONPlayers.add(player.getPrettyName());
+			}
+			
 			JSONObject JSONGame = new JSONObject();
+			JSONGame.put("players", JSONPlayers);
 			JSONGame.put("creationDate",game.getCreationDate().toString());
-			JSONGame.put("players",game.getPlayers());
 			JSONGame.put("id",game.getId());
 			JSONGame.put("roundNum", roundSize);
 
 			if (!game.isFinished()) {
 				gameAdded = false;
-				for (String player : game.getPlayers()) {
-					if (player.equals(user.getName())) {
+				for (Player player : game.getPlayers()) {
+					// TODO: is this test right?
+					if (player instanceof HumanPlayer &&
+						((HumanPlayer) player).getUser().getUsername().equals(user.getName())) {
 						JSONRunningGames.add(JSONGame);
 						gameAdded = true;
 						break;
@@ -210,13 +221,11 @@ public class GameControllerImpl implements GameController {
 		response.getWriter().print(JSONGames);
 	}
 
-	@Transactional
 	@SuppressWarnings("unchecked")
 	public void gameStartCheck(
 			HttpServletResponse response,
 			HttpServletRequest request,
 			Principal user) throws IOException {
-		Game game = new Game();
 		JSONObject JSONResult = new JSONObject();
 		
 		JSONObject JSONInput = null;
@@ -232,11 +241,9 @@ public class GameControllerImpl implements GameController {
 		if (JSONInput == null) {
 			return;
 		}
-					
-		Session session = sessionFactory.getCurrentSession();
-			
+								
 		Long gameId = ((Number) JSONInput.get("id")).longValue();
-		session.load(game, gameId);
+		Game game = gameDAO.load(gameId);
 	
 		Round currentRound = game.getCurrentRound();
 		
@@ -248,10 +255,17 @@ public class GameControllerImpl implements GameController {
 		}
 		
 		playersStats.update();
+
 		JSONArray JSONPlayersStats = new JSONArray();
+		JSONArray JSONPlayers = new JSONArray();
 		
-		for (String player : game.getPlayers()) {
+		for (Player player : game.getPlayers()) {
+			// Get players names
+			JSONPlayers.add(player.getShortName());
+			
+			// Get players stats
 			PlayerStats playerStats = playersStats.getPlayerStats(player);
+			
 			JSONObject JSONPlayerStats = new JSONObject();
 
 			JSONPlayerStats.put("favBid", playerStats.getFavBid());
@@ -264,17 +278,15 @@ public class GameControllerImpl implements GameController {
 	
 		JSONResult.put("playersStats", JSONPlayersStats);
 
-		JSONResult.put("players", game.getPlayers());
+		JSONResult.put("players", JSONPlayers);
 		response.getWriter().print(JSONResult);
 	}
 
-	@Transactional(readOnly = true)
 	@SuppressWarnings("unchecked")
 	public void update(
 			HttpServletResponse response,
 			HttpServletRequest request,
 			Principal user) throws IOException {
-		Game game = new Game();
 		JSONObject JSONResult = new JSONObject();
 	
 		JSONObject JSONInput = null;
@@ -291,12 +303,11 @@ public class GameControllerImpl implements GameController {
 			return;
 		}
 					
-		Session session = sessionFactory.getCurrentSession();
-			
 		Long gameId = ((Number) JSONInput.get("id")).longValue();
 		Integer clientPhase = ((Number) JSONInput.get("phase")).intValue();
 	
-		session.load(game, gameId);
+		Game game = gameDAO.load(gameId);
+		Player player = humanPlayerDAO.get(user.getName());
 	
 		Round currentRound = game.getCurrentRound();
 		int idx = game.getRounds().indexOf(currentRound);
@@ -324,7 +335,7 @@ public class GameControllerImpl implements GameController {
 		}
 	
 		if (clientPhase <= 0 || currentPhase == 0) {
-			JSONResult.put("hand", handAsJSON(game, game.getPlayerIndex(user.getName())));
+			JSONResult.put("hand", handAsJSON(game, game.getPlayerIndex(player)));
 			// We have changed round, need to let the client know how the last round finished
 			if (idx > 0) {
 				JSONResult.put("previousRound", roundAsJSON(game, idx - 1));
@@ -347,29 +358,22 @@ public class GameControllerImpl implements GameController {
 	}
 
 
-	@Transactional
 	public ModelAndView deleteGame(HttpServletResponse response, @RequestParam("id") Long gameId, Principal user) {
 		Map<String, Object> model = new HashMap<String, Object>();
-		Game game = new Game();
-		Session session = sessionFactory.getCurrentSession();
-		boolean playerInGame = false;
 		
-		session.load(game, gameId);
+		Game game = gameDAO.load(gameId);
+		Player player = humanPlayerDAO.get(user.getName());
 		
-		for (String player : game.getPlayers()) {
-			if (player.equals(user.getName())) {
-				playerInGame = true;
+		for (Player currPlayer : game.getPlayers()) {
+			if (currPlayer.equals(player)) {
+				gameDAO.delete(gameId);
+				break;
 			}
-		}
-		
-		if (playerInGame) {
-			session.delete(game);
 		}
 		
 		return new ModelAndView("redirect:/", model);
 	}
 
-	@Transactional
 	@SuppressWarnings("unchecked")
 	public void bid(
 			HttpServletResponse response,
@@ -394,12 +398,11 @@ public class GameControllerImpl implements GameController {
 		Long gameId = ((Number) JSONInput.get("id")).longValue();
 		Integer bid = ((Number) JSONInput.get("bid")).intValue();
 
-		Game game = new Game();
-		Session session = sessionFactory.getCurrentSession();
-		session.load(game, gameId);
+		Game game = gameDAO.load(gameId);
+		Player player = humanPlayerDAO.get(user.getName());
 
 		try {
-			game.bid(user.getName(), bid);
+			game.bid(player, bid);
 		} catch (WhistException whistException) {
 			JSONResult.put("errorMessage", whistException.getMessage());
 			JSONResult.put("result", "-1");
@@ -408,14 +411,13 @@ public class GameControllerImpl implements GameController {
 			return;
 		}
 		
-		session.save(game);
+		gameDAO.update(game);
 
 		JSONResult.put("result", "0");
 		
 		response.getWriter().print(JSONResult);
 	}	
 
-	@Transactional
 	@SuppressWarnings("unchecked")
 	public void trumps(
 			HttpServletResponse response,
@@ -440,12 +442,11 @@ public class GameControllerImpl implements GameController {
 		Long gameId = ((Number) JSONInput.get("id")).longValue();
 		Card.Suit trumps = Enum.valueOf(Card.Suit.class, JSONInput.get("trumps").toString().replace("-", "_"));
 
-		Game game = new Game();
-		Session session = sessionFactory.getCurrentSession();
-		session.load(game, gameId);
-			
+		Game game = gameDAO.load(gameId);
+		Player player = humanPlayerDAO.get(user.getName());
+		
 		try {
-			game.selectTrumps(user.getName(), trumps);
+			game.selectTrumps(player, trumps);
 		} catch (WhistException whistException) {
 			JSONResult.put("errorMessage", whistException.getMessage());
 			JSONResult.put("result", "-1");
@@ -454,14 +455,13 @@ public class GameControllerImpl implements GameController {
 			return;
 		}
 		
-		session.save(game);
+		gameDAO.update(game);
 
 		JSONResult.put("result", "0");
 		
 		response.getWriter().print(JSONResult);
 	}
 	
-	@Transactional
 	@SuppressWarnings("unchecked")
 	public void playCard(
 			HttpServletResponse response,
@@ -487,12 +487,11 @@ public class GameControllerImpl implements GameController {
 		String enumConstant = JSONInput.get("card").toString().replace("-", "_");
 		Card card = Enum.valueOf(Card.class, enumConstant);
 
-		Game game = new Game();
-		Session session = sessionFactory.getCurrentSession();
-		session.load(game, gameId);
+		Game game = gameDAO.load(gameId);
+		Player player = humanPlayerDAO.get(user.getName());
 
 		try {
-			game.playCard(user.getName(), card);
+			game.playCard(player, card);
 		} catch (WhistException whistException) {
 			JSONResult.put("errorMessage", whistException.getMessage());
 			JSONResult.put("result", "1");
@@ -501,7 +500,7 @@ public class GameControllerImpl implements GameController {
 			return;
 		}
 		
-		session.save(game);
+		gameDAO.update(game);
 		
 		JSONResult.put("result", "0");
 
@@ -548,15 +547,14 @@ public class GameControllerImpl implements GameController {
 			HttpServletRequest request,
 			Principal principal) throws IOException {
 		Map<String, Object> model = new HashMap<String, Object>();
-		
+
 		if (principal != null) {
-			Session session = sessionFactory.getCurrentSession();
-			String username = (String) session.createCriteria(User.class)
-							.add(Restrictions.idEq(principal.getName()))
-							.setProjection(Projections.property("username"))
-							.uniqueResult();
-		
-			model.put("playerName", username);
+			Player player = humanPlayerDAO.get(principal.getName());
+
+			if (player != null) {
+				model.put("playerName", player.getPrettyName());
+				model.put("username", principal.getName());
+			}
 		}
 
 		return new ModelAndView("footer", model);

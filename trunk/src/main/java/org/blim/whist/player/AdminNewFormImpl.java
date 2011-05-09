@@ -4,28 +4,37 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.blim.whist.dao.HumanPlayerDAO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.servlet.ModelAndView;
 
 @Controller
-@SessionAttributes(types = Player.class)
 public class AdminNewFormImpl implements AdminNewForm {
 
-	private PlayerDAO playerDAO;
+	private HumanPlayerDAO humanPlayerDAO;
+	private PasswordEncryptor passwordEncryptor;
 
-	public PlayerDAO getPlayerDAO() {
-		return playerDAO;
+	public PasswordEncryptor getPasswordEncryptor() {
+		return passwordEncryptor;
 	}
 
 	@Autowired
-	public void setPlayerDAO(PlayerDAO playerDAO) {
-		this.playerDAO = playerDAO;
+	public void setPasswordEncryptor(PasswordEncryptor passwordEncryptor) {
+		this.passwordEncryptor = passwordEncryptor;
+	}
+
+	public HumanPlayerDAO getHumanPlayerDAO() {
+		return humanPlayerDAO;
+	}
+
+	@Autowired
+	public void setHumanPlayerDAO(HumanPlayerDAO humanPlayerDAO) {
+		this.humanPlayerDAO = humanPlayerDAO;
 	}
 
 	public void setAllowedFields(WebDataBinder dataBinder) {
@@ -35,50 +44,48 @@ public class AdminNewFormImpl implements AdminNewForm {
 	public ModelAndView setupForm() throws IOException {
     	Map<String, Object> model = new HashMap<String, Object>();
 
-    	Player player = new Player();
+    	HumanPlayer humanPlayer = new HumanPlayer();
     	
-       	model.put("player", player);
-       	// TODO: This var is really sucky but we need to know if this is a new
-       	// user and what's the alternative? Have redundant ID column to see
-       	// if it's already been registered?
-		model.put("new", 1);
+       	model.put("player", humanPlayer);
 
-    	return new ModelAndView("players/adminForm", model);
+    	return new ModelAndView("players/form", model);
 	}
 
-    public ModelAndView processSubmit(@ModelAttribute("player") Player player, BindingResult result, 
+    public ModelAndView processSubmit(@ModelAttribute("player") HumanPlayer humanPlayer, BindingResult result, 
     								  SessionStatus status) {
 
     	Map<String, Object> model = new HashMap<String, Object>();
 
-    	new PlayerValidator().validate(player, result);
+    	User user = humanPlayer.getUser();
+
+    	new UserValidator().validate(user, result);
 
         // Check username is free
     	// TODO: This should be in validate but it doesn't have a database session
-        if (playerDAO.get(player.getUsername()) != null) {
-            result.rejectValue("username", "duplicate");        	
+        if (humanPlayerDAO.get(user.getUsername()) != null) {
+            result.rejectValue("user.username", "duplicate");        	
         }
    	
     	if (result.hasErrors()) {
     		model.put("new", 1);
-    		return new ModelAndView("/players/adminForm", model);
+    		return new ModelAndView("/players/form", model);
     	}
 
-		if (player.getPrettyName().isEmpty()) {
-			player.setPrettyName(player.getUsername());
+		if (user.getPrettyName().isEmpty()) {
+			user.setPrettyName(user.getUsername());
 		}
 		
-		if (player.getShortName().isEmpty()) {
-			if (player.getPrettyName().length() > 6) {
-				player.setShortName(player.getPrettyName().substring(0, 7));
+		if (user.getShortName().isEmpty()) {
+			if (user.getPrettyName().length() > 6) {
+				user.setShortName(user.getPrettyName().substring(0, 7));
 			} else {
-				player.setShortName(player.getPrettyName());
+				user.setShortName(user.getPrettyName());
 			}
 		}
 		
-		player.setPassword(playerDAO.encryptPassword(player));
+		user.setPassword(passwordEncryptor.encryptPassword(user));
 
-    	playerDAO.save(player);
+    	humanPlayerDAO.save(humanPlayer);
 
     	status.setComplete();
 

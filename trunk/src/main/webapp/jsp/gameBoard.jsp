@@ -9,12 +9,12 @@
     <script type="text/javascript" src="<c:url value="/js/vars.js"/>"></script>
     <script type="text/javascript" src="<c:url value="/js/jQueryGlobals.js"/>"></script>
     <script type="text/javascript">
-    	user = '${user}';
+    	user = '${userShortName}';
     	userId = ${userIndex};
     	
     	game.id = ${game.id};
       <c:forEach var="player" begin="0" end="${fn:length(game.players) - 1}">
-    	game.players[${player}] = '${game.players[player]}';
+    	game.players[${player}] = '${game.players[player].shortName}';
       </c:forEach>
       <c:if test="${fn:length(game.rounds) > 0}">
 		game.rounds = ${rounds};
@@ -41,7 +41,7 @@
  	<div id="header">
  		<div id="scores"></div>
     	<h1>Nomination Whist</h1>
-    	<h3>Player ${user}</h3>
+    	<h3>Player ${userPrettyName}</h3>
     </div>
     <hr>
     <div id="gameArea">
@@ -49,12 +49,12 @@
  			<div id="messages">
  				<p id="message">
 			 		<c:if test="${fn:length(game.rounds) == 0}">
-			 		<c:if test="${game.players[0] eq user}">
-			 			Please click "Start Game" when ready
-    				</c:if>
-			 		<c:if test="${game.players[0] ne user}">
-			 			Waiting for ${game.players[0]} to start the game
-    				</c:if>
+			 			<c:if test="${game.players[0].shortName eq userShortName}">
+			 				Please click "Start Game" when ready
+    					</c:if>
+			 			<c:if test="${game.players[0].shortName ne userShortName}">
+			 				Waiting for ${game.players[0].shortName} to start the game
+    					</c:if>
     				</c:if>
  				</p>
  			</div>
@@ -74,7 +74,7 @@
 		<div id="gamePane">
 		 	<div id="finalScores" style="display: none;"></div>
     		<div id="gameTable">
-		 		<c:if test="${game.players[0] eq user && fn:length(game.rounds) == 0}">
+		 		<c:if test="${game.players[0].shortName eq userShortName && fn:length(game.rounds) == 0}">
     			<form method="POST" action="start-game">
     	    	  	<input type="hidden" name="id" value="${game.id}" />
     	   	  		<input type="submit" value="Start Game" />

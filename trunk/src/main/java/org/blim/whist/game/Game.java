@@ -10,6 +10,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -17,6 +18,7 @@ import javax.persistence.Transient;
 
 import org.blim.whist.WhistException;
 import org.blim.whist.game.Card.Suit;
+import org.blim.whist.player.Player;
 import org.hibernate.annotations.CollectionOfElements;
 import org.hibernate.annotations.IndexColumn;
 
@@ -29,10 +31,10 @@ public class Game {
 	private Long id;
 	private Date creationDate;	
 	private List<Round> rounds = Lists.newArrayList();	
-	private List<String> players = Lists.newArrayList();
+	private List<Player> players = Lists.newArrayList();
 	private int[] roundSequence;
 	public static final int MAX_CARDS = 52;
-	public static final int[] ROUND_SEQUENCE_DFLT = {13,12,11,10,9,8,7,6,5,4,3,2,2,2,2,3,4,5,6,7,8,9,10,11,12,13};
+	public static final int[] ROUND_SEQUENCE_DFLT = {2,2,2};
 	
 	@Id
 	@GeneratedValue
@@ -48,13 +50,13 @@ public class Game {
 		this.creationDate = creationDate;
 	}
 	
-	@CollectionOfElements
+	@ManyToMany(cascade = CascadeType.ALL)
 	@IndexColumn(name = "sortkey")
-	public List<String> getPlayers() {
+	public List<Player> getPlayers() {
 		return players;
 	}
 
-	public void setPlayers(List<String> players) {
+	public void setPlayers(List<Player> players) {
 		this.players = players;
 	}
 
@@ -78,8 +80,8 @@ public class Game {
 	}
 	
 	@Transient
-	public int getPlayerIndex(String name) {
-		return players.indexOf(name);
+	public Integer getPlayerIndex(Player player) {
+		return players.indexOf(player);
 	}
 	
 	@Transient
@@ -89,6 +91,14 @@ public class Game {
 		}
 		
 		return Iterables.getLast(rounds);
+	}
+
+	@Transient
+	public void start() {
+		if (getCurrentRound() == null) {
+			addRound();
+			addTrick();			
+		}
 	}
 
 	@Transient
@@ -183,12 +193,11 @@ public class Game {
 	}
 
 	@Transient
-	public int activePlayer() {
+	public Integer activePlayer() {
 		Round currentRound = getCurrentRound();
-		
-		// TODO: is returning -1 the right thing to do here?
+
 		if (currentRound == null) {
-			return -1;
+			return null;
 		}
 		
 		int numberOfBids = currentRound.getNumberOfBids();
@@ -228,7 +237,7 @@ public class Game {
 	}
 
 	@Transient
-	public void bid(String player, int bid) throws WhistException {
+	public void bid(Player player, Integer bid) throws WhistException {
 		int playerIndex = getPlayerIndex(player);
 		if (playerIndex != activePlayer()) {
 			throw new WhistException("Sorry, it isn't your turn");
@@ -260,8 +269,8 @@ public class Game {
 	}
 	
 	@Transient
-	public void selectTrumps (String player, Suit trumps) throws WhistException {
-		int playerIndex = getPlayerIndex(player);
+	public void selectTrumps (Player player, Suit trumps) throws WhistException {
+		Integer playerIndex = getPlayerIndex(player);
 		if (playerIndex != activePlayer()) {
 			throw new WhistException("Sorry, it isn't your turn");
 		}
@@ -284,8 +293,8 @@ public class Game {
 	}
 	
 	@Transient
-	public void playCard (String player, Card card) throws WhistException {
-		int playerIndex = getPlayerIndex(player);
+	public void playCard (Player player, Card card) throws WhistException {
+		Integer playerIndex = getPlayerIndex(player);
 		if (playerIndex != activePlayer()) {
 			throw new WhistException("Sorry, it isn't your turn");
 		}

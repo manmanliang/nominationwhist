@@ -7,9 +7,11 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.servlet.ModelAndView;
 
+@SessionAttributes(types = HumanPlayer.class)
 @RequestMapping("/players/register")
 public interface NewForm {
 
@@ -20,7 +22,7 @@ public interface NewForm {
 
 	@RequestMapping(method = RequestMethod.PUT)
 	public abstract ModelAndView processSubmit(
-			@ModelAttribute("player") Player player, BindingResult result,
+			@ModelAttribute("player") HumanPlayer humanPlayer, BindingResult result,
 			SessionStatus status);
 
 }

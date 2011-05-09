@@ -31,7 +31,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 		// side stepping open session in view filter
 		User user = (User) session.createCriteria(User.class)
 					.setFetchMode("roles", FetchMode.JOIN)
-					.add(Restrictions.idEq(username))
+					.add(Restrictions.eq("username", username))
 					.uniqueResult();
 		
 		return user;
