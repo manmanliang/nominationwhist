@@ -15,9 +15,9 @@ public abstract class Player extends BaseEntity {
 	}
 	
     @Transient
-	public abstract String getPlayerPrettyName();
+	public abstract String getPrettyName();
 
     @Transient
-	public abstract String getPlayerShortName();
+	public abstract String getShortName();
 
 }
