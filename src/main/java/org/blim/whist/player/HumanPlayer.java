@@ -46,18 +46,6 @@ public class HumanPlayer extends Player implements Cloneable {
 	public String getShortName() {
 		return shortName;
 	}
-	
-	@Override
-	@Transient
-	public String getPlayerPrettyName() {
-		return getPrettyName();
-	}
-
-	@Override
-	@Transient
-	public String getPlayerShortName() {
-		return getShortName();
-	}
 
 	@Override
 	public Object clone() {
