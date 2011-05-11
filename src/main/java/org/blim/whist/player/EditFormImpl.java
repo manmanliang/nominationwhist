@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.servlet.ModelAndView;
@@ -39,8 +39,9 @@ public class EditFormImpl implements EditForm {
 		this.humanPlayerDAO = humanPlayerDAO;
 	}
 
-	public void setAllowedFields(WebDataBinder dataBinder) {
-		dataBinder.setDisallowedFields("username", "roles", "active");
+	@InitBinder
+	public void initBinder(WebDataBinder dataBinder) {
+		dataBinder.setDisallowedFields("user.username", "user.roles", "user.active");
 	}
 
 	public ModelAndView setupForm(@PathVariable("username") String username, HttpSession session) throws IOException {
@@ -57,8 +58,8 @@ public class EditFormImpl implements EditForm {
     	return new ModelAndView("players/form", model);
 	}
 
-    public ModelAndView processSubmit(@ModelAttribute("player") HumanPlayer humanPlayer, BindingResult result,
-    								  SessionStatus status, @PathVariable("username") String username, 
+    public ModelAndView processSubmit(HumanPlayer humanPlayer, BindingResult result,
+    								  SessionStatus status, String username, 
     								  HttpSession session) {
     	HumanPlayer currPlayer = (HumanPlayer) session.getAttribute("currUser");
     	session.removeAttribute("currUser");

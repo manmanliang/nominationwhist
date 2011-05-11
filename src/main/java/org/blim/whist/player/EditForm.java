@@ -21,7 +21,7 @@ import org.springframework.web.servlet.ModelAndView;
 public interface EditForm {
 
 	@InitBinder
-	public abstract void setAllowedFields(WebDataBinder dataBinder);
+	public abstract void initBinder(WebDataBinder dataBinder);
 
 	@PreAuthorize("#username == principal.username")
 	@RequestMapping(method = RequestMethod.GET)
@@ -31,8 +31,7 @@ public interface EditForm {
 
 	@PreAuthorize("#username == principal.username")
 	@RequestMapping(method = RequestMethod.PUT)
-	public abstract ModelAndView processSubmit( 
-			  @ModelAttribute("player") HumanPlayer humanPlayer, 
+	public abstract ModelAndView processSubmit(@ModelAttribute("player") HumanPlayer humanPlayer, 
 			  BindingResult result, SessionStatus status, 
 			  @PathVariable("username") String username, 
 			  HttpSession session);

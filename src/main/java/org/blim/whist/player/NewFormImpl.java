@@ -5,11 +5,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.validation.Valid;
+
 import org.blim.whist.dao.HumanPlayerDAO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.servlet.ModelAndView;
@@ -21,6 +24,16 @@ public class NewFormImpl implements NewForm {
 
 	private HumanPlayerDAO humanPlayerDAO;
 	private PasswordEncryptor passwordEncryptor;
+	private HumanPlayerValidator humanPlayerValidator;
+
+	public HumanPlayerValidator getHumanPlayerValidator() {
+		return humanPlayerValidator;
+	}
+
+	@Autowired
+	public void setHumanPlayerValidator(HumanPlayerValidator humanPlayerValidator) {
+		this.humanPlayerValidator = humanPlayerValidator;
+	}
 
 	public PasswordEncryptor getPasswordEncryptor() {
 		return passwordEncryptor;
@@ -40,8 +53,10 @@ public class NewFormImpl implements NewForm {
 		this.humanPlayerDAO = humanPlayerDAO;
 	}
 
-	public void setAllowedFields(WebDataBinder dataBinder) {
-		dataBinder.setDisallowedFields("username", "roles", "active");
+	@InitBinder
+	public void initBinder(WebDataBinder dataBinder) {
+		dataBinder.setDisallowedFields("user.roles", "user.active");
+		dataBinder.setValidator(humanPlayerValidator);
 	}
 
 	public ModelAndView setupForm() throws IOException {
@@ -54,22 +69,15 @@ public class NewFormImpl implements NewForm {
     	return new ModelAndView("players/form", model);
 	}
 
-    public ModelAndView processSubmit(@ModelAttribute("player") HumanPlayer humanPlayer, BindingResult result, 
+    public ModelAndView processSubmit(@Valid @ModelAttribute("player") HumanPlayer humanPlayer, BindingResult result, 
     								  SessionStatus status) {
     	Map<String, Object> model = new HashMap<String, Object>();
-
-    	User user = humanPlayer.getUser();
-    	
-		new UserValidator().validate(user, result);
-    	
-        // Check username is free
-        if (humanPlayerDAO.get(user.getUsername()) != null) {
-            result.rejectValue("user.username", "duplicate");        	
-        }
 
     	if (result.hasErrors()) {
     		return new ModelAndView("players/form", model);
     	}
+
+    	User user = humanPlayer.getUser();
 
     	// Default some stuff
 		if (humanPlayer.getShortName().isEmpty()) {
