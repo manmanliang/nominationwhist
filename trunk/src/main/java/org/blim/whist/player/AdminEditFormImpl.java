@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.support.SessionStatus;
@@ -40,8 +41,9 @@ public class AdminEditFormImpl implements AdminEditForm {
 		this.passwordEncryptor = passwordEncryptor;
 	}
 
-	public void setAllowedFields(WebDataBinder dataBinder) {
-		dataBinder.setDisallowedFields("username");
+	@InitBinder
+	public void initBinder(WebDataBinder dataBinder) {
+		dataBinder.setDisallowedFields("user.username");
 	}
 
 	public ModelAndView setupForm(@PathVariable("username") String username, HttpSession session) throws IOException {
@@ -55,7 +57,7 @@ public class AdminEditFormImpl implements AdminEditForm {
        	
     	session.setAttribute("currPlayer", currPlayer);
 
-    	return new ModelAndView("players/form", model);
+    	return new ModelAndView("players/adminForm", model);
 	}
 
     public ModelAndView processSubmit(@ModelAttribute("player") HumanPlayer humanPlayer, BindingResult result, 

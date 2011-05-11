@@ -4,11 +4,14 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.validation.Valid;
+
 import org.blim.whist.dao.HumanPlayerDAO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.servlet.ModelAndView;
@@ -18,6 +21,16 @@ public class AdminNewFormImpl implements AdminNewForm {
 
 	private HumanPlayerDAO humanPlayerDAO;
 	private PasswordEncryptor passwordEncryptor;
+	private HumanPlayerValidator humanPlayerValidator;
+	
+	public HumanPlayerValidator getHumanPlayerValidator() {
+		return humanPlayerValidator;
+	}
+
+	@Autowired
+	public void setHumanPlayerValidator(HumanPlayerValidator humanPlayerValidator) {
+		this.humanPlayerValidator = humanPlayerValidator;
+	}
 
 	public PasswordEncryptor getPasswordEncryptor() {
 		return passwordEncryptor;
@@ -37,8 +50,9 @@ public class AdminNewFormImpl implements AdminNewForm {
 		this.humanPlayerDAO = humanPlayerDAO;
 	}
 
-	public void setAllowedFields(WebDataBinder dataBinder) {
-		dataBinder.setDisallowedFields("username", "roles", "active");
+	@InitBinder
+	public void initBinder(WebDataBinder dataBinder) {
+		dataBinder.setValidator(humanPlayerValidator);
 	}
 
 	public ModelAndView setupForm() throws IOException {
@@ -48,31 +62,20 @@ public class AdminNewFormImpl implements AdminNewForm {
     	
        	model.put("player", humanPlayer);
 
-    	return new ModelAndView("players/form", model);
+    	return new ModelAndView("players/adminForm", model);
 	}
 
-    public ModelAndView processSubmit(@ModelAttribute("player") HumanPlayer humanPlayer, BindingResult result, 
+    public ModelAndView processSubmit(@Valid @ModelAttribute("player") HumanPlayer humanPlayer, BindingResult result, 
     								  SessionStatus status) {
 
     	Map<String, Object> model = new HashMap<String, Object>();
 
-    	User user = humanPlayer.getUser();
-
-    	new UserValidator().validate(user, result);
-
-        // Check username is free
-    	// TODO: This should be in validate but it doesn't have a database session
-        if (humanPlayerDAO.get(user.getUsername()) != null) {
-            result.rejectValue("user.username", "duplicate");        	
-        }
-   	
     	if (result.hasErrors()) {
-    		model.put("new", 1);
-    		return new ModelAndView("/players/form", model);
+    		return new ModelAndView("players/adminForm", model);
     	}
 
 		if (humanPlayer.getPrettyName().isEmpty()) {
-			humanPlayer.setPrettyName(user.getUsername());
+			humanPlayer.setPrettyName(humanPlayer.getUser().getUsername());
 		}
 		
 		if (humanPlayer.getShortName().isEmpty()) {
@@ -83,7 +86,7 @@ public class AdminNewFormImpl implements AdminNewForm {
 			}
 		}
 		
-		user.setPassword(passwordEncryptor.encryptPassword(user));
+		humanPlayer.getUser().setPassword(passwordEncryptor.encryptPassword(humanPlayer.getUser()));
 
     	humanPlayerDAO.save(humanPlayer);
 

@@ -44,14 +44,28 @@
 	    		<tr>
         			<td></td><td><p>A full name to be used in the Game UI.</p></td>
     			</tr>
+				<sec:authorize access="hasRole('ROLE_ADMIN')">		
+			       	<tr>
+    			       	<td class="label">Permissions: </td>
+        			   	<td>
+            		      	Player: <form:checkbox path="user.roles" value="ROLE_USER"/>
+                		  	Admin: <form:checkbox path="user.roles" value="ROLE_ADMIN"/>
+							<form:errors path="user.roles" cssClass="formErrors"/>
+					</td>
+		         	</tr>
+		   			<tr>
+      					<td class="label">Enabled: </td>
+        				<td><form:checkbox path="user.active"/> <form:errors path="user.active" cssClass="formErrors"/></td>
+    				</tr>
+		 		</sec:authorize>
 		 		<tr>
 		 			<td>
 		 				<c:choose>
 		 					<c:when test="${player.new}">
-		 						<p class="submit"><input type="submit" value="Create My Account"/></p>
+		 						<p class="submit"><input type="submit" value="Create New User"/></p>
 			 				</c:when>
 			 				<c:otherwise>
-			 					<p class="submit"><input type="submit" value="Edit My Account"/></p>
+			 					<p class="submit"><input type="submit" value="Edit"/></p>
 		 					</c:otherwise>
 		 				</c:choose>
 		 			</td>

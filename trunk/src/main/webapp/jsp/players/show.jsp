@@ -13,7 +13,7 @@
   	<div id="user">
 		<h2>Player ${user.prettyName}</h2>
   		<sec:authorize access="hasRole('ROLE_ADMIN')">
-			<p>Go back to <a href="<c:url value="/admin/players"/>">user list</a></p>
+			<p>Go to <a href="<c:url value="/admin/players"/>">user list</a></p>
   		</sec:authorize>
   		<p>Username: ${player.user.username}</p>
   		<p>Name: ${player.prettyName}</p>
