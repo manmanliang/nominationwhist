@@ -20,7 +20,7 @@ import org.springframework.web.servlet.ModelAndView;
 import com.google.common.collect.Lists;
 
 @Controller
-public class NewFormImpl implements NewForm {
+public class HumanNewFormImpl implements HumanNewForm {
 
 	private HumanPlayerDAO humanPlayerDAO;
 	private PasswordEncryptor passwordEncryptor;

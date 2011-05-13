@@ -17,7 +17,7 @@ import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.servlet.ModelAndView;
 
 @Controller
-public class AdminNewFormImpl implements AdminNewForm {
+public class HumanNewAdminFormImpl implements HumanNewAdminForm {
 
 	private HumanPlayerDAO humanPlayerDAO;
 	private PasswordEncryptor passwordEncryptor;

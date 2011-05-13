@@ -11,8 +11,8 @@ import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.servlet.ModelAndView;
 
 @SessionAttributes(types = HumanPlayer.class)
-@RequestMapping("/admin/players/new")
-public interface AdminNewForm {
+@RequestMapping("/players/register")
+public interface HumanNewForm {
 
 	public abstract void initBinder(WebDataBinder dataBinder);
 
@@ -20,7 +20,7 @@ public interface AdminNewForm {
 	public abstract ModelAndView setupForm() throws IOException;
 
 	@RequestMapping(method = RequestMethod.PUT)
-	public abstract ModelAndView processSubmit(HumanPlayer humanPlayer,
+	public abstract ModelAndView processSubmit(HumanPlayer player, 
 			BindingResult result, SessionStatus status);
 
 }

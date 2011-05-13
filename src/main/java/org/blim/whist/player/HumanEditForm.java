@@ -18,7 +18,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 @RequestMapping("/players/{username}/edit")
 @SessionAttributes(types = HumanPlayer.class)
-public interface EditForm {
+public interface HumanEditForm {
 
 	@InitBinder
 	public abstract void initBinder(WebDataBinder dataBinder);
