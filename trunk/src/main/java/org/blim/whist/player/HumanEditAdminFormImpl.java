@@ -12,14 +12,25 @@ import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.servlet.ModelAndView;
 
 @Controller
-public class EditFormImpl implements EditForm {
+public class HumanEditAdminFormImpl implements HumanEditAdminForm {
+
 	private HumanPlayerDAO humanPlayerDAO;
 	private PasswordEncryptor passwordEncryptor;
+	
+	public HumanPlayerDAO getHumanPlayerDAO() {
+		return humanPlayerDAO;
+	}
+
+	@Autowired
+	public void setHumanPlayerDAO(HumanPlayerDAO humanPlayerDAO) {
+		this.humanPlayerDAO = humanPlayerDAO;
+	}
 
 	public PasswordEncryptor getPasswordEncryptor() {
 		return passwordEncryptor;
@@ -30,18 +41,9 @@ public class EditFormImpl implements EditForm {
 		this.passwordEncryptor = passwordEncryptor;
 	}
 
-	public HumanPlayerDAO getHumanPlayerDAO() {
-		return humanPlayerDAO;
-	}
-
-	@Autowired
-	public void setHumanPlayerDAO(HumanPlayerDAO humanPlayerDAO) {
-		this.humanPlayerDAO = humanPlayerDAO;
-	}
-
 	@InitBinder
 	public void initBinder(WebDataBinder dataBinder) {
-		dataBinder.setDisallowedFields("user.username", "user.roles", "user.active");
+		dataBinder.setDisallowedFields("user.username");
 	}
 
 	public ModelAndView setupForm(@PathVariable("username") String username, HttpSession session) throws IOException {
@@ -53,28 +55,32 @@ public class EditFormImpl implements EditForm {
        	
        	model.put("player", humanPlayer);
        	
-    	session.setAttribute("currUser", currPlayer);
+    	session.setAttribute("currPlayer", currPlayer);
 
-    	return new ModelAndView("players/form", model);
+    	return new ModelAndView("players/adminForm", model);
 	}
 
-    public ModelAndView processSubmit(HumanPlayer humanPlayer, BindingResult result,
-    								  SessionStatus status, String username, 
+    public ModelAndView processSubmit(@ModelAttribute("player") HumanPlayer humanPlayer, BindingResult result, 
+    								  SessionStatus status, @PathVariable("username") String username, 
     								  HttpSession session) {
-    	HumanPlayer currPlayer = (HumanPlayer) session.getAttribute("currUser");
-    	session.removeAttribute("currUser");
+    	HumanPlayer currUser = (HumanPlayer) session.getAttribute("currPlayer");
+    	session.removeAttribute("currPlayer");
     	
-    	if (humanPlayer.getUser().getPassword().isEmpty()) {
-    		humanPlayer.getUser().setPassword(currPlayer.getUser().getPassword());
+    	User user = humanPlayer.getUser();
+    	
+		if (user.getPassword().isEmpty()) {
+    		user.setPassword(currUser.getUser().getPassword());
        	} else {
-       		humanPlayer.getUser().setPassword(passwordEncryptor.encryptPassword(humanPlayer.getUser()));
+       		user.setPassword(passwordEncryptor.encryptPassword(user));
        	}
 
+    	user.setUsername(username);
+    	
     	humanPlayerDAO.update(humanPlayer);
     	
     	status.setComplete();
 
-    	return new ModelAndView("redirect:/players/" + humanPlayer.getUser().getUsername());
+    	return new ModelAndView("redirect:/admin/players/" + user.getUsername());
     }
 
 }
