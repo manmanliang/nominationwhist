@@ -5,7 +5,7 @@ function gameUpdatedEventHandler() {
 	// marked updated
 	updateUI();
 	
-	if (userId != game.activePlayer) {
+	if (userIndex != game.activePlayer) {
         setTimeout("updateCall(game.phase)", gameStateUpdateDelay);
 	}
 }
@@ -87,7 +87,7 @@ function updateGameState() {
         $("#finalScores").show();
 
        	// we're done set current player to us so we don't do any more polling and return
-       	game.activePlayer = userId;
+       	game.activePlayer = userIndex;
         return
     }
 	
@@ -128,21 +128,21 @@ function updateGameState() {
     }
 
     if (bidsToBeMade) {
-        if (game.activePlayer == userId) {
+        if (game.activePlayer == userIndex) {
             $("#message").text("Please select your bid");
         } else {
             $("#message").text(game.players[game.activePlayer] + " is bidding");
         }
     } else if (game.rounds[game.round.current].trumps == null) {
         var highestBidder = game.rounds[game.round.current].highestBidder;
-        if (game.activePlayer == userId) {
+        if (game.activePlayer == userIndex) {
             $("#message").text("Please choose trumps");
         } else {
             $("#message").text(game.players[game.activePlayer] + " is choosing trumps");
         }
     } else {
         // Must be in a trick
-        if (game.activePlayer == userId) {
+        if (game.activePlayer == userIndex) {
             $("#message").text("Please play a card");
         } else {
             $("#message").text(game.players[game.activePlayer] + "'s turn to play a card");
@@ -154,7 +154,7 @@ function updateGameState() {
 
 function updateUI() {
 	// Check UIs to update if we are the current player
-	if (userId == game.activePlayer) {	
+	if (userIndex == game.activePlayer) {	
 		// Bid UI Update
 		if (game.phase == 0) {
 			var html = "";
@@ -230,7 +230,7 @@ function bid(bid) {
 	// Clear the UI and record our bid
 	$("#bidUI").hide();
 	$("#trick").show();
-	$("#player" + userId + "currentBid").text(bid);
+	$("#player" + userIndex + "currentBid").text(bid);
 	$("#message").css('visibility', 'hidden');
 	
 	$.ajax({url: 'bid', data: JSON.stringify({id:game.id, bid:bid}), 
@@ -243,7 +243,7 @@ function bidCallback(output) {
 		updateCall(game.phase);
 	} else {
 		// Show the ui again along with an error and clear our unacceptable bid
-		$("#player" + userId + "currentBid").text("");
+		$("#player" + userIndex + "currentBid").text("");
         $("#trick").hide();
 		$("#bidUI").show();
 		$("#message").css('visibility', 'visible');
@@ -287,8 +287,8 @@ function playCard() {
     
 	// Remove the card from our hand and add it to the trick
 	$(this).hide();
-	$("#player" + userId + "TrickCard").attr('src', $(this).attr('src'));
-	$("#player" + userId + "TrickElement").css('visibility', 'visible');
+	$("#player" + userIndex + "TrickCard").attr('src', $(this).attr('src'));
+	$("#player" + userIndex + "TrickElement").css('visibility', 'visible');
     
     game.playCardAttempt = $(this).attr("title");
 	
@@ -297,13 +297,13 @@ function playCard() {
 }
 function playCardCallback(output) {
 	if (output.result == 0) {
-        $("#" + output.card).remove();
+        $("#" + game.playCardAttempt).remove();
 		
 		updateCall(game.phase);
 	} else {
 		// Show the ui again with error and put the card back into our hand from the trick
-		$("#player" + userId + "TrickElement").css('visibility', 'hidden');
-		$("#player" + userId + "TrickCard").attr('src', '');
+		$("#player" + userIndex + "TrickElement").css('visibility', 'hidden');
+		$("#player" + userIndex + "TrickCard").attr('src', '');
 		$("#" + game.playCardAttempt).show();
 		writeMessage(output.errorMessage);
 		

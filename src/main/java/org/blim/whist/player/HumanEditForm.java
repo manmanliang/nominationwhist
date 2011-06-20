@@ -3,6 +3,7 @@ package org.blim.whist.player;
 import java.io.IOException;
 
 import javax.servlet.http.HttpSession;
+import javax.validation.Valid;
 
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
@@ -16,8 +17,8 @@ import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.servlet.ModelAndView;
 
-@RequestMapping("/players/{username}/edit")
 @SessionAttributes(types = HumanPlayer.class)
+@RequestMapping("/player/{username}/edit")
 public interface HumanEditForm {
 
 	@InitBinder
@@ -31,7 +32,7 @@ public interface HumanEditForm {
 
 	@PreAuthorize("#username == principal.username")
 	@RequestMapping(method = RequestMethod.PUT)
-	public abstract ModelAndView processSubmit(@ModelAttribute("player") HumanPlayer humanPlayer, 
+	public abstract ModelAndView processSubmit(@Valid @ModelAttribute("player") HumanPlayer humanPlayer, 
 			  BindingResult result, SessionStatus status, 
 			  @PathVariable("username") String username, 
 			  HttpSession session);

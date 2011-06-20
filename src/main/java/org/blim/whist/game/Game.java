@@ -12,12 +12,14 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
 import org.blim.whist.WhistException;
 import org.blim.whist.game.Card.Suit;
+import org.blim.whist.player.HumanPlayer;
 import org.blim.whist.player.Player;
 import org.hibernate.annotations.CollectionOfElements;
 import org.hibernate.annotations.IndexColumn;
@@ -25,6 +27,7 @@ import org.hibernate.annotations.IndexColumn;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 
+//TODO: Confirm timeout on ajax works
 @Entity
 public class Game {
 
@@ -32,6 +35,7 @@ public class Game {
 	private Date creationDate;	
 	private List<Round> rounds = Lists.newArrayList();	
 	private List<Player> players = Lists.newArrayList();
+	private HumanPlayer creator;
 	private int[] roundSequence;
 	public static final int MAX_CARDS = 52;
 	public static final int[] ROUND_SEQUENCE_DFLT = {13,12,11,10,9,8,7,6,5,4,3,2,2,2,2,3,4,5,6,7,8,9,10,11,12,13};
@@ -44,6 +48,15 @@ public class Game {
 	@Temporal(TemporalType.TIMESTAMP)
 	public Date getCreationDate() {
 		return creationDate;
+	}
+
+	@OneToOne(cascade = CascadeType.ALL)
+	public HumanPlayer getCreator() {
+		return creator;
+	}
+
+	public void setCreator(HumanPlayer creator) {
+		this.creator = creator;
 	}
 
 	public void setCreationDate(Date creationDate) {

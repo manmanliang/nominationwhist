@@ -10,8 +10,8 @@
     <script type="text/javascript" src="<c:url value="/js/jQueryGlobals.js"/>"></script>
     <script type="text/javascript">
     	user = '${userShortName}';
-    	userId = ${userIndex};
-    	
+    	userIndex = ${userIndex};
+    	userId = ${userId};
     	game.id = ${game.id};
       <c:forEach var="player" begin="0" end="${fn:length(game.players) - 1}">
     	game.players[${player}] = '${game.players[player].shortName}';
@@ -74,11 +74,17 @@
 		<div id="gamePane">
 		 	<div id="finalScores" style="display: none;"></div>
     		<div id="gameTable">
-		 		<c:if test="${game.players[0].shortName eq userShortName && fn:length(game.rounds) == 0}">
+		 		<c:if test="${game.creator.user.id eq userId && fn:length(game.rounds) == 0}">
     			<form method="POST" action="start-game">
     	    	  	<input type="hidden" name="id" value="${game.id}" />
     	   	  		<input type="submit" value="Start Game" />
     			</form>
+    			<p>Current Players:</p>
+    			<ul id="playerOrder">
+    			</ul>
+    			<p>You may add some computer players:</p>
+    			<ul id="availableComputerPlayers">
+    			</ul>
     			</c:if>
 				<div id="bidUI" style="display: none;"></div>
 				<div id="trumpsUI" style="display: none;"></div>

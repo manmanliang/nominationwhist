@@ -5,8 +5,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.http.HttpSession;
+import javax.validation.Valid;
 
-import org.blim.whist.dao.HumanPlayerDAO;
+import org.blim.whist.dao.PlayerDAO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -20,18 +21,28 @@ import org.springframework.web.servlet.ModelAndView;
 @Controller
 public class HumanEditAdminFormImpl implements HumanEditAdminForm {
 
-	private HumanPlayerDAO humanPlayerDAO;
 	private PasswordEncryptor passwordEncryptor;
-	
-	public HumanPlayerDAO getHumanPlayerDAO() {
-		return humanPlayerDAO;
+	private HumanPlayerValidator humanPlayerValidator;
+	private PlayerDAO playerDAO;
+
+	public PlayerDAO getPlayerDAO() {
+		return playerDAO;
 	}
 
 	@Autowired
-	public void setHumanPlayerDAO(HumanPlayerDAO humanPlayerDAO) {
-		this.humanPlayerDAO = humanPlayerDAO;
+	public void setPlayerDAO(PlayerDAO playerDAO) {
+		this.playerDAO = playerDAO;
 	}
 
+	public HumanPlayerValidator getHumanPlayerValidator() {
+		return humanPlayerValidator;
+	}
+
+	@Autowired
+	public void setHumanPlayerValidator(HumanPlayerValidator humanPlayerValidator) {
+		this.humanPlayerValidator = humanPlayerValidator;
+	}
+	
 	public PasswordEncryptor getPasswordEncryptor() {
 		return passwordEncryptor;
 	}
@@ -44,43 +55,27 @@ public class HumanEditAdminFormImpl implements HumanEditAdminForm {
 	@InitBinder
 	public void initBinder(WebDataBinder dataBinder) {
 		dataBinder.setDisallowedFields("user.username");
+		dataBinder.setValidator(humanPlayerValidator);
 	}
 
 	public ModelAndView setupForm(@PathVariable("username") String username, HttpSession session) throws IOException {
     	Map<String, Object> model = new HashMap<String, Object>();
 
-    	HumanPlayer humanPlayer = humanPlayerDAO.get(username);
+    	HumanPlayer humanPlayer = playerDAO.getHumanPlayer(username);
     	
-       	HumanPlayer currPlayer = (HumanPlayer) humanPlayer.clone();
-       	
        	model.put("player", humanPlayer);
-       	
-    	session.setAttribute("currPlayer", currPlayer);
 
-    	return new ModelAndView("players/adminForm", model);
+    	return new ModelAndView("players/humanAdminForm", model);
 	}
 
-    public ModelAndView processSubmit(@ModelAttribute("player") HumanPlayer humanPlayer, BindingResult result, 
+    public ModelAndView processSubmit(@Valid @ModelAttribute("player") HumanPlayer humanPlayer, BindingResult result, 
     								  SessionStatus status, @PathVariable("username") String username, 
-    								  HttpSession session) {
-    	HumanPlayer currUser = (HumanPlayer) session.getAttribute("currPlayer");
-    	session.removeAttribute("currPlayer");
-    	
-    	User user = humanPlayer.getUser();
-    	
-		if (user.getPassword().isEmpty()) {
-    		user.setPassword(currUser.getUser().getPassword());
-       	} else {
-       		user.setPassword(passwordEncryptor.encryptPassword(user));
-       	}
-
-    	user.setUsername(username);
-    	
-    	humanPlayerDAO.update(humanPlayer);
+    								  HttpSession session) {    	
+    	playerDAO.update(humanPlayer);
     	
     	status.setComplete();
 
-    	return new ModelAndView("redirect:/admin/players/" + user.getUsername());
+    	return new ModelAndView("redirect:/admin/players");
     }
 
 }

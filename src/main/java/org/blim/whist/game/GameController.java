@@ -43,6 +43,14 @@ public interface GameController {
 	public abstract void gameStartCheck(HttpServletResponse response,
 			HttpServletRequest request, Principal user) throws IOException;
 
+	@RequestMapping(value = "/addPlayer", method = RequestMethod.POST)
+	public void addPlayer(HttpServletResponse response, 
+			HttpServletRequest request, Principal user) throws IOException;
+
+	@RequestMapping(value = "/removePlayer", method = RequestMethod.POST)
+	public void removePlayer(HttpServletResponse response, 
+			HttpServletRequest request, Principal user) throws IOException;
+
 	@RequestMapping(value = "/update", method = RequestMethod.POST)
 	public abstract void update(HttpServletResponse response,
 			HttpServletRequest request, Principal user) throws IOException;

@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+ 	   xmlns:context="http://www.springframework.org/schema/context"
+ 	   xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+       xsi:schemaLocation="
+            http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+            http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+            http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
+            http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd
+            http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc.xsd">
+
+
+  <!--
+    - Persistence configuration for whist.
+   -->
+  
+  <!--
+    - I don't know why but these 2 annotation statements seemingly must be together and in the last file mentioned
+    - in the contextConfigLocation in web.xml - they can't be in applicationContext or whist-servlet.xml
+  -->
+  <tx:annotation-driven/>
+  <context:component-scan base-package="org.blim.whist"/>
+
+	<bean id="whistConfig" class="org.blim.whist.WhistConfig">
+		<property name="computerPlayerTypes">
+            <map>
+                <entry key="org.blim.whist.player.BasicComputerPlayer" value="Basic"/>
+            </map>
+        </property>
+	</bean>
+
+
+  <!-- JNDI resource - can't work out how to close this properly
+  <bean id="dataSource" class="org.springframework.jndi.JndiObjectFactoryBean">
+    <property name="jndiName" value="java:comp/env/jdbc/whist"/>
+  </bean>
+  -->
+  
+  <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+	<property name="driverClassName" value="org.postgresql.Driver" />
+	<property name="url" value="jdbc:postgresql://127.0.0.1:5432/whist" />
+	<property name="username" value="tomcat" />
+	<property name="password" value="" />
+  </bean>
+  
+  <bean id="sessionFactory" class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
+    <property name="dataSource" ref="dataSource"/>
+    <property name="packagesToScan">
+      <list>
+        <value>org.blim.whist</value>
+      </list>
+    </property>
+   <property name="schemaUpdate" value="true" />
+    <property name="hibernateProperties">
+      <value>
+        hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
+        hibernate.show_sql=false
+        hibernate.jdbc.batch_size=30
+      </value>
+    </property>
+  </bean>
+
+  <bean id="transactionManager" class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+    <property name="sessionFactory" ref="sessionFactory" />
+  </bean>
+
+</beans>

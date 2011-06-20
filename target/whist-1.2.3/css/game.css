@@ -1,0 +1,184 @@
+/* Header */
+
+#header {
+    overflow: auto;
+}
+
+#header h3 {
+    display: inline;
+}
+
+#scores {
+    float: right;
+}
+
+/* Table Area */
+
+#gamePane {
+    width: 68%;
+    padding: 0px;
+    margin: 0px;
+    border: 0px;
+}
+
+#gameTable {
+    height: 370px;
+    position: relative;
+}
+
+#status {
+    margin: 0px;
+}
+
+#status.active {
+    color: #991114;
+}
+
+#trumpsUI,
+#bidUI {
+    text-align: center;
+}
+
+#trick {
+    height: 370px;
+}
+
+.trickElement {
+    background: none;
+    border: 0px;
+    display: inline;
+}
+
+.trickElement td {
+    text-align: center;
+    border: 0px;
+}
+
+#previousTrick {
+    bottom: 0px;
+    right: 5px;
+    position: absolute;
+}
+
+/* Messages Area */
+
+#messagesPane {
+    float: right;
+    width: 32%;
+    padding: 0px;
+    margin: 0px;
+    border-bottom: 1px solid black;
+    height: 369px;
+    max-height: 369px;
+    overflow: hidden;
+}
+
+#messages {
+    background: #fafafa;
+    border: 1px solid black;
+    margin-bottom: 5px;
+    padding: 5px;
+}
+
+#message {
+    margin: 0;
+}
+
+#statsPane {
+    background: #fafafa;
+    border: 1px solid black;
+    padding: 5px;
+    height: 100%;
+}
+
+#stats, #statsKey {
+    border-top: 1px solid black;
+    padding-top: 5px;
+}
+
+#stats p,
+#statsKey p {
+    margin: 0 0 3px 0;
+}
+
+#stats table {
+    width: 100%;
+}
+
+#statsKey img {
+    vertical-align: middle;
+}
+
+#statsKeyLinkPara {
+    float: right;
+    margin: 5px 0 0 0;
+}
+
+/* Hand */
+
+#hand {
+    text-align: center;
+    margin-top: 10px;
+    height: 106px;
+}
+
+/* Ajax Progress Indicator */
+
+#ajaxProgress {
+    display: none;
+    background-color: white;
+    border: 1px solid black;
+}
+
+#ajaxProgress p {
+    padding: 0 2px;
+    display: inline;
+    border-right: 1px solid black;
+}
+
+#ajaxProgress #ajaxProgressAction {
+    border-right: 0px;
+}
+
+#ajaxProgressSpinner {
+    vertical-align: -2px;
+}
+
+/* Game general table rules */
+
+table {
+    background: #fafafa;
+    border: 1px solid black;
+    border-collapse: collapse;
+}
+
+table td {
+    border: 1px solid black;
+    padding: 2px;
+    text-align: center;
+}
+
+table th {
+    background-color: #BEC8D1;
+    border: 1px solid black;
+    padding: 2px;
+}
+
+table th.active {
+    background-color: #FFCCCC;
+}
+
+/* gameList page */
+
+#gamesList ul form {
+    display: inline;
+    margin-bottom: 0px;
+}
+
+#gamesList li {
+    margin-bottom: 5px;
+}
+
+h1, h3 {
+    margin: 5px 0;
+}

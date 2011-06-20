@@ -3,6 +3,7 @@ package org.blim.whist.player;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.OneToOne;
+import javax.persistence.Transient;
 
 @Entity
 public class HumanPlayer extends Player implements Cloneable {
@@ -28,6 +29,11 @@ public class HumanPlayer extends Player implements Cloneable {
 	@Override
 	public Object clone() {
 		return new HumanPlayer(this);
+	}
+	
+	@Transient
+	public final PlayerType getType() {
+		return PlayerType.HUMAN;
 	}
 
 }

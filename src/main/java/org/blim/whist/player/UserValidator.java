@@ -29,26 +29,39 @@ public class UserValidator implements Validator {
 	public void validate(Object target, Errors errors) {
     	
 		User user = (User) target;
-		
-        // Check username is free
-        if (userDAO.get(user.getUsername()) != null) {
-            errors.rejectValue("username", "duplicate");        	
-        }
-   	
+
     	// Must supply a username
         if (!StringUtils.hasLength(user.getUsername())) {
             errors.rejectValue("username", "required");
         }
         
+    	// Must not be new
+        if (user.getUsername().equals("new")) {
+            errors.rejectValue("username", "notallowed");
+        }
+        
+        User dbUser = userDAO.get(user.getUsername());
+
+        // Check username is free
+        if (user.isNew() && dbUser != null) {
+            errors.rejectValue("username", "duplicate");        	
+        }
+
     	// username must contain only a-zA-Z0-9
         if (!user.getUsername().matches("[a-zA-z0-9]*")) {
             errors.rejectValue("username", "mustBeAlphanumeric");
         }
-        
+
         // Must supply a password
         if (!StringUtils.hasLength(user.getPassword())) {
-            errors.rejectValue("password", "required");
+        	if (dbUser != null) {
+               	user.setPassword(dbUser.getPassword());
+        	} else {
+                errors.rejectValue("password", "required");
+        	}
         }
+        
+        userDAO.evict(dbUser);
     }
         
 }

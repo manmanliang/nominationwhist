@@ -6,7 +6,7 @@ import java.util.Map;
 
 import javax.validation.Valid;
 
-import org.blim.whist.dao.HumanPlayerDAO;
+import org.blim.whist.dao.PlayerDAO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -19,9 +19,18 @@ import org.springframework.web.servlet.ModelAndView;
 @Controller
 public class HumanNewAdminFormImpl implements HumanNewAdminForm {
 
-	private HumanPlayerDAO humanPlayerDAO;
 	private PasswordEncryptor passwordEncryptor;
 	private HumanPlayerValidator humanPlayerValidator;
+	private PlayerDAO playerDAO;
+
+	public PlayerDAO getPlayerDAO() {
+		return playerDAO;
+	}
+
+	@Autowired
+	public void setPlayerDAO(PlayerDAO playerDAO) {
+		this.playerDAO = playerDAO;
+	}
 	
 	public HumanPlayerValidator getHumanPlayerValidator() {
 		return humanPlayerValidator;
@@ -41,15 +50,6 @@ public class HumanNewAdminFormImpl implements HumanNewAdminForm {
 		this.passwordEncryptor = passwordEncryptor;
 	}
 
-	public HumanPlayerDAO getHumanPlayerDAO() {
-		return humanPlayerDAO;
-	}
-
-	@Autowired
-	public void setHumanPlayerDAO(HumanPlayerDAO humanPlayerDAO) {
-		this.humanPlayerDAO = humanPlayerDAO;
-	}
-
 	@InitBinder
 	public void initBinder(WebDataBinder dataBinder) {
 		dataBinder.setValidator(humanPlayerValidator);
@@ -62,7 +62,7 @@ public class HumanNewAdminFormImpl implements HumanNewAdminForm {
     	
        	model.put("player", humanPlayer);
 
-    	return new ModelAndView("players/adminForm", model);
+    	return new ModelAndView("players/humanAdminForm", model);
 	}
 
     public ModelAndView processSubmit(@Valid @ModelAttribute("player") HumanPlayer humanPlayer, BindingResult result, 
@@ -71,24 +71,16 @@ public class HumanNewAdminFormImpl implements HumanNewAdminForm {
     	Map<String, Object> model = new HashMap<String, Object>();
 
     	if (result.hasErrors()) {
-    		return new ModelAndView("players/adminForm", model);
+    		return new ModelAndView("players/humanAdminForm", model);
     	}
 
 		if (humanPlayer.getPrettyName().isEmpty()) {
 			humanPlayer.setPrettyName(humanPlayer.getUser().getUsername());
 		}
-		
-		if (humanPlayer.getShortName().isEmpty()) {
-			if (humanPlayer.getPrettyName().length() > 6) {
-				humanPlayer.setShortName(humanPlayer.getPrettyName().substring(0, 7));
-			} else {
-				humanPlayer.setShortName(humanPlayer.getPrettyName());
-			}
-		}
-		
+				
 		humanPlayer.getUser().setPassword(passwordEncryptor.encryptPassword(humanPlayer.getUser()));
 
-    	humanPlayerDAO.save(humanPlayer);
+		playerDAO.save(humanPlayer);
 
     	status.setComplete();
 

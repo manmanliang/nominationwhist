@@ -11,7 +11,7 @@ import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.servlet.ModelAndView;
 
 @SessionAttributes(types = HumanPlayer.class)
-@RequestMapping("/admin/players/new")
+@RequestMapping("/admin/human/new")
 public interface HumanNewAdminForm {
 
 	public abstract void initBinder(WebDataBinder dataBinder);
