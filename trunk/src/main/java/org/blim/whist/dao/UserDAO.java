@@ -10,6 +10,8 @@ public interface UserDAO {
 
 	public abstract User get(String username);
 
+	public abstract User evict(User user);
+
 	public abstract User update(User user);
 
 	public abstract void delete(String username);

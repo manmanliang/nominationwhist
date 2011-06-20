@@ -8,10 +8,15 @@
   </head>
   <body>
   	<div id="userList">
-  		<c:forEach var="player" items="${players}">
-    		<p><a href="<c:url value="/admin/players/${player.user.username}"/>">${player.prettyName}</a> - <a href="<c:url value="/admin/players/${player.user.username}/delete"/>">Delete</a></p>
+  		<h2>Human Players</h2>
+  		<c:forEach var="humanPlayer" items="${humanPlayers}">
+    		<p><a href="<c:url value="/admin/human/${humanPlayer.user.username}"/>">${humanPlayer.prettyName}</a> - <a href="<c:url value="/admin/player/${humanPlayer.id}/delete"/>">Delete</a></p>
     	</c:forEach>
-    	<p>Click on a user to view and edit their account, or <a href="<c:url value="/admin/players/new"/>">create a new account</a></p>
+  		<h2>Computer Players</h2>
+  		<c:forEach var="computerPlayer" items="${computerPlayers}">
+    		<p><a href="<c:url value="/admin/computer/${computerPlayer.id}"/>">${computerPlayer.prettyName}</a> (${computerPlayer.type}) - <a href="<c:url value="/admin/player/${computerPlayer.id}/delete"/>">Delete</a></p>
+    	</c:forEach>
+    	<p>Click on a user to view and edit their account, <a href="<c:url value="/admin/human/new"/>">create a new account</a>, or <a href="<c:url value="/admin/computer/new"/>">create a new computer player</a></p>
   	</div>
   	
  	<jsp:include page="/footer">

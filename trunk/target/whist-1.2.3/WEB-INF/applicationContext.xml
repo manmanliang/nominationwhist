@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+ 	   xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="
+            http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+            http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+            http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
+            http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+
+  <!--
+    - Application context definition for whist. See whist-servlet.xml for webapp config.
+   -->
+
+    <bean id="annotationMapper" class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping">
+	  <property name="interceptors">
+		<list>
+			<bean class="org.springframework.orm.hibernate3.support.OpenSessionInViewInterceptor">
+			  <property name="sessionFactory" ref="sessionFactory"/>
+			</bean>
+		</list>
+	  </property>
+    </bean> 
+
+    <bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+      <property name="viewClass"><value>org.springframework.web.servlet.view.JstlView</value></property>
+      <property name="prefix"><value>/jsp/</value></property>
+      <property name="suffix"><value>.jsp</value></property>
+    </bean>
+
+</beans>

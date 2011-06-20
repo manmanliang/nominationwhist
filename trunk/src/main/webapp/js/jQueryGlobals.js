@@ -39,7 +39,7 @@ function whistAjaxErrorHandler(xhr, textStatus, exception) {
             writeMessage("Network problem, giving up");
         }
     } else {
-        writeMessage("Error: " + xhr.responseText + " - giving up");
+        writeMessage("Error: " + textStatus + " - giving up");
     }
 }
 

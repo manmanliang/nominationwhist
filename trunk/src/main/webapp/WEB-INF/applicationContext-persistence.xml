@@ -23,7 +23,16 @@
   -->
   <tx:annotation-driven/>
   <context:component-scan base-package="org.blim.whist"/>
-      
+
+	<bean id="whistConfig" class="org.blim.whist.WhistConfig">
+		<property name="computerPlayerTypes">
+            <map>
+                <entry key="org.blim.whist.player.BasicComputerPlayer" value="Basic"/>
+            </map>
+        </property>
+	</bean>
+
+
   <!-- JNDI resource - can't work out how to close this properly
   <bean id="dataSource" class="org.springframework.jndi.JndiObjectFactoryBean">
     <property name="jndiName" value="java:comp/env/jdbc/whist"/>

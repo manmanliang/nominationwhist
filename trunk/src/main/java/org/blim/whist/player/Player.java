@@ -1,6 +1,7 @@
 package org.blim.whist.player;
 
 import javax.persistence.Entity;
+import javax.persistence.Transient;
 
 import org.blim.whist.BaseEntity;
 
@@ -35,4 +36,7 @@ public abstract class Player extends BaseEntity {
 		return shortName;
 	}
 
+	@Transient
+	public abstract PlayerType getType();
+	
 }

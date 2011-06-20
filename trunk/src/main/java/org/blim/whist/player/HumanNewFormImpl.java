@@ -7,7 +7,7 @@ import java.util.Map;
 
 import javax.validation.Valid;
 
-import org.blim.whist.dao.HumanPlayerDAO;
+import org.blim.whist.dao.PlayerDAO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -22,9 +22,18 @@ import com.google.common.collect.Lists;
 @Controller
 public class HumanNewFormImpl implements HumanNewForm {
 
-	private HumanPlayerDAO humanPlayerDAO;
 	private PasswordEncryptor passwordEncryptor;
 	private HumanPlayerValidator humanPlayerValidator;
+	private PlayerDAO playerDAO;
+
+	public PlayerDAO getPlayerDAO() {
+		return playerDAO;
+	}
+
+	@Autowired
+	public void setPlayerDAO(PlayerDAO playerDAO) {
+		this.playerDAO = playerDAO;
+	}
 
 	public HumanPlayerValidator getHumanPlayerValidator() {
 		return humanPlayerValidator;
@@ -44,15 +53,6 @@ public class HumanNewFormImpl implements HumanNewForm {
 		this.passwordEncryptor = passwordEncryptor;
 	}
 
-	public HumanPlayerDAO getHumanPlayerDAO() {
-		return humanPlayerDAO;
-	}
-
-	@Autowired
-	public void setHumanPlayerDAO(HumanPlayerDAO humanPlayerDAO) {
-		this.humanPlayerDAO = humanPlayerDAO;
-	}
-
 	@InitBinder
 	public void initBinder(WebDataBinder dataBinder) {
 		dataBinder.setDisallowedFields("user.roles", "user.active");
@@ -66,7 +66,7 @@ public class HumanNewFormImpl implements HumanNewForm {
     	
        	model.put("player", humanPlayer);
 
-    	return new ModelAndView("players/form", model);
+    	return new ModelAndView("players/humanForm", model);
 	}
 
     public ModelAndView processSubmit(@Valid @ModelAttribute("player") HumanPlayer humanPlayer, BindingResult result, 
@@ -74,7 +74,7 @@ public class HumanNewFormImpl implements HumanNewForm {
     	Map<String, Object> model = new HashMap<String, Object>();
 
     	if (result.hasErrors()) {
-    		return new ModelAndView("players/form", model);
+    		return new ModelAndView("players/humanForm", model);
     	}
 
     	User user = humanPlayer.getUser();
@@ -96,7 +96,7 @@ public class HumanNewFormImpl implements HumanNewForm {
 
     	user.setActive(false);
 
-    	humanPlayerDAO.save(humanPlayer);
+    	playerDAO.save(humanPlayer);
 
     	status.setComplete();
 

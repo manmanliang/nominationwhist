@@ -1,6 +1,7 @@
 var game = new Object();
 var user = null;
 var userAction = false;
+var userIndex = null;
 var userId = null;
 
 game.id = null;
@@ -21,10 +22,13 @@ game.phase = null;
 game.activePlayer = null;
 game.showPreviousTrickCards = false;
 game.playCardAttempt = null;
+game.availCompPlayers = null;
 
 timer = new Object();
 timer.messages = null;
 timer.showPreviousTrickCards = null;
+timer.gameStartPoll = null;
+timer.gameStartMutex = null;
 
 updated = new Object();
 updated.hand = false;

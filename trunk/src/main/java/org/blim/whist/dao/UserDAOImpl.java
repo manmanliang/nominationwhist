@@ -33,6 +33,14 @@ public class UserDAOImpl implements UserDAO {
     	return user;
 	}
 	
+	@Transactional(readOnly = true)
+	public User evict(User user) {
+
+		sessionFactory.getCurrentSession().evict(user);
+				
+    	return user;
+	}
+	
 	@Transactional
 	public User update(User user) {
 		sessionFactory.getCurrentSession().update(user);

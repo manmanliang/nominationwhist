@@ -9,7 +9,17 @@ import org.springframework.validation.Validator;
 public class HumanPlayerValidator implements Validator {
 
 	private UserValidator userValidator;
+	private PlayerValidator playerValidator;
 	
+	public PlayerValidator getPlayerValidator() {
+		return playerValidator;
+	}
+
+	@Autowired
+	public void setPlayerValidator(PlayerValidator playerValidator) {
+		this.playerValidator = playerValidator;
+	}
+
 	public UserValidator getUserValidator() {
 		return userValidator;
 	}
@@ -28,6 +38,8 @@ public class HumanPlayerValidator implements Validator {
     	
 		HumanPlayer humanPlayer = (HumanPlayer) target;
 		
+		playerValidator.validate(humanPlayer, errors);
+
 		errors.pushNestedPath("user");
 		
 		userValidator.validate(humanPlayer.getUser(), errors);

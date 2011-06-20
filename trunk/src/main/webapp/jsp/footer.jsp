@@ -9,7 +9,7 @@
  		<div id="footerLinks">
 			<p id="footerRight">
 				<c:if test="${not empty username}">
-					<a href="<c:url value="/players/${username}"/>">${playerName}</a>
+					<a href="<c:url value="/player/${username}"/>">${playerName}</a>
 					&nbsp;(<a href="<c:url value="/j_spring_security_logout" />">logout</a>)
 				</c:if>
 				<a href="<c:url value="/information" />">Info</a>

@@ -18,7 +18,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.blim.whist.WhistException;
 import org.blim.whist.dao.GameDAO;
-import org.blim.whist.dao.HumanPlayerDAO;
+import org.blim.whist.dao.PlayerDAO;
+import org.blim.whist.player.ComputerPlayer;
 import org.blim.whist.player.HumanPlayer;
 import org.blim.whist.player.Player;
 import org.blim.whist.player.PlayerStats;
@@ -39,7 +40,16 @@ public class GameControllerImpl implements GameController {
 
 	private GameDAO gameDAO;
 	private PlayersStats playersStats;
-	private HumanPlayerDAO humanPlayerDAO;
+	private PlayerDAO playerDAO;
+
+	public PlayerDAO getPlayerDAO() {
+		return playerDAO;
+	}
+
+	@Autowired
+	public void setPlayerDAO(PlayerDAO playerDAO) {
+		this.playerDAO = playerDAO;
+	}
 
 	public GameDAO getGameDAO() {
 		return gameDAO;
@@ -48,15 +58,6 @@ public class GameControllerImpl implements GameController {
 	@Autowired
 	public void setGameDAO(GameDAO gameDAO) {
 		this.gameDAO = gameDAO;
-	}
-
-	public HumanPlayerDAO getHumanPlayerDAO() {
-		return humanPlayerDAO;
-	}
-
-	@Autowired
-	public void setHumanPlayerDAO(HumanPlayerDAO humanPlayerDAO) {
-		this.humanPlayerDAO = humanPlayerDAO;
 	}
 	
 	public PlayersStats getPlayerStats() {
@@ -73,7 +74,7 @@ public class GameControllerImpl implements GameController {
 			Principal user) throws IOException {
 		Map<String, Object> model = new HashMap<String, Object>();
 		
-		Player player = humanPlayerDAO.get(user.getName());
+		Player player = playerDAO.getHumanPlayer(user.getName());
 
 		model.put("player", player.getPrettyName());
 		
@@ -87,7 +88,8 @@ public class GameControllerImpl implements GameController {
 		game.setCreationDate(new Date());
 		game.setRoundSequence(Game.ROUND_SEQUENCE_DFLT);
 		
-		Player player = humanPlayerDAO.get(user.getName());
+		HumanPlayer player = playerDAO.getHumanPlayer(user.getName());
+		game.setCreator(player);
 		game.getPlayers().add(player);
 
 		gameDAO.save(game);
@@ -101,7 +103,7 @@ public class GameControllerImpl implements GameController {
 		Map<String, Object> model = new HashMap<String, Object>();
 		
 		Game game = gameDAO.load(gameId);
-		Player player = humanPlayerDAO.get(user.getName());
+		Player player = playerDAO.getHumanPlayer(user.getName());
 		
 		if (!game.getPlayers().contains(player)) {
 			game.getPlayers().add(player);
@@ -117,7 +119,7 @@ public class GameControllerImpl implements GameController {
 		Map<String, Object> model = new HashMap<String, Object>();
 
 		Game game = gameDAO.load(gameId);
-		Player player = humanPlayerDAO.get(user.getName());
+		Player player = playerDAO.getHumanPlayer(user.getName());
 			
 		if (game.getPlayers().get(0).equals(player)) {
 			game.start();
@@ -142,7 +144,7 @@ public class GameControllerImpl implements GameController {
 		}
 		
 		Game game = gameDAO.load(gameId);
-		Player player = humanPlayerDAO.get(user.getName());
+		HumanPlayer humanPlayer = playerDAO.getHumanPlayer(user.getName());
 		
 		for (int idx = 0; idx < game.getRounds().size(); idx++) {
 			JSONRounds.add(roundAsJSON(game, idx));
@@ -156,9 +158,12 @@ public class GameControllerImpl implements GameController {
 		model.put("game", game);
 		model.put("rounds", JSONRounds.toString());
 		model.put("roundCount", game.getRoundSequence().length);
-		model.put("userPrettyName", player.getPrettyName());
-		model.put("userShortName", player.getShortName());
-		model.put("userIndex", game.getPlayerIndex(player));
+		// TODO: Should just pass user here when I can be bothered
+		model.put("username", humanPlayer.getUser().getUsername());
+		model.put("userShortName", humanPlayer.getShortName());
+		model.put("userPrettyName", humanPlayer.getPrettyName());
+		model.put("userId", humanPlayer.getUser().getId());
+		model.put("userIndex", game.getPlayerIndex(humanPlayer));
 		model.put("trickNum", trickNum);
 		model.put("AJAXTimeout", AJAXTimeout);
 		
@@ -218,6 +223,7 @@ public class GameControllerImpl implements GameController {
 			JSONGames.put("runningGames", JSONRunningGames);
 		}
 
+		response.setContentType("application/json");
 		response.getWriter().print(JSONGames);
 	}
 
@@ -244,6 +250,7 @@ public class GameControllerImpl implements GameController {
 								
 		Long gameId = ((Number) JSONInput.get("id")).longValue();
 		Game game = gameDAO.load(gameId);
+		List<ComputerPlayer> computerPlayers = playerDAO.listComputerPlayers();
 	
 		Round currentRound = game.getCurrentRound();
 		
@@ -258,10 +265,15 @@ public class GameControllerImpl implements GameController {
 
 		JSONArray JSONPlayersStats = new JSONArray();
 		JSONArray JSONPlayers = new JSONArray();
+		JSONArray JSONComputerPlayers = new JSONArray();
 		
 		for (Player player : game.getPlayers()) {
-			// Get players names
-			JSONPlayers.add(player.getShortName());
+			// Get players
+			JSONObject JSONPlayer = new JSONObject();
+			JSONPlayer.put("shortName", player.getShortName());
+			JSONPlayer.put("id", player.getId());
+			
+			JSONPlayers.add(JSONPlayer);
 			
 			// Get players stats
 			PlayerStats playerStats = playersStats.getPlayerStats(player);
@@ -276,9 +288,102 @@ public class GameControllerImpl implements GameController {
 			JSONPlayersStats.add(JSONPlayerStats);
 		}
 	
-		JSONResult.put("playersStats", JSONPlayersStats);
+		for (Player player : computerPlayers) {
+			
+			if (!game.getPlayers().contains(player)) {				
+				JSONObject JSONComputerPlayer = new JSONObject();
 
+				JSONComputerPlayer.put("shortName", player.getShortName());
+				JSONComputerPlayer.put("id", player.getId());
+			
+				JSONComputerPlayers.add(JSONComputerPlayer);
+			}
+		}
+	
+		JSONObject JSONCreator = new JSONObject();
+		JSONCreator.put("shortName", game.getCreator().getShortName());
+		JSONCreator.put("id", game.getCreator().getUser().getId());
+		
+		JSONResult.put("playersStats", JSONPlayersStats);
 		JSONResult.put("players", JSONPlayers);
+		JSONResult.put("creator", JSONCreator);		
+		JSONResult.put("availCompPlayers", JSONComputerPlayers);
+
+		response.setContentType("application/json");
+		response.getWriter().print(JSONResult);
+	}
+
+	@SuppressWarnings("unchecked")
+	public void addPlayer(HttpServletResponse response, 
+			HttpServletRequest request,
+			Principal user) throws IOException {
+		JSONObject JSONInput = null;
+		
+		try {
+		 	JSONInput = parseInput(request);	
+		} catch (RuntimeException e) {
+			response.getWriter().print(e.getMessage());
+			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+			return;
+		}
+		
+		if (JSONInput == null) {
+			return;
+		}
+								
+		Long gameId = ((Number) JSONInput.get("id")).longValue();
+		Long playerId = ((Number) JSONInput.get("player")).longValue();
+		Game game = gameDAO.load(gameId);
+
+		Player player = playerDAO.get(playerId);
+		
+		if (!game.getPlayers().contains(player)) {
+			game.getPlayers().add(player);
+			gameDAO.update(game);
+		}
+	
+		JSONObject JSONResult = new JSONObject();
+
+		JSONResult.put("result", "0");
+
+		response.setContentType("application/json");
+		response.getWriter().print(JSONResult);
+	}
+
+	@SuppressWarnings("unchecked")
+	public void removePlayer(HttpServletResponse response, 
+			HttpServletRequest request,
+			Principal user) throws IOException {
+		JSONObject JSONInput = null;
+		
+		try {
+		 	JSONInput = parseInput(request);	
+		} catch (RuntimeException e) {
+			response.getWriter().print(e.getMessage());
+			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+			return;
+		}
+		
+		if (JSONInput == null) {
+			return;
+		}
+								
+		Long gameId = ((Number) JSONInput.get("id")).longValue();
+		Long playerId = ((Number) JSONInput.get("player")).longValue();
+		Game game = gameDAO.load(gameId);
+
+		Player player = playerDAO.get(playerId);
+		
+		if (game.getPlayers().contains(player)) {
+			game.getPlayers().remove(player);
+			gameDAO.update(game);
+		}
+	
+		JSONObject JSONResult = new JSONObject();
+
+		JSONResult.put("result", "0");
+
+		response.setContentType("application/json");
 		response.getWriter().print(JSONResult);
 	}
 
@@ -307,7 +412,7 @@ public class GameControllerImpl implements GameController {
 		Integer clientPhase = ((Number) JSONInput.get("phase")).intValue();
 	
 		Game game = gameDAO.load(gameId);
-		Player player = humanPlayerDAO.get(user.getName());
+		Player player = playerDAO.getHumanPlayer(user.getName());
 	
 		Round currentRound = game.getCurrentRound();
 		int idx = game.getRounds().indexOf(currentRound);
@@ -321,6 +426,8 @@ public class GameControllerImpl implements GameController {
 			if (idx > 0) {
 				JSONResult.put("previousRound", roundAsJSON(game, idx - 1));
 			}
+
+			response.setContentType("application/json");
 			response.getWriter().print(JSONResult);
 			return;
 		}
@@ -354,6 +461,7 @@ public class GameControllerImpl implements GameController {
 		// and the phase
 		JSONResult.put("phase", currentPhase);
 		
+		response.setContentType("application/json");
 		response.getWriter().print(JSONResult);
 	}
 
@@ -362,7 +470,7 @@ public class GameControllerImpl implements GameController {
 		Map<String, Object> model = new HashMap<String, Object>();
 		
 		Game game = gameDAO.load(gameId);
-		Player player = humanPlayerDAO.get(user.getName());
+		Player player = playerDAO.getHumanPlayer(user.getName());
 		
 		for (Player currPlayer : game.getPlayers()) {
 			if (currPlayer.equals(player)) {
@@ -399,7 +507,7 @@ public class GameControllerImpl implements GameController {
 		Integer bid = ((Number) JSONInput.get("bid")).intValue();
 
 		Game game = gameDAO.load(gameId);
-		Player player = humanPlayerDAO.get(user.getName());
+		Player player = playerDAO.getHumanPlayer(user.getName());
 
 		try {
 			game.bid(player, bid);
@@ -407,6 +515,7 @@ public class GameControllerImpl implements GameController {
 			JSONResult.put("errorMessage", whistException.getMessage());
 			JSONResult.put("result", "-1");
 
+			response.setContentType("application/json");
 			response.getWriter().print(JSONResult);
 			return;
 		}
@@ -415,6 +524,7 @@ public class GameControllerImpl implements GameController {
 
 		JSONResult.put("result", "0");
 		
+		response.setContentType("application/json");
 		response.getWriter().print(JSONResult);
 	}	
 
@@ -434,7 +544,7 @@ public class GameControllerImpl implements GameController {
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return;
 		}
-		
+
 		if (JSONInput == null) {
 			return;
 		}
@@ -443,7 +553,7 @@ public class GameControllerImpl implements GameController {
 		Card.Suit trumps = Enum.valueOf(Card.Suit.class, JSONInput.get("trumps").toString().replace("-", "_"));
 
 		Game game = gameDAO.load(gameId);
-		Player player = humanPlayerDAO.get(user.getName());
+		Player player = playerDAO.getHumanPlayer(user.getName());
 		
 		try {
 			game.selectTrumps(player, trumps);
@@ -451,6 +561,7 @@ public class GameControllerImpl implements GameController {
 			JSONResult.put("errorMessage", whistException.getMessage());
 			JSONResult.put("result", "-1");
 
+			response.setContentType("application/json");
 			response.getWriter().print(JSONResult);
 			return;
 		}
@@ -459,6 +570,7 @@ public class GameControllerImpl implements GameController {
 
 		JSONResult.put("result", "0");
 		
+		response.setContentType("application/json");
 		response.getWriter().print(JSONResult);
 	}
 	
@@ -488,7 +600,7 @@ public class GameControllerImpl implements GameController {
 		Card card = Enum.valueOf(Card.class, enumConstant);
 
 		Game game = gameDAO.load(gameId);
-		Player player = humanPlayerDAO.get(user.getName());
+		Player player = playerDAO.getHumanPlayer(user.getName());
 
 		try {
 			game.playCard(player, card);
@@ -496,6 +608,7 @@ public class GameControllerImpl implements GameController {
 			JSONResult.put("errorMessage", whistException.getMessage());
 			JSONResult.put("result", "1");
 
+			response.setContentType("application/json");
 			response.getWriter().print(JSONResult);
 			return;
 		}
@@ -504,6 +617,7 @@ public class GameControllerImpl implements GameController {
 		
 		JSONResult.put("result", "0");
 
+		response.setContentType("application/json");
 		response.getWriter().print(JSONResult);
 	}	
 	
@@ -549,7 +663,7 @@ public class GameControllerImpl implements GameController {
 		Map<String, Object> model = new HashMap<String, Object>();
 
 		if (principal != null) {
-			Player player = humanPlayerDAO.get(principal.getName());
+			Player player = playerDAO.getHumanPlayer(principal.getName());
 
 			if (player != null) {
 				model.put("playerName", player.getPrettyName());
